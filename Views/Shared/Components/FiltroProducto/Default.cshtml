@@ -1,0 +1,520 @@
+﻿@model FiltroProductoViewModel
+@{
+    SessionAcceso session = SessionAcceso.RecuperarSession(Context); //Context.Session.GetJson<SessionAcceso>("SessionAcceso");
+
+    var activarFiltroFamilia = session?.Configuracion?.
+        ConfiguracionesViewDatosProductos?.FirstOrDefault(x => x.Codigo ==
+        (int)ConfViewDatosProductos.EnumConfViewDatosProductos.Ver_Filtro_Familia);
+
+    var activarFiltroMarca = session?.Configuracion?.
+        ConfiguracionesViewDatosProductos?.FirstOrDefault(x => x.Codigo ==
+        (int)ConfViewDatosProductos.EnumConfViewDatosProductos.Ver_Filtro_Marca);
+
+
+    string dato = Model.Filtro.Dato;
+
+    int familiaId = Model.Filtro.FamiliaId ?? 0;
+
+    int marcaId = Model.Filtro.MarcaId ?? 0;
+
+    int paginaActual = Model.Filtro.PaginaActual;
+
+    string urlActionGenerar = Url.Action("GenerarUrlProducto", "Producto");
+
+
+}
+
+
+<div class="dropdown dropleft">
+
+    <button class="btn bordeNaranja dropdown-toggle" type="button"
+            id="dropdownMenuButton"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-bars fa-1x"></i>
+    </button>
+
+
+
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
+
+
+        @{
+            if (session?.Usuario?.Rol != (Int32)EnumRol.Catalogo)
+            {
+
+                <a class="dropdown-item" onclick="abrirMenuOpciones()" id="btnOpciones" href="#">
+                    <i class="fas fa-tools"></i> Opciones
+                </a>
+
+
+
+                <a class="dropdown-item" onclick="abrirOrdenamiento()" id="btnOrdenamiento">
+                    <i class="fas fa-sort"></i> Ordenar
+                </a>
+
+                <a class="dropdown-item" asp-area="Carrito"
+                   asp-action="Productos"
+                   asp-controller="Producto"
+                   asp-route-PaginaActual="1"
+                   asp-route-MarcaId="@Model.Filtro.MarcaId"
+                   asp-route-FamiliaId="@Model.Filtro.FamiliaId"
+                   asp-route-ClasificacionId="@Model.Filtro.ClasificacionId"
+                   asp-route-Ofertas="true"><i class="fas fa-fire"></i> Ofertas</a>
+            }
+
+
+            if (session?.Usuario?.Rol != (Int32)EnumRol.Vendedor)
+            {
+                if (session?.Usuario?.Rol == (Int32)EnumRol.Catalogo)
+                {
+
+
+                    <a class="dropdown-item" onclick="abrirClasificaciones()" id="btnClasificacion" href="#">
+                        <i class="fab fa-cloudsmith">
+                        </i> Clasificaciones
+                    </a>
+
+                    <a class="dropdown-item" asp-area="Carrito"
+                       asp-action="Productos"
+                       asp-controller="Producto"
+                       asp-route-PaginaActual="1"
+                       asp-route-MarcaId="@Model.Filtro.MarcaId"
+                       asp-route-FamiliaId="@Model.Filtro.FamiliaId"
+                       asp-route-ClasificacionId="@Model.Filtro.ClasificacionId"
+                       asp-route-Ofertas="true"><i class="fas fa-fire"></i> Ofertas</a>
+
+                    <span class="dropdown-divider"></span>
+
+                    <a class="dropdown-item" asp-area="Carrito"
+                       asp-action="Productos"
+                       asp-controller="Producto"
+                       asp-route-PaginaActual="1"><i class="fas fa-weight-hanging"></i> Productos</a>
+
+                    <span class="dropdown-divider"></span>
+
+
+                    <a class="dropdown-item"
+                       asp-area="Acceso"
+                       asp-controller="Acceso"
+                       asp-action="Cerrar">
+                        <i class="fas fa-door-open"></i> Cerrar
+                    </a>
+
+
+                }
+                else
+                {
+                    if (activarFiltroFamilia?.Valor == 1)
+                    {
+                        <a class="dropdown-item" onclick="abrirRubros()" id="btnRubro" href="#">
+                            <i class="fab fa-buffer">
+                            </i> Rubros
+                        </a>
+
+                    }
+
+
+                    if (activarFiltroMarca?.Valor == 1)
+                    {
+                        <a class="dropdown-item" onclick="abrirMarcas()" id="btnMarca" href="#">
+                            <i class="fas fa-tag">
+                            </i> Marcas
+                        </a>
+                    }
+
+
+                    if (session?.Sistema?.EmpresaId == 88)
+                    {
+                        <a class="dropdown-item" onclick="abrirClasificaciones()" id="btnClasificacion" href="#">
+                            <i class="fab fa-cloudsmith">
+                            </i> Clasificaciones
+                        </a>
+                    }
+                }
+
+            }
+
+            else
+            {
+                <a class="dropdown-item" onclick="abrirRubros()" id="btnRubro" href="#">
+                    <i class="fab fa-buffer">
+                    </i> Rubros
+                </a>
+                <a class="dropdown-item" onclick="abrirMarcas()" id="btnMarca" href="#">
+                    <i class="fas fa-tag">
+                    </i> Marcas
+                </a>
+
+                if (session?.Sistema?.EmpresaId == 88)
+                {
+                    <a class="dropdown-item" onclick="abrirClasificaciones()" id="btnClasificacion" href="#">
+                        <i class="fab fa-cloudsmith">
+                        </i> Clasificaciones
+                    </a>
+                }
+            }
+
+        }
+
+
+
+        @{
+
+            if (session?.Usuario?.Rol != (Int32)EnumRol.Catalogo)
+            {
+                <a onclick="copiarPagina('@urlActionGenerar','@dato',@familiaId,@marcaId,@paginaActual)"
+                class="dropdown-item">
+                    <i class="fas fa-link">
+                    </i> Copiar link
+                </a>
+            }
+
+
+            if (session?.Usuario?.Rol == (Int32)EnumRol.Vendedor || session?.Usuario?.Rol == (Int32)EnumRol.ClienteFidelizado)
+            {
+                <a class="dropdown-item" asp-area="Carrito" target="_blank"
+                   asp-action="GenerarPdfListaProductos"
+                   asp-controller="Producto" asp-route-filtro="@Model.Filtro">
+                    <i class="fas fa-file-download"></i>  Lista Precios
+                </a>
+            }
+        }
+
+
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="dialogo1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+
+            @*cabecera del diálogo*@
+            <div class="modal-header">
+                <h5 class="modal-title text-primary">Opciones</h5>
+                <button type="button" class="close" data-dismiss="modal">X</button>
+            </div>
+
+
+
+            @*cuerpo del diálogo*@
+            <div class="modal-body">
+                <form asp-area="Carrito" asp-controller="Producto" asp-action="Productos" method="get">
+
+                    <div class="form-check mb-1">
+                        <input class="form-check-input"
+                               type="checkbox" asp-for="@Model.Filtro.VerProductosSinImagen">
+                        <label class="form-check-label" for="">
+                            Ver productos sin imagen
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-1">
+                        <input class="form-check-input" type="checkbox" asp-for="@Model.Filtro.VerProductosSinStock">
+                        <label class="form-check-label" for="">
+                            Ver productos sin stock
+                        </label>
+                    </div>
+
+
+                    <div class="form-check mb-1">
+                        <input class="form-check-input" type="checkbox" asp-for="@Model.Filtro.EsconderPrecio">
+                        <label class="form-check-label" for="">
+                            Ocultar Precio
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-1">
+                        <input class="form-check-input" type="checkbox" asp-for="@Model.Filtro.OcultarImagenes">
+                        <label class="form-check-label" for="">
+                            Ocultar Imagenes
+                        </label>
+                    </div>
+
+                    <div class="form-group mb-1">
+                        <label for="exampleFormControlSelect1">Tipo de vista</label>
+
+                        <select asp-for="@Model.Filtro.TipoVisualizacion" class="form-control" id="exampleFormControlSelect1">
+                            <option value="1">Tarjeta</option>
+                            <option value="2">Lista</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-1">
+                        <label for="staticEmail">Elementos por Página</label>
+                        <input type="text" value="" class="form-control" asp-for="@Model.Filtro.Dato">
+                    </div>
+
+
+
+
+
+
+
+
+
+                    <input type="hidden" value="OpcionesFiltro" asp-for="Filtro.DatoAuxiliar">
+                    <button type="submit" class="mt-2 btn btn-success">Aceptar</button>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="frmOrdenamiento">
+    <div class="modal-dialog  modal-sm modal-dialog-centered">
+        <div class="modal-content">
+
+            @*cabecera del diálogo*@
+            <div class="modal-header">
+                <h5 class="modal-title text-primary">Ordenamiento</h5>
+                <button type="button" class="close" data-dismiss="modal">X</button>
+            </div>
+
+            @*cuerpo del diálogo*@
+            <div class="modal-body">
+                <form asp-area="Carrito" asp-controller="Producto" asp-action="Productos" method="get">
+
+                    @{
+                        List<Generica> lista = new List<Generica>();
+                        lista.Add(new Generica { Id = 1, Nombre = "Nombre A..Z" });
+                        lista.Add(new Generica { Id = 2, Nombre = "Nombre Z..A" });
+                        //lista.Add(new Generica { Id = 3, Nombre = "Menor Precio" });
+                        //lista.Add(new Generica { Id = 4, Nombre = "Mayor Precio" });
+                        lista.Add(new Generica { Id = 5, Nombre = "1ero Ofertas - Nombre A..Z" });
+                        lista.Add(new Generica { Id = 6, Nombre = "Menor Código" });
+                        lista.Add(new Generica { Id = 7, Nombre = "Mayor Código" });
+
+
+
+                        foreach (var item in lista)
+                        {
+
+                            <div class="form-check">
+                                @if (item.Id == Model.Filtro.Ordenamiento)
+                                {
+                                    <input class="form-check-input" type="radio" asp-for="Filtro.Ordenamiento" id="exampleRadios1" value="@item.Id" checked>
+                                }
+                                else
+                                {
+                                    <input class="form-check-input" type="radio" asp-for="Filtro.Ordenamiento" id="exampleRadios1" value="@item.Id">
+                                }
+                                <label class="form-check-label" for="exampleRadios1">
+                                    <i class="fas fa-sort-alpha-down"></i> @item.Nombre
+                                </label>
+                            </div>
+
+                        }
+                    }
+
+                    <br/><br /><br /><br />
+
+                    <button type="submit" class="btn btn-success ">Aceptar</button>
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="modal fade" id="frmRubro">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+            @*cabecera del diálogo*@
+            <div class="modal-header">
+                <h5 class="modal-title text-primary">Rubros</h5>
+                <button type="button" class="close" data-dismiss="modal">X</button>
+            </div>
+
+
+
+            @*cuerpo del diálogo*@
+            <div class="modal-body">
+
+                <div class="input-group">
+                    <div class="input-group-prepend mr-2 mt-2 ml-1">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </div>
+                    <input class="form-control text-sm-left" autofocus type="text" 
+                    id="txtFiltroFamilia" onkeyup="FiltrarFamilias_lista()" placeholder="Buscar Rubros">
+                </div>
+                <br />
+
+                <ul class="list-group" id="listaTablaFamilia">
+                    @{
+                        if (Model?.Familias != null && Model?.Familias.Count() > 0)
+                        {
+                            foreach (FamiliaMinimo familia in Model.Familias)
+                            {
+                                <li class="list-group-item">
+                                    <a class="filaRubro" asp-area="Carrito"
+                                       asp-action="Productos"
+                                       asp-controller="Producto"
+                                       asp-route-PaginaActual="1"
+                                       asp-route-MarcaId="@Model.Filtro.MarcaId"
+                                       asp-route-NombreMarca="@Model.Filtro.NombreMarca"
+                                       asp-route-FamiliaId="@familia.FamiliaId"
+                                       asp-route-FiltroRubro="@true"
+                                       asp-route-NombreFamilia="@familia.Nombre"
+                                       asp-route-FamiliaOrden="@familia.Orden"
+                                       asp-route-Ofertas="@Model.Filtro.Ofertas"
+                                       asp-route-ClasificacionId="@Model.Filtro.ClasificacionId">
+                                       
+                                        <span class="badge badge-success badge-pill">@familia.FamiliaId</span>  @Html.Raw(@familia.Nombre)
+                                    </a>
+                                </li>
+                            }
+                        }
+
+                    }
+                </ul>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div class="modal fade" id="frmMarca">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+            @*cabecera del diálogo*@
+            <div class="modal-header">
+                <h5 class="modal-title text-primary">Marcas</h5>
+                <button type="button" class="close" data-dismiss="modal">X</button>
+            </div>
+
+
+
+            @*cuerpo del diálogo*@
+            <div class="modal-body">
+
+                <div class="input-group">
+                    <div class="input-group-prepend mr-2 mt-2 ml-1">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </div>
+                    <input class="form-control text-sm-left" autofocus type="text" id="txtFiltroMarca" onkeyup="FiltrarMarcas_lista()" placeholder="Buscar Marca">
+                </div>
+                <br />
+
+                <ul class="list-group" id="listaTablaMarca">
+                    @{
+                        if (Model?.Marcas != null && Model?.Marcas.Count() > 0)
+                        {
+                            foreach (MarcaMinimo marca in Model.Marcas)
+                            {
+                                <li class="list-group-item">
+                                                        <a asp-area="Carrito"
+                                                           asp-action="Productos"
+                                                           asp-controller="Producto"
+                                                           asp-route-PaginaActual="1"
+                                                           asp-route-MarcaId="@marca.MarcaId"
+                                                           asp-route-FiltroMarca="@true"
+                                                           asp-route-NombreMarca="@marca.Nombre"
+                                                           asp-route-FamiliaId="@Model.Filtro.FamiliaId"
+                                                           asp-route-NombreFamilia="@Model.Filtro.NombreFamilia"
+                                                           asp-route-FamiliaOrden="@Model.Filtro.FamiliaOrden"
+                                                           asp-route-Ofertas="@Model.Filtro.Ofertas"
+                                                           asp-route-ClasificacionId="@Model.Filtro.ClasificacionId">
+                                                            <span class="badge badge-success badge-pill">@marca.MarcaId</span>  @marca.Nombre
+                                                        </a>
+                                   
+                                </li>
+                            }
+                        }
+
+                    }
+                </ul>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="modal fade" id="frmClasificacion">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+            @*cabecera del diálogo*@
+            <div class="modal-header">
+                <h5 class="modal-title text-primary">Clasificaciones</h5>
+                <button type="button" class="close" data-dismiss="modal">X</button>
+            </div>
+
+
+
+            @*cuerpo del diálogo*@
+            <div class="modal-body">
+
+                <div class="input-group">
+                    <div class="input-group-prepend mr-2 mt-2 ml-1">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </div>
+                    <input class="form-control text-sm-left" autofocus type="text" id="txtFiltroClasificacion" onkeyup="FiltrarClasificaciones_lista()" placeholder="Buscar Clasificación">
+                </div>
+                <br />
+
+                <ul class="list-group" id="listaTablaClasificacion">
+                    @{
+                        if (Model?.Clasificaciones != null && Model?.Clasificaciones.Count() > 0)
+                        {
+                            foreach (LibreriaBase.Areas.Carrito.ViewClasificacion clasificacion in Model.Clasificaciones)
+                            {
+                                <li class="list-group-item">
+                                                        <a asp-area="Carrito"
+                                                           asp-action="Productos"
+                                                           asp-controller="Producto"
+                                                           asp-route-PaginaActual="1"
+                                                           asp-route-MarcaId="@Model.Filtro.MarcaId"
+                                                           asp-route-FiltroMarca="@true"
+                                                           asp-route-NombreMarca="@Model.Filtro.NombreMarca"
+                                                           asp-route-FamiliaId="@Model.Filtro.FamiliaId"
+                                                           asp-route-NombreFamilia="@Model.Filtro.NombreFamilia"
+                                                           asp-route-FamiliaOrden="@Model.Filtro.FamiliaOrden"
+                                                           asp-route-Ofertas="@(session?.Usuario?.Rol == (Int32)EnumRol.Catalogo?false:Model.Filtro.Ofertas)"
+                                                           asp-route-ClasificacionId="@clasificacion.ClasificacionID">
+
+                                                            @if (session?.Usuario?.Rol != (Int32)EnumRol.Catalogo)
+                                                            {
+                                                                <span class="badge badge-success badge-pill">@clasificacion.ClasificacionID</span>
+                                                            }
+
+
+                                                            @clasificacion.Descripcion
+                                                        </a>
+
+                                </li>
+                            }
+                        }
+
+                    }
+                </ul>
+
+            </div>
+
+        </div>
+    </div>
+</div>

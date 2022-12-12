@@ -1,0 +1,64 @@
+﻿@model FiltroProducto
+
+@{
+    ViewData["Title"] = "BuscadorProductos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container">
+    <div class="jumbotron">
+
+
+        <br />
+
+        <div class="row">
+
+            <div class="col-md-3">
+
+
+                <img height="150" width="150" src="~/img/busqueda/binoc.png" class="img-fluid text-center">
+
+
+                <br />
+
+            </div>
+
+            <div class="col-md-9">
+
+                <div class="form-group">
+                    <label for="lbNumeroGuia">Buscar Producto</label>
+                    <input type="text" id="txtBuscar" class="form-control" autofocus>
+                    <small id="numeroHelp" class="form-text text-muted">Ingrese el nombre y se filtrara el mismo contra la Base de Datos</small>
+                </div>
+                <br />
+
+
+            </div>
+
+
+
+        </div>
+
+    </div>
+</div>
+
+<br />
+<br />
+<br />
+
+
+
+@section Scripts{
+
+    <script type="text/javascript">
+
+        $("#txtBuscar").on("change", function (e)
+        {
+
+            alert("S");
+              
+        });
+
+    </script>
+}

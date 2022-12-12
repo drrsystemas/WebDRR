@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Http
+@model SessionAcceso
+
+
+<li class="nav-item">
+    <a class="nav-link text-dark" asp-area=""
+       asp-controller="Home" asp-action="Principal">
+        <i class="fab fa-font-awesome-flag"></i> Principal
+    </a>
+</li>
+
+@if (Model != null)
+{
+
+
+    if (Model?.Usuario?.IdAlmaWeb == 29 && Model?.Usuario?.Clave == "4483300")
+    {
+
+
+        <li class="navbar-nav dropdown">
+            <a class="nav-link text-dark dropdown-toggle" data-toggle="dropdown">
+                Administración <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="Logistica" asp-controller="Cliente" asp-action="BuscarCliente">Buscar Clientes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="Logistica" asp-controller="Logistica" asp-action="NumeroGuia" asp-route-tipo="1">Buscar Guias</a>
+                </li>
+            </ul>
+        </li>
+    }
+    else
+    {
+
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Logistica"
+               asp-controller="Logistica" asp-action="GuiasPorCliente">Guías</a>
+        </li>
+
+    }
+}
+
+

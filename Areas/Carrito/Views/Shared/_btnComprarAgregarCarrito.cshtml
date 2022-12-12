@@ -1,0 +1,76 @@
+﻿@model LibreriaBase.Areas.Carrito.AgregarCarrito
+
+@{
+    Boolean activarCS = false;
+    Boolean btnComprar = (Boolean)ViewData["BtnComprar"];
+
+    var controlStock = ((List<LibreriaBase.Areas.Usuario.DatoConfiguracion>)ViewData["Conf_Portal"])?
+.FirstOrDefault(x => x.Codigo == (int)LibreriaBase.Areas.Usuario.ConfPortal.EnumConfPortal.
+Activar_ControlStock_Ventas)?.Valor;
+
+    if(controlStock?.MostrarEntero()==1)
+    {
+        activarCS = true;
+    }
+
+
+
+}
+
+<form name="frmBtnCarrito"
+      asp-area="Carrito"
+      asp-controller="Carrito"
+      asp-action="AgregarDos"
+      method="post">
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <input type="hidden" class="form-control" asp-for="ProductoId" />
+    <input type="hidden" class="form-control" asp-for="Representada" />
+
+
+
+
+
+    <div class="form-group">
+        @{
+            if (activarCS == true)
+            {
+                <input asp-for="Cantidad_I" min="1" max="@Model.StockMaximo" />
+            }
+            else
+            {
+                <input asp-for="Cantidad_I" min="1" />
+            }
+        }
+
+
+        <span asp-validation-for="Cantidad_I" class="text-danger d-block"></span>
+    </div>
+
+    <input type="hidden" name="UrlRetorno"
+           value="@ViewContext.HttpContext.Request.PathAndQuery()" />
+
+    @{
+        if (btnComprar == true)
+        {
+            if ((Int32?)ViewData["Rol"] != (Int32)EnumRol.Vendedor)
+            {
+                <button type="submit" value="2" name="TipoOperacion"
+                        class="btn btn-primary btn-sm pull-right">
+                    <i class="fas fa-cash-register"></i> <b>Comprar ahora</b>
+                </button>
+                <br />
+            }
+        }
+
+
+    }
+
+
+    <button type="submit" value="1" name="TipoOperacion"
+            class="btn btn-primary btn-sm pull-right mt-2">
+        <i class="fas fa-cart-plus"></i> <b>Agregar al carrito</b>
+    </button>
+
+</form>

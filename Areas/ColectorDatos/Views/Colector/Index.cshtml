@@ -1,0 +1,432 @@
+﻿@model IEnumerable<ViewColector>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "/Areas/ColectorDatos/Views/Shared/_Layout.cshtml";
+
+    FiltroColector filtro = (FiltroColector)ViewData["FiltroColector"];
+
+    SelectList listaOperaciones = new SelectList(filtro.GetLista_OperacionesConsultor(), "Id", "Nombre");
+    SelectList listaSucursales = new SelectList(filtro.ListaSucursales, "Id", "Nombre");
+
+    //SelectList listaDeposito = new SelectList(filtro.ListaDepositos, "Id", "Nombre");
+    //String logo = (String)ViewData["Logo"];
+
+    //Boolean sucurdal = true;
+
+    //if (ViewData.ContainsKey("Sucursal"))
+    //{
+    //    sucurdal = (Boolean)ViewData["Sucursal"];
+    //}
+
+
+    String urlSumarRestar = Url.Action("SumarRestarColector", "Colector");
+}
+
+
+@section Estilos
+        {
+    <style type="text/css">
+        .mostar {
+            display: block;
+        }
+
+        .ocultar {
+            display: none;
+        }
+
+        .cantidadDatos {
+            width: 100px;
+        }
+
+        /*        @@media screen and (max-width: 480px) {
+            .cantidadDatos {
+                width: 45px;
+            }
+        }*/
+
+/*        .modal-body {
+            height: 100px;
+            overflow-y: auto;
+        }
+
+        @@media (min-height: 200px) {
+            .modal-body {
+                height: 100px;
+            }
+        }
+
+        @@media (min-height: 400px) {
+            .modal-body {
+                height: 200px;
+            }
+        }*/
+
+
+        .modal-body {
+            height: 250px;
+            overflow-y: auto;
+        }
+
+        @@media (min-height: 500px) {
+            .modal-body {
+                height: 400px;
+            }
+        }
+
+        @@media (min-height: 800px) {
+            .modal-body {
+                height: 600px;
+            }
+        }
+    </style>
+}
+
+
+
+@section Menu
+        {
+    <div class="d-flex bd-highlight">
+
+        <button class="ml-2 my-2  btn btn-light" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <i class="fas fa-bars fa-1x"></i>
+        </button>
+
+
+
+        <h4 class="ml-4 pt-1">Colector de Datos</h4>
+
+        <div class=" ml-auto p-2 bd-highlight">
+
+
+
+            <!-- Default dropleft button -->
+            @*<div class="btn-group dropleft ">
+
+
+
+                <button type="button" class="btn  btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bars fa-1x"></i>
+                </button>
+                <div class="dropdown-menu">
+
+                    <a class="dropdown-item  cursor-pointer" onclick="cambiarSucursal()">
+                        <i class="fa-solid fa-ghost"></i> Sucursal
+                    </a>
+                </div>
+            </div>*@
+
+
+
+        </div>
+
+    </div>
+
+
+
+
+    @* Div que se muestra o esconde --- Filtros *@
+    <div class="mx-3 mx-md-4 collapse" id="collapseExample">
+
+        <form method="post" asp-action="Filtro" asp-controller="Colector" asp-area="ColectorDatos">
+
+
+
+            <div class="container-fluid">
+  @*              <div class="row px-2 mb-2">
+
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="col-form-label">Operación</label>
+                            <div class="">
+                                <select asp-for="@filtro.TipoOperacion" class="form-control" asp-items="@listaOperaciones">
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="col-form-label">Sucursal</label>
+                            <div class="">
+                                <select asp-for="@filtro.SucursalId" class="form-control" asp-items="@listaSucursales">
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3  d-flex align-items-end">
+                        <div class="form-group form-check ">
+                            <input class="form-check-input" type="checkbox" name="modoVisor" asp-for="@filtro.ModoVisor" id="ch-activar-visor">
+                            <label class="form-check-label" for="ch-activar-visor">
+                                @(filtro.ModoVisor == false?"Activar Visor":"Desactivar Visor")
+                            </label>
+                        </div>
+                    </div>
+
+                    
+                </div>*@
+
+
+                    @*<div class="form-group col-sm-3">
+            <label class="col-form-label">Deposito</label>
+            <div class="">
+                <select asp-for="@filtro.DepositoId" class="form-control" asp-items="@listaDeposito">
+                </select>
+            </div>
+
+        </div>*@
+
+
+
+                    <div class="row px-2 mb-2">
+                        <div class="col-sm-4">
+                            <div class="form-group pmd-textfield pmd-textfield-floating-label">
+                                <label class="control-label">Desde: </label>
+                                <input asp-for="@filtro.FechaDesde" type="date" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group pmd-textfield pmd-textfield-floating-label">
+                                <label class="control-label">Hasta: </label>
+                                <input asp-for="@filtro.FechaHasta" type="date" class="form-control">
+                            </div>
+                        </div>
+
+
+                        <div class="col-sm-3  d-flex align-items-end">
+                            <div class="form-check mb-3">
+                                <input asp-for="@filtro.Todos" type="checkbox" class="form-check-input">
+                                <label class="form-check-label font-weight-bold">Todos</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            <div class=" d-flex justify-content-end align-items-center mt-md-2">
+                <button class="btn btn-success mb-1 mr-2" type="submit"><i class="fas fa-filter"></i> Filtrar</button>
+            </div>
+
+        </form>
+
+    </div>
+
+
+
+
+
+    <div class="container-fluid">
+                     <div class="row px-2 mb-2 mt-2">
+
+        <div class="col-sm-4">
+        <div class="form-group">
+        <label class="col-form-label">Operación</label>
+        <div class="">
+        <select asp-for="@filtro.TipoOperacion" class="form-control" asp-items="@listaOperaciones">
+        </select>
+        </div>
+
+        </div>
+        </div>
+
+        <div class="col-sm-4">
+        <div class="form-group">
+        <label class="col-form-label">Sucursal</label>
+        <div class="">
+        <select asp-for="@filtro.SucursalId" class="form-control" asp-items="@listaSucursales">
+        </select>
+        </div>
+
+        </div>
+        </div>
+
+        <div class="col-sm-3  d-flex align-items-end">
+        <div class="form-group form-check ">
+        <input class="form-check-input" type="checkbox" name="modoVisor" asp-for="@filtro.ModoVisor" id="ch-activar-visor">
+        <label class="form-check-label" for="ch-activar-visor">
+        @(filtro.ModoVisor == false?"Activar Visor":"Desactivar Visor")
+        </label>
+        </div>
+        </div>
+
+
+        </div>
+    </div>
+}
+
+
+<hr class="d-none d-md-block" />
+<partial name="_aviso" />
+
+
+@{
+
+
+        <partial name="_barraColector" />
+
+
+        <div id="cargando" class="d-flex justify-content-center">
+        </div>
+
+
+        <div class="border border-secondary my-1" id="productoActual">
+
+        </div>
+
+
+
+        <table id="tablaProductos" data-url-sumar-restar="@urlSumarRestar" class="mt-1 table table-sm table-striped">
+            <thead>
+                <tr>
+
+                    <th class="d-none d-sm-table-cell">
+                        Cod. Barra
+                    </th>
+
+                    <th>
+                        Datos
+                    </th>
+
+                    <th>
+                        Cantidad
+                    </th>
+
+                    <th class="d-none d-sm-table-cell">
+                        Fecha
+                    </th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @{
+                    if (Model?.Count() > 0)
+                    {
+                        for (int i = 0; i < Model.Count(); i++)
+                        {
+                            ViewColector item = Model.ElementAt(i);
+
+                            String dato = "[" + item.CodigoId + "] - " + item.Descripcion;
+
+                            <tr id="fila_@item.CodigoId" data-indice="@i">
+
+                                <td class="d-none d-sm-table-cell">
+                                    @item.CodigoBarra
+                                </td>
+
+                                <td>
+                                    <a asp-area="ColectorDatos"
+                                       asp-controller="Colector"
+                                       asp-action="Modificar"
+                                       asp-route-id="@item.CodigoId" 
+                                       asp-route-reg="@item.Registro"> @dato</a>
+                                </td>
+
+                                <td>
+
+                                    <div class="input-group input-group-sm cantidadDatos">
+
+
+                                        <div class="input-group-prepend">
+                                            <button onclick="sumar_restar_colector('@item.CodigoId','@item.Registro','0')"
+                                                    class="btn btn-sm btn-danger"
+                                                    type="button">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                        </div>
+
+                                        <input id="cantidad_@item.CodigoId" readonly
+                                               min="0"
+                                               value="@item.Cantidad.MostrarEntero()"
+                                               class="form-control p-1 text-center"
+                                               aria-describedby="basic-addon2">
+
+                                        <div class="input-group-append">
+                                            <button onclick="sumar_restar_colector('@item.CodigoId','@item.Registro','1')"
+                                                    class="btn btn-sm btn-primary"
+                                                    type="button">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+
+
+                                </td>
+
+                                <td class="d-none d-sm-table-cell">
+                                    @item.Fecha
+                                </td>
+
+                            </tr>
+                        }
+
+                    }
+                }
+
+            </tbody>
+
+        </table>
+    
+
+                    
+    @await Component.InvokeAsync("Sucursal")
+}
+
+
+
+
+
+<br />
+<br />
+<br />
+
+
+
+
+
+<div class="modal fade" id="frm-modal-si-no" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">¿Seguro quiere eliminar el registro?</h4>
+            </div>
+
+
+            <div class="modal-footer">
+                <button id="frm-modal-btn-modal-aceptar"
+                        onclick="suma_resta(this,0,2,'@urlSumarRestar')" type="button" class="btn btn-primary mr-2"
+                        data-dismiss="modal">
+                    Aceptar
+                </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<div id="frmModal"></div>
+
+
+@section Scripts
+{
+
+    <script asp-append-version="true" type="text/javascript" src="~/script/_drrSystemas.js"></script>
+    <script asp-append-version="true" type="text/javascript" src="~/script/colector/colector.js"></script>
+    <script asp-append-version="true" type="text/javascript" src="~/script/components/_sucursalViewComponent.js"></script>
+    <script type="text/javascript">
+
+        @*_haySucursal = '@sucurdal';*@
+
+    </script>
+}

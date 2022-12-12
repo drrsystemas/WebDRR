@@ -1,0 +1,260 @@
+﻿@model ViewModelCliente
+@{
+
+    if (Model?.Paginacion.Elementos > 0)
+    {
+        ViewData["Title"] = "Clientes [" + Model?.Paginacion.Elementos + "]";
+    }
+    else
+    {
+        ViewData["Title"] = "Clientes";
+    }
+
+    String urlBaseFiltroCiudad = Url.Action("FiltroCiudad", "Cliente");
+
+    //Idea para el control de paisprovciudad
+    ViewModelPaisProvinciaCiudad modelPaisProvinciaCiudad = (ViewModelPaisProvinciaCiudad)
+
+    ViewBag.ViewModelPaisProvinciaCiudad;
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    SessionAcceso session = (SessionAcceso)ViewData["Session"];
+
+    //No me gusta nada esto
+    List<SelectListItem> listaZonas = (List<SelectListItem>)ViewData["ListaZonas"];
+
+    List<SelectListItem> listaClasificacionClientes = (List<SelectListItem>)ViewData["ListaClasificacionClientes"];
+
+    String urlGetSaldos = Url.Action("GetEstadosCuenta", "Cliente");
+
+    //Esto de hacer un Json aca reverlo
+    String jsonListaCliente = Model.Lista.ToJson();
+
+    String jsonFiltroCliente = Model?.Filtro?.ToJson();
+
+
+}
+
+
+@section Estilos
+{
+    <style type="text/css">
+        .colBtn {
+            width: 130px;
+        }
+
+        /*        td {
+            border: 1px #DDD solid;
+            padding: 5px;
+            cursor: pointer;
+        }*/
+
+        .selected {
+            background-color: orange;
+            color: #FFF;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
+
+    
+
+    </style>
+}
+
+
+@section Menu
+{
+    <div class="d-flex justify-content-end bd-highlight">
+
+        <button class="ml-2 my-2  btn btn-light" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <i class="fas fa-bars fa-1x"></i>
+        </button>
+
+        <div class="d-none d-sm-none d-md-block p-md-2 bd-highlight">
+            <img src="@session?.Sistema?.Logo" height="45" id="headerv4_img_logo" class="d-inline-block align-top" alt="logo">
+        </div>
+
+        <div class="p-2 w-100 align-items-end bd-highlight">
+
+
+            <form asp-area="Usuario"
+                  asp-controller="Cliente"
+                  asp-action="ListarClientes"
+                  method="post">
+                <div class="row ml-2">
+                    <div class="col-9 col-md-9 col-lg-10 p-0">
+
+                        <input class="form-control mr-1" asp-for="@Model.Filtro.Codigo"
+                               type="search" placeholder="Buscar Cliente/s" aria-label="Search">
+                        <input asp-for="@Model.Filtro.UrLRetorno" type="hidden">
+                        <input asp-for="@Model.Filtro.BusquedaCliente" type="hidden">
+                        <input asp-for="@Model.Filtro.EnumFiltro" type="hidden">
+                    </div>
+                    <div class="col-2 col-md-2 col-lg-1 pl-2">
+                        <button type="submit" class="btn btn-primary "><i class="fas fa-search fa-1x"></i></button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+
+        <div class="p-2 bd-highlight">
+
+
+
+            <!-- Default dropleft button -->
+            <div class="btn-group dropleft">
+                <button type="button" class="btn  btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bars fa-1x"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a id="link-ver-estados-cuentas" 
+                       onclick="verEstadosDeCuentas('@urlGetSaldos', '@jsonListaCliente')" 
+                       class="dropdown-item cursor-pointer">Mostrar columna Estado de Cuentas</a>
+
+                    <a asp-action="Mapa" asp-area="Usuario" asp-controller="Cliente" 
+                       asp-route-data="@jsonFiltroCliente" id="link-ver-mapa" class="dropdown-item">Ver Mapa</a>
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+
+    @* Div que se muestra o esconde --- Filtros *@
+    <div class="collapse" id="collapseExample">
+
+        @*<partial name="_paisProvinciaCiudad" model="modelPaisProvinciaCiudad" />
+            <br />
+            <a onclick="filtrarBusquedaCiudad('@urlBaseFiltroCiudad')" class="m-2 btn btn-success">Filtrar</a>*@
+
+        @*<select onchange="change_cbPais('@urlGetProvincia')" id="cbPais" asp-for="PaisId"
+                    asp-items="@(new SelectList(Model.ListaPaises,"PaisId","Descripcion"))">
+                <option>Selecciona el País</option>
+            </select>*@
+
+
+        @*<div class="form-row m-0">
+                <div class="form-group ml-2 col-md-4">
+                    <label for="inputState">Zona</label>
+                    <select id="inputState" class="form-control">
+                        <option selected>Todas</option>
+                        <option>...</option>
+                    </select>
+
+                </div>
+            </div>*@
+        <form method="get" asp-area="Usuario" asp-controller="Cliente" asp-action="ListarClientes">
+
+            <div class="form-row m-0">
+
+                <div class="form-group ml-2 col-md-5">
+                    <label class="control-label">Dirección</label>
+                    <input class="form-control" type="text" asp-for="Filtro.Domicilio" />
+
+                </div>
+
+                <div class="form-group ml-2 col-md-5">
+                    <label class="control-label">Zonas</label>
+                    <select class="custom-select" asp-for="Filtro.ZonaId"
+                            asp-items="@listaZonas">
+                        <option value="0" selected="selected">Todas</option>
+                    </select>
+                </div>
+            </div>
+
+
+
+            <div class="form-row m-0">
+
+
+
+                <div class="form-group ml-2 col-md-5">
+                    <label class="control-label">Clasificación</label>
+                    <select class="custom-select" asp-for="Filtro.ClasificacionId"
+                            asp-items="@listaClasificacionClientes">
+                        <option value="0" selected="selected">Todos</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class=" d-flex justify-content-end align-items-center">
+                <button class="btn btn-success mb-1 mr-2" type="submit"><i class="fas fa-filter"></i> Filtrar</button>
+            </div>
+
+        </form>
+
+    </div>
+
+}
+
+<partial name="_aviso" />
+
+<p id="seleccionado"></p>
+@*<a id="urlVolver" href="@urlRetorno" hidden></a>*@
+
+
+<div id="div-spinner" class="mb-2 ocultarDiv" >
+    <strong>En unos segundos se visualizara <small>una nueva columna</small>  con los datos.</strong>
+    <div class="spinner-border text-warning ms-auto" role="status" aria-hidden="true"></div>
+</div>
+
+
+<div id="divTablaCliente">
+
+    @{
+        if (Model.Filtro?.EnumFiltro == (Int32)FiltroCliente.EnumFiltroCliente.Carrito)
+        {
+            <partial name="_tablaClientesPorVendedor" model="Model" />
+        }
+        else
+        {
+            <partial name="_tablaClientesSoporte" model="Model" />
+
+        }
+
+    }
+
+</div>
+
+
+
+
+<div page-model="@Model.Paginacion"
+     page-action="ListarClientes"
+     page-classes-enabled="true"
+     page-class="btn"
+     page-class-normal="btn-light"
+     page-class-selected="btn-primary"
+     page-url-Codigo="@Model.Filtro.Codigo"
+     page-url-BusquedaCliente="@Model.Filtro.BusquedaCliente"
+     page-url-EnumFiltro="@Model.Filtro.EnumFiltro"
+     class="btn-group">
+</div>
+
+
+<br />
+<br />
+<br />
+
+@section Scripts
+{
+    <script type="text/javascript" src="~/script/_drrSystemas.js"></script>
+    <script type="text/javascript" src="~/script/_paisProvinciaCiudad.js"></script>
+    
+    <script type="text/javascript" src="~/script/cliente/listarClientes.js" asp-append-version="true"></script>
+    <script src="~/lib/sorttable/sorttable.js"></script>
+
+  
+
+
+}

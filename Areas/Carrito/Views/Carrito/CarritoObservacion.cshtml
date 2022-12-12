@@ -1,0 +1,39 @@
+﻿@model LibreriaBase.Clases.Generica
+
+@{
+    ViewData["Title"] = "Observacion";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section Atras
+{
+    <a class="btn bd-white mr-1"
+       href="@Model.UrlRetorno">
+        <i class="fas fa-angle-left"></i> <p class="d-none d-sm-inline">Atrás</p>
+    </a>
+}
+
+<h4>Observación</h4>
+<hr />
+
+<div class="row">
+    <div class="col-12">
+        <form asp-action="EditObservacion" asp-controller="Carrito" asp-area="Carrito" method="post">
+
+            <div class="form-group">
+                <textarea rows="3" asp-for="Nombre" placeholder="Ingrese la observación" class="form-control" ></textarea>
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="UrlRetorno" class="form-control" />
+            <div class="form-group">
+                <button class="btn btn-primary" type="submit">
+                    <i class="far fa-save"></i> Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+

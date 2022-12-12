@@ -1,0 +1,179 @@
+﻿@model IEnumerable<LibreriaBase.Areas.Usuario.DatoConfiguracion>
+
+@{
+    ViewData["Title"] = "ConfigurarViewDatosProductos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+    List<Generica> listaOrdenamiento = new List<Generica>();
+    listaOrdenamiento.Add(new Generica { Id = 1, Nombre = "Nombre A..Z" });
+    listaOrdenamiento.Add(new Generica { Id = 2, Nombre = "Nombre Z..A" });
+    listaOrdenamiento.Add(new Generica { Id = 3, Nombre = "Menor Precio" });
+    listaOrdenamiento.Add(new Generica { Id = 4, Nombre = "Mayor Precio" });
+    listaOrdenamiento.Add(new Generica { Id = 5, Nombre = "1ero Ofertas - Nombre A..Z" });
+    listaOrdenamiento.Add(new Generica { Id = 6, Nombre = "Menor Código" });
+    listaOrdenamiento.Add(new Generica { Id = 7, Nombre = "Mayor Código" });
+
+}
+
+
+<h3>Configurar Datos del Producto </h3>
+
+<table class="sortable table table-sm table-striped">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Categoría
+            </th>
+            <th>
+                Descripción
+            </th>
+            <th>
+                Valor
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+
+            if (item.Codigo == 3 || item.Codigo == 4 || item.Codigo == 8)
+            {
+                continue;
+            }
+
+            String dato = "";
+
+
+            if (item.Codigo == 2)
+            {
+                dato = item.Valor.Activo_Inactivo();
+                dato = "% " + item.Valor.MostrarEntero().ToString();
+            }
+
+            else if (item.Codigo == 13)
+            {
+                //esto es temporal para que funciones.
+
+                if (item.Valor == 1)
+                {
+                    dato = "Precio Final";
+                }
+                else if (item.Valor == 2)
+                {
+                    dato = "Precio Neto - Iva - Precio Final";
+                }
+                else if (item.Valor == 3)
+                {
+                    dato = "Revendedor";
+                }
+            }
+            else if (item.Codigo == 14)
+            {
+                //esto es temporal para que funciones.
+
+                if (item.Valor == 0)
+                {
+                    dato = "Producto Oferta";
+                }
+                else if (item.Valor == 1)
+                {
+                    dato = "Lista Precio";
+                }
+            }
+            else if (item.Codigo == 16)
+            {
+                //esto es temporal para que funciones.
+
+                if (item.Valor.MostrarEntero() == 1)
+                {
+                    dato = "Tarjeta";
+                }
+                else if (item.Valor.MostrarEntero() == 2)
+                {
+                    dato = "Lista";
+                }
+            }
+            else if (item.Codigo == 19)
+            {
+                var orden = listaOrdenamiento.First(c => c.Id == item.Valor);
+                dato = orden.Nombre;
+            }
+            else if (item.Codigo == 21)
+            {
+                dato = item.Extra;
+            }
+            else if (item.Codigo == 23)
+            {
+                dato = item.Valor.ToString();
+            }
+            else if (item.Codigo == 25)
+            {
+                dato = item.Valor.Activo_Inactivo() + " -- " + item.Extra;
+            }
+
+            else
+            {
+                dato = item.Valor.Activo_Inactivo();
+            }
+
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Codigo)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+
+            <td>
+                @{
+                    if (item.Codigo == 9)
+                    {
+
+                        String decrip = "Semaforo Stock";
+                        <label>@decrip</label>
+                    }
+                    else
+                    {
+                        <label>@item.Descripcion</label>
+                    }
+                }
+
+            </td>
+            <td>
+                @dato
+            </td>
+            <td>
+                <a class="btn btn-sm btn-outline-success"
+                   asp-action="ModificarViewDatosProductos"
+                   asp-route-codigoViewDatoProducto="@item.Codigo">
+                    Modificar
+                </a>
+                @* @Html.ActionLink("Modificar", "ModificarViewDatosProductos", new { codigoViewDatoProducto = item.Codigo })*@
+
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<a class="my-2 btn btn-outline-primary" asp-action="Root" asp-controller="Panel" asp-area="Usuario">Ir Panel</a>
+<br />
+<br />
+<br />
+
+@section Scripts {
+
+    <script src="~/lib/sorttable/sorttable.js"></script>
+
+}
+
+
+
+
+

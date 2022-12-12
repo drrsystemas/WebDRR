@@ -1,0 +1,90 @@
+﻿@model IEnumerable<ClienteViewModel>
+
+@{
+    ViewData["Title"] = "Buscar Clientes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <div class="container-fluid">
+
+        <div class="jumbotron">
+
+            <h3>Buscar Clientes</h3>
+            <br />
+
+
+
+                <form method="post" asp-controller="Cliente" asp-action="BuscarCliente">
+                    <div class="form-group">
+
+                        <div class="radio">
+                            <label><input type="radio" name="tipoB" value="1" checked> Nombre</label>
+                        </div>
+                        <div class="radio">
+                            <label><input type="radio" name="tipoB" value="2"> Documento</label>
+                        </div>
+                        <div class="radio">
+                            <label><input type="radio" name="tipoB" value="3"> N° Cliente</label>
+                        </div>
+
+                        <label for="lbDato">Buscar</label>
+
+                        <input type="text" class="form-control" name="dato" id="dato" placeholder="Ingrese el dato" autofocus>
+                    </div>
+
+                    <p class="text-danger">@ViewBag.ErrorMessage</p>
+                    <button type="submit" class="btn btn-primary">Aceptar</button>
+                </form>
+            </div>
+
+            <br />
+
+            @{
+                if (Model != null)
+                {
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Nombre
+                                </th>
+                                <th>
+                                    Nro. Identificación
+                                </th>
+                                <th>
+                                    Nro. Cliente
+                                </th>
+                                <th>
+                                    Clave
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.NyA)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Dni)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ClienteId)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Clave)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                }
+            }
+
+        </div>
+
+        @section Scripts
+{
+        }

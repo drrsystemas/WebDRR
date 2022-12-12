@@ -1,0 +1,59 @@
+﻿@model LibreriaBase.Areas.Home.ViewContacto
+
+@{
+    ViewData["Title"] = "Contacto";
+}
+
+
+<h4>Contacto</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form method="post" asp-action="EnviarCorreo" asp-controller="Jugando">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="NombreyApellido" class="control-label"></label>
+                <input asp-for="NombreyApellido" class="form-control" />
+                <span asp-validation-for="NombreyApellido" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Documento" class="control-label"></label>
+                <input asp-for="Documento" class="form-control" />
+                <span asp-validation-for="Documento" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Direccion" class="control-label"></label>
+                <input asp-for="Direccion" class="form-control" />
+                <span asp-validation-for="Direccion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Telefono" class="control-label"></label>
+                <input asp-for="Telefono" class="form-control" />
+                <span asp-validation-for="Telefono" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CorreoElectronico" class="control-label"></label>
+                <input asp-for="CorreoElectronico" class="form-control" />
+                <span asp-validation-for="CorreoElectronico" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Consulta" class="control-label"></label>
+                <input asp-for="Consulta" class="form-control" />
+                <span asp-validation-for="Consulta" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Enviar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<br/>
+<br />
+<br />
+
+@section Scripts {
+   
+
+}

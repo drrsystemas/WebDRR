@@ -1,0 +1,89 @@
+﻿@model LibreriaBase.Areas.Usuario.ViewEnvio
+@using  LibreriaBase.Areas.Usuario;
+
+<div class="container">
+
+    <form asp-action="GuardarEnvio" asp-controller="Pedido" asp-area="Carrito">
+
+        <div class="form-group">
+            <label class="control-label">Tipo Envio</label>
+            <select id="cbTipoEnvio" asp-for="IdTipoEnvio" asp-items="@((List<SelectListItem>)ViewBag.ListaTipoEnvio)">
+            </select>
+        </div>
+        
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <hr />
+
+        <div class="row">
+
+            <div id="divRetiro" class="col-md-4 oculto">
+
+                <div class="form-group">
+                    <label class="control-label">Sucursal: </label>
+                    <select class="w-75" id="cbSucursalRetiro" asp-items="@((List<SelectListItem>)ViewBag.ListaSucursales)">
+                    </select>
+                </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                    </button>
+
+            </div>
+
+
+            <div id="divEnvio" class="col-md-6 oculto">
+
+                <div class="form-group">
+                    <p>Datos del Cliente</p>
+                    <label class="control-label">Codigo Postal: </label>
+                    <input asp-for="CodigoPostal" type="number" />
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Dirección: </label>
+                    <input asp-for="Domicilio" type="text" />
+                </div>
+
+                <hr />
+
+                <div class="form-group">
+                    <p>Datos del Envio</p>
+                    <label class="control-label">Envio: </label>
+                    <select class="w-75" id="cbEnvio" asp-for="IdEnvio">
+                        @{
+                            foreach (DatoConfiguracion envio in ViewBag.ListaEnvio)
+                            {
+                                <option data-valor="@envio.Valor.MostrarEntero()" value="@envio.Codigo">@envio.Descripcion</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Costo de envio: </label>
+                    <input asp-for="Costo" type="number" id="txtCostoEnvio" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Sucursal: </label>
+                    <select class="w-75" id="cbSucursalEnvio" asp-items="@((List<SelectListItem>)ViewBag.ListaSucursales)">
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Guardar" class="btn btn-primary" />
+                </div>
+
+            </div>
+
+        </div>
+
+        <input type="hidden" asp-for="IdSucursal" id="txtIdSucursal" />
+        <input type="hidden" asp-for="NombreIdTipoEnvio" id="txtNombreIdTipoEnvio" />
+        <input type="hidden" asp-for="NombreIdEnvio" id="txtNombreIdEnvio" />
+        <input type="hidden" asp-for="NombreIdSucursal" id="txtNombreIdSucursal" />
+
+    </form>
+
+</div>

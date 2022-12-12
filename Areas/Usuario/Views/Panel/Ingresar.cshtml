@@ -1,0 +1,350 @@
+﻿@model DatosUsuario
+@{
+    ViewData["Title"] = "Ingresar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    String rol = "Cliente";
+
+    if (Model.Rol == (Int32)EnumRol.Administrador)
+    {
+        rol = "Administrador";
+    }
+    else if (Model.Rol == (Int32)EnumRol.Vendedor)
+    {
+        rol = "Vendedor";
+
+    }
+
+
+    Boolean fullData = (Boolean)ViewData["FullData"];
+
+
+    String urlSeleccionar = Url.Action("Inyectar_SeleccionarSector", "Panel");
+    }
+
+<div class="container">
+    <partial name="_aviso" />
+    <h3 class="d-inline-flex">Panel de control </h3> <h5 class="d-inline-flex"> -  @rol  </h5>
+    <hr />
+
+    <div class="row">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="card-title">Datos</h4>
+                    <p class="card-text">
+                        El usuario podrá gestionar su información personal, direcciones de envío, etc.
+                    </p>
+                    <a asp-area="Usuario"
+                       asp-controller="Panel"
+                       asp-action="EditarDatos" class="btn btn-primary"><i class="fas fa-book-reader fa-2x"></i></a>
+                </div>
+            </div>
+            <br />
+        </div>
+        <br />
+        <br />
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="card-title">Estados de Cuenta</h4>
+                    <p class="card-text">
+                        Visualiza un detalle de los últimos movimientos de su cuenta corriente.
+                    </p>
+
+                    <form asp-area="Usuario"
+                          asp-controller="Cliente"
+                          asp-action="MiEstadoDeCuenta"
+                          method="post">
+
+                        <span class="card-text p-1">
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                <i class="fas fa-balance-scale fa-2x"></i>
+                            </button>
+                        </span>
+                    </form>
+
+
+
+
+
+
+
+                </div>
+            </div>
+            <br />
+        </div>
+        <br />
+        <br />
+
+
+        @if (rol == "Vendedor")
+        {
+
+
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h4 class="card-title">Seleccionar Sector</h4>
+                        <p class="card-text">
+                            Nos permite operar sobre 1 sector en particular, en caso de que la empresa tenga mas de uno.
+                        </p>
+                        @*<form asp-area="Usuario"
+                        asp-controller="Panel"
+                        asp-action="SeleccionarSector"
+                        method="post">*@
+                        <span class="card-text p-1">
+                            <button id="btn-seleccionar-sector" class="btn btn-primary" data-url="@urlSeleccionar" onclick="seleccionarSector()">
+                                <i class="fas fa-vector-square fa-2x"></i>
+                            </button>
+                        </span>
+                        @*</form>*@
+
+                    </div>
+                </div>
+                <br />
+            </div>
+            <br />
+            <br />
+
+            if (fullData == true)
+            {
+
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="card-title">Full Clientes/Productos</h4>
+                            <p class="card-text">
+                                Nos da la posibilidad de tener los datos en session, para mejorar la velocidad.
+                            </p>
+                            <span class="card-text p-1">
+                                <a asp-controller="Home" asp-action="FullCargaDatos" id="btn-seleccionar-sector" class="btn btn-primary" >
+                                    <i class="fas fa-vector-square fa-2x"></i>
+                                </a>
+                            </span>
+                            @*</form>*@
+
+                        </div>
+                    </div>
+                    <br />
+                </div>
+                <br />
+                <br />
+            }
+
+
+        }
+
+
+        @*
+
+            @{
+            if (Model?.IdEmpresa != null && Model?.IdEmpresa != 118 && Model?.IdEmpresa != 117)
+            {
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="card-title">Tu Opinión</h4>
+                            <p class="card-text">
+                                Queremos mejorar tu experiencia en el portal,
+                                para eso necesitamos que nos digas que te gusto,
+                                que no te gusto y como medemos mejorar el portal.
+                            </p>
+                            <a class="btn btn-primary"
+                               asp-area="Usuario"
+                               asp-controller="Panel"
+                               asp-action="TuOpinion"><i class="fas fa-bullhorn fa-2x"></i></a>
+                        </div>
+                    </div>
+                    <br />
+                </div>
+                <br />
+                <br />
+            }
+            else if (Model?.IdEmpresa == 118)
+            {
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="card-title">Mis Conf.</h4>
+                            <p class="card-text">
+                                Queremos mejorar tu experiencia para eso, te damos la posibilidad de realizar configuraciones a tu gusto.
+                            </p>
+                            <a class="btn btn-primary"
+                               asp-area="Usuario"
+                               asp-controller="Panel"
+                               asp-action="OpcionesUsuario"><i class="fab fa-cpanel fa-2x"></i></a>
+                        </div>
+                    </div>
+                    <br />
+                </div>
+                <br />
+                <br />
+            }
+        }
+
+        *@
+
+    </div>
+
+    <br />
+    <hr />
+    <br />
+
+
+
+    @{
+        if (rol == "Administrador")
+        {
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="card-title">Opciones Pago y Envío</h4>
+                            <p class="card-text">
+                                Se establecen las formas de pago y las modalidades de envío.
+                            </p>
+
+                            @* Aca va despues un if para si es o no representada. *@
+
+                            <a class="btn btn-primary"
+                               asp-area="Usuario"
+                               asp-controller="Administracion"
+                               asp-action="Index"><i class="fas fa-cash-register fa-2x"></i></a>
+                        </div>
+                    </div>
+                    <br />
+                </div>
+
+                <br />
+                <br />
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="card-title">Conf. Portal</h4>
+                            <p class="card-text">
+                                Asignación de permisos dentro de la página. Por ejemplo,
+                                los usuarios pueden visualizar los productos o necesitan iniciar sesión.
+                            </p>
+
+                            @* Aca va despues un if para si es o no representada. *@
+
+                            <a class="btn btn-primary"
+                               asp-area="Usuario"
+                               asp-controller="Administracion"
+                               asp-action="Validacion" asp-route-pantalla="2"><i class="fas fa-user-secret fa-2x"></i></a>
+                        </div>
+                    </div>
+                    <br />
+                </div>
+
+                <br />
+                <br />
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="card-title">Conf. Producto</h4>
+                            <p class="card-text">
+                                Se configuran las opciones para la visualizacion de los productos.
+                            </p>
+
+                            @* Aca va despues un if para si es o no representada. *@
+
+                            <a class="btn btn-primary"
+                               asp-area="Usuario"
+                               asp-controller="Administracion"
+                               asp-action="Validacion" asp-route-pantalla="3"><i class="fas fa-list-ul fa-2x"></i></a>
+                        </div>
+                    </div>
+                    <br />
+                </div>
+
+                <br />
+                <br />
+
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="card-title">Usuario Web</h4>
+                            <p class="card-text">Pantalla para administrar los Usuarios de la Web y los Vendedores </p>
+                            <a class="btn btn-primary"
+                               asp-area="Usuario"
+                               asp-controller="Administracion"
+                               asp-action="Validacion" asp-route-pantalla="5"><i class="fas fa-users-cog fa-2x"></i></a>
+                        </div>
+                    </div>
+                    <br />
+                </div>
+
+                <br />
+                <br />
+
+                @if (Model.IdEmpresa == 2)//DRR Systemas
+                {
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h4 class="card-title">Conf. Empresas</h4>
+                                <p class="card-text">
+                                    Abm de las empresas que se visualizan desde Empresas.
+                                </p>
+
+                                <a class="btn btn-primary"
+                                   asp-area="Usuario"
+                                   asp-controller="Administracion"
+                                   asp-action="ConfigurarEmpresas"><i class="fas fa-chess-king fa-2x"></i></a>
+                            </div>
+                        </div>
+                        <br />
+                    </div>
+
+                    <br />
+                    <br />
+                }
+
+
+
+
+                @*<br />
+                    <br />
+
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h4 class="card-title">Optimización</h4>
+                                <p class="card-text">Se podrán configurar características que mejoran la velocidad, desactivando algunas.</p>
+                                <a class="btn btn-primary"
+                                   asp-area="Usuario"
+                                   asp-controller="Administracion"
+                                   asp-action="Validacion" asp-route-pantalla="6"><i class="fas fa-tachometer-alt fa-2x"></i></a>
+                            </div>
+                        </div>
+                        <br />
+                    </div>*@
+
+
+            </div>
+        }
+    }
+
+
+</div>
+
+
+
+<div id="div-inyeccion-sector">
+
+</div>
+
+
+<br />
+<br />
+<br />
+
+@section Scripts
+{
+    <script asp-append-version="true" type="text/javascript" src="~/script/panel/ingresar.js"></script>
+
+}

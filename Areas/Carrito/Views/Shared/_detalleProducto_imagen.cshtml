@@ -1,0 +1,66 @@
+﻿@model ProductoMinimo
+@{
+    int esquemaPrecios = (Int32)ViewData["EsquemaPrecios"];
+    string urlVerProducto = (String)ViewData["UrlVerProducto"];
+}
+
+<div class="card-body @(Model.ProductoOfertaID>0?"contenedor-relativo":"")" onclick="verProducto('@urlVerProducto')" style="cursor: pointer;">
+    <div class="row">
+
+        <div class="container">
+
+            @if (!String.IsNullOrEmpty(Model.RutaImagen))
+            {
+                @*<img id="img-prod-@item.ProductoBaseId" class="zoom imagenTarjeta_DetalleProducto img-fluid post-Carga" src="@item.RutaImagen">*@
+
+                <img id="img-prod-@Model.ProductoBaseId"
+                     class="zoom img-fluid
+                                     @(esquemaPrecios!=3?" imagenTarjeta_DetalleProducto":"imagenTarjeta_DetalleProducto_dos") ">
+
+            }
+            else
+            {
+                @*<img id="img-prod-@item.ProductoBaseId" class="zoom imagenTarjeta_DetalleProducto img-fluid">*@
+
+                <img id="img-prod-@Model.ProductoBaseId"
+                     class="zoom img-fluid
+                                     @(esquemaPrecios!=3?" imagenTarjeta_DetalleProducto":"imagenTarjeta_DetalleProducto_dos") "
+                     src="~/img/sinImagen.png">
+            }
+
+
+
+
+            @if (Model.ProductoOfertaID > 0)
+            {
+                if (Model.TipoOferta == 0 || Model.TipoOferta==null)
+                {
+                    String data = $" Oferta";
+
+                    <div class="centrado"><i class="fas fa-fire fa-2x colorRojo"></i> 
+                                          <span class="fs-4 font-weight-bold" style="color: orangered">@data</span>
+                    </div>
+                }
+                else if (Model.TipoOferta == 5)
+                {
+                    if (Model.CantidadMinimaOferta.IsNullOrValue(0))
+                    {
+                        String data = $" Oferta  {Model.PorcentajeOferta.MostrarEntero()}% descuento";
+
+                        <div class="centrado"><i class="fas fa-fire fa-2x colorRojo"></i> <span class="fs-4 font-weight-bold" style="color: orangered">@data</span> </div>
+                    }
+                    else
+                    {
+                        String data = $" Oferta comprando {@Model.CantidadMinimaOferta.MostrarEntero()} o +";
+
+                        <div class="centrado"><i class="fas fa-fire fa-2x colorRojo"></i> <span class="fs-4 font-weight-bold" style="color:orangered">@data</span></div>
+                    }
+                }
+            }
+
+
+
+        </div>
+    </div>
+</div>
+

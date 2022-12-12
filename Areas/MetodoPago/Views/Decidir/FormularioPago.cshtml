@@ -1,0 +1,48 @@
+﻿@model LibreriaBase.Areas.MetodoPago.ViewModelFormaPagoTarjeta
+
+@{
+    ViewData["Title"] = "FormularioPago";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container">
+    <h4>Pagar</h4>
+    <hr />
+    <div class="row">
+
+        <div class="col-md-10">
+            <h5 class="mb-2">Importe Total: @Model.DatosPago.TotalOperacion.FormatoMoneda()</h5>
+            <br />
+            <form asp-action="RealizarPago" asp-controller="Decidir" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="mb-5">
+                    <label>Cuotas </label>
+
+                    <select id="cbTarjeta" class="custom-select" asp-for="DatosPago.IdTransaccion"
+                            asp-items="@(new SelectList(Model.FormasPago.Desgloce,"FormaPagoDesgloseId","Descripcion"))">
+                        <option selected disabled value="0">Seleccione ...</option>
+                    </select>
+
+                    <span asp-validation-for="DatosPago.IdTransaccion" class="text-danger"></span>
+
+                </div>
+
+                <input type="hidden" value="@Model.FormasPago.Desgloce.ToJson()" name="desgleJson" />
+
+                <div class="form-group">
+                    <input type="submit" value="Finalizar Compra" class="btn btn-primary" />
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<br/>
+<br/>
+<br/>
+
+@section Scripts {
+
+
+}

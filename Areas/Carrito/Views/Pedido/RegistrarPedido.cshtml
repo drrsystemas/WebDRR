@@ -1,0 +1,244 @@
+﻿@* 
+    Pantalla para verificar los datos y finalizar la compra.
+    modificacion 04/10/2021
+*@
+
+@model Carrito
+@{
+    ViewData["Title"] = "RegistrarPedido";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    SessionAcceso SessionAcceso = Context.Session.GetJson<SessionAcceso>("SessionAcceso");
+    string urlFinalizarPedido = @Url.Action("FinalizarPedido", "Pedido");
+}
+
+
+@section Estilos
+{
+    <style type="text/css">
+    </style>
+}
+
+
+
+<div class="container-sm">
+
+    
+    <partial name="_aviso" />
+
+
+    <h4>Confirmar la Compra</h4>
+
+    @*<h4 class="text-center">Ya casi!!</h4>
+        <p class="text-success">
+            Verifica que todos los datos sean correctos, por cualquier duda
+            o consulta que tengas, podes realizarla en el campo de observación.
+            Si el tipo de pago que seleccionaste es Tarjeta C/Debito o Mercado Pago,
+            al dar aceptar se abrirá la pantalla para poder efectuar el pago.
+        </p>*@
+    <hr />
+
+    <div class="row mt-1">
+
+        <div class="col-2 col-sm-3 col-md-2">
+            <img class="iconito" src="~/img/finalizarCompra/informacion.png" />
+        </div>
+        <div class="col-10 col-sm-8 col-md-10">
+            <div class="form-group">
+                <label class="control-label">Observación</label>
+                <textarea id="txtObservacion" rows="2" asp-for="Observacion" class="form-control"
+                          placeholder="Cualquier duda o consulta que tenga puede escribirla acá">
+        </textarea>
+                <span asp-validation-for="Observacion" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+
+    <hr />
+
+
+    <div class="row">
+
+        <div class="col-2 col-sm-3 col-md-2 text-center">
+            <i class="far fa-user fa-3x"></i>
+        </div>
+
+        <div class="col-10 col-sm-9 col-md-10">
+            <div class="form-group">
+                <label class="control-label">Cliente</label>
+
+                <p>@Model.Envio?.Clientes</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <hr />
+
+    <div class="row">
+
+        <div class="col-2 col-sm-3 col-md-2">
+            <img class="iconito mt-2" src="~/img/finalizarCompra/celular.png" />
+        </div>
+
+        <div class="col-10 col-sm-9 col-md-10">
+            <div class="form-group">
+                <label class="control-label">Teléfono</label>
+                <input id="txtCelular" asp-for="@Model.Envio.Celular" class="form-control" />
+                <span asp-validation-for="@Model.Envio.Celular" class="text-danger"></span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <hr />
+
+
+    @{
+
+        if (SessionAcceso.getEstaActivoEnvioyRetiro_Carrito() == true)
+        {
+            <div class="row">
+
+                <div class="col-2 col-sm-3 col-md-2">
+                    <img class="iconito" src="~/img/finalizarCompra/mapa.png" />
+                </div>
+
+                <div class="col-10 col-sm-9 col-md-10">
+                    @{
+                        if (Model?.Envio?.IdTipoEnvio > 0)
+                        {
+                            //Retiro.
+                            if (Model?.Envio?.IdTipoEnvio == 1)
+                            {
+                                <p>@Model.Envio.NombreIdTipoEnvio</p>
+                                <p>Se retira en la sucursal: @Model.Envio.NombreIdSucursal</p>
+
+                            }
+                            else
+                            {
+                                <p>@Model.Envio.NombreIdTipoEnvio</p>
+                                <p>@Model.Envio.NombreIdEnvio - con un costo de: @Model.Envio.Costo</p>
+                                <p>El envio se realiza de la sucursal: @Model.Envio.NombreIdSucursal</p>
+
+                                <div class="form-group">
+                                    <label class="control-label">Código Postal: </label>
+                                    <input id="txtcodigopostal" type="number" asp-for="Envio.CodigoPostal" class="form-control" />
+                                    <span asp-validation-for="Envio.CodigoPostal" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Dirección: </label>
+                                    <input id="txtdireccion" asp-for="@Model.Envio.Domicilio" class="form-control" />
+                                    <span asp-validation-for="@Model.Envio.Domicilio" class="text-danger"></span>
+                                </div>
+                            }
+                        }
+                    }
+
+                    <a asp-area="Carrito" asp-controller="Carrito" asp-action="DatosDeEnvio" asp-route-url="@ViewContext.HttpContext.Request.PathAndQuery()" class="btn btn-outline-primary">Editar</a>
+
+                </div>
+
+            </div>
+
+            <hr />
+
+
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-2 col-sm-3 col-md-2">
+                    <img class="iconito" src="~/img/finalizarCompra/mapa.png" />
+                </div>
+
+                <div class="col-10 col-sm-9 col-md-10">
+                    <p>Los datos de envio/retiro se coordinan con el vendedor, finalizada la compra.</p>
+                </div>
+            </div>
+            <hr />
+        }
+
+
+
+        if (SessionAcceso.getEstaActivoPago_Carrito() == true)
+        {
+            <div class="row">
+
+                <div class="col-2 col-sm-3 col-md-2">
+                    <img class="iconito" src="~/img/finalizarCompra/billetera.png" />
+                </div>
+
+                <div class="col-10 col-sm-9 col-md-10">
+                    <div class="form-group">
+                        @{
+                            <p>Forma de Pago</p>
+
+                            if (Model?.Pago?.IdPago > 0)
+                            {
+                                <p>@Model.Pago.NombreIdPago</p>
+                            }
+                        }
+
+                        <a asp-area="Carrito" asp-controller="Carrito" asp-action="MetodoDePago" asp-route-url="@ViewContext.HttpContext.Request.PathAndQuery()" class="btn btn-outline-primary">Editar</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr />
+        }
+        else
+        {
+            <div class="row">
+
+                <div class="col-2 col-sm-3 col-md-2">
+                    <img class="iconito" src="~/img/finalizarCompra/billetera.png" />
+                </div>
+
+                <div class="col-10 col-sm-9 col-md-10">
+                    <p>La forma de pago se define con el vendedor una vez finalizada la compra.</p>
+                </div>
+
+            </div>
+
+            <hr />
+        }
+
+    }
+
+
+    @*@if(Model.EstadoId == 20)
+    {
+
+    }
+    else
+    {
+
+    }*@
+
+    <div class="d-flex justify-content-center">
+        <a data-action="@urlFinalizarPedido" onclick="aceptarPedido()"
+           class="btn btn-primary text-white"
+           id="btnAceptar">
+            <i class="fas fa-check"></i>  Aceptar
+        </a>
+    </div>
+
+
+</div>
+
+
+            <br />
+            <br />
+            <br />
+
+            @section Scripts{
+
+                <script asp-append-version="true" type="text/javascript" src="~/script/pedido/pedido.js"></script>
+
+
+            }

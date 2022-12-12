@@ -1,0 +1,37 @@
+﻿
+@{
+    String json = "";
+    NotificacionesViewModel notificacion = null;
+
+    if (TempData.ContainsKey("Error"))
+    {
+        json = TempData["Error"].ToString();
+        TempData.Remove("Error");
+    }
+
+
+    if (!String.IsNullOrEmpty(json))
+    {
+        notificacion = json.ToObsect<NotificacionesViewModel>();
+        if (notificacion != null)
+        {
+            <div class="pb-1 mb-1 alert-danger">
+
+                <h4>Aviso</h4>
+                <p>
+                    @notificacion.Mensaje
+
+                                @if (!String.IsNullOrEmpty(notificacion.UrlIr))
+                                {
+                                    <a class="ml-2 btn-sm btn-outline-danger" href="@notificacion.UrlIr">@notificacion.UrlTexto</a>
+                                }
+
+
+                            </p>
+              
+
+            </div>
+        }
+
+    }
+}

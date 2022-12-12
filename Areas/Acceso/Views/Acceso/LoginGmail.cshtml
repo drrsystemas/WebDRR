@@ -1,0 +1,149 @@
+﻿@model LibreriaBase.Areas.Acceso.IngresoGmail
+
+@{
+    ViewData["Title"] = "Gmail";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es-ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="707857615497-v8u50q2l7plocfe8jresvds0tfemna6f.apps.googleusercontent.com">
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
+
+    <title>Ingreso con Gmail</title>
+
+
+</head>
+<body>
+
+    <div class="container-fluid">
+
+        <div class="container p-4">
+
+            <partial name="_aviso" />
+
+            <div class="row">
+
+                <div class="col-md-4 mx-auto">
+
+                    <div class="card text-center">
+
+
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-2">
+                                    <i class="fas fa-sign-in-alt fa-2x"></i>
+                                </div>
+
+                                <div class="col-8 text-left">
+                                    <h4>Ingreso con Gmail</h4>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="card-body">
+
+                            <p class="text-info">Hace clic en el botón con el logo de Google (abajo), selecciona tu cuenta de correo y vas a poder iniciar sesión</p>
+
+                            <br />
+                            <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+                            @*<button class="btn btn-light" onclick="cerrarSession">Cerrar</button>*@ 
+                            <br />
+
+
+                            <form name="frmIngresoGmail" method="post" asp-area="Acceso" asp-controller="Acceso" asp-action="Gmail">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                <div class="form-group">
+                                    @*<label asp-for="Nombre" class="control-label"></label>*@
+                                    <input placeholder="Se va a obtener tu nombre" id="inputNombre" asp-for="Nombre" class="form-control" />
+                                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    @*<label asp-for="Correo" class="control-label"></label>*@
+                                    <input placeholder="Se va a obtener el correo" id="inputCorreo" asp-for="Correo" class="form-control" />
+                                    <span asp-validation-for="Correo" class="text-danger"></span>
+                                </div>
+
+                                <input id="inputToken" type="hidden" asp-for="Token" class="form-control" />
+                                <br />
+                                <div class="form-group float-left">
+                                    <a class="btn btn-secondary ml-2" asp-action="Index"><i class="fas fa-angle-left"></i> Atrás</a>
+
+                                    <input type="submit" value="Aceptar" class="btn btn-primary" />
+                                </div>
+                            </form>
+
+
+                        </div>
+                    </div>
+
+                    <br />
+                    <span @ViewBag.info class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <br />
+        <br />
+        <br />
+
+    </div>
+
+
+
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+
+    <script type="text/javascript">
+
+        $( document ).ready(function() {
+                        $("#inputNombre").attr("readonly", "true");
+            $("#inputCorreo").attr("readonly", "true");
+
+
+        });
+
+
+        function onSignIn(googleUser) {
+            // Useful data for your client-side scripts:
+            var profile = googleUser.getBasicProfile();
+            var id_token = googleUser.getAuthResponse().id_token;
+
+            $("#inputNombre").attr("readonly", "false");
+            $("#inputCorreo").attr("readonly", "false");
+
+
+            $("#inputNombre").val(profile.getName());
+            $("#inputCorreo").val(profile.getEmail());
+            $("#inputToken").val(id_token);
+
+            $("#inputNombre").attr("readonly", "true");
+            $("#inputCorreo").attr("readonly", "true");
+
+            
+        }
+
+
+        function cerrarSession() {
+            gapi.auth2.getAuthInstance().signOut();
+        }
+
+    </script>
+
+</body>
+</html>

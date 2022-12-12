@@ -1,0 +1,92 @@
+﻿@{
+    int rol = (int)ViewData["rol"];
+    string rep = (string)ViewData["rep"];
+    int id = (int)ViewData["PedidoId"];
+
+    String urlCambioComprobante = Url.Action("CambiarComprobante", "Carrito");
+}
+
+<div class="dropdown dropleft">
+    <button class="btn bordeNaranja dropdown-toggle" type="button" 
+            id="dropdownMenuButton" 
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-bars fa-1x"></i>
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
+        <form class="form-inline"
+              asp-area="Usuario"
+              asp-controller="Cliente"
+              asp-action="ListarClientes"
+              method="post">
+            <input type="hidden" name="UrLRetorno" value="@ViewContext.HttpContext.Request.PathAndQuery()">
+            <input type="hidden" name="BusquedaCliente" value="true">
+            <button type="submit" class="dropdown-item"> <i class="fas fa-user-plus"></i> Cliente </button>
+        </form>
+
+        <a class="dropdown-item" asp-area="Carrito"
+           asp-action="CarritoObservacion"
+           asp-controller="Carrito"
+           asp-route-urlRetorno="@ViewContext.HttpContext.Request.PathAndQuery()"><i class="far fa-comment"></i> Observacion</a>
+
+        <a class="dropdown-item" asp-area="Carrito"
+           asp-action="DatosDeEnvio"
+           asp-controller="Carrito"
+           asp-route-urlRetorno="@ViewContext.HttpContext.Request.PathAndQuery()">
+            <i class="fas fa-shipping-fast"></i> Envios/Retiros
+        </a>
+
+        <button onclick="abrirPantallaVentanaBonificacion()" class="dropdown-item">
+            <i class="fas fa-percentage"></i> Bonificación Gral.
+        </button>
+
+        <button onclick="abrirPantallaVentanaDescuento()" class="dropdown-item">
+            <i class="fas fa-percentage"></i> Descuento.
+        </button>
+
+        @{
+            if (rep == "true")
+            {
+                <form class="form-inline"
+                      asp-area="Carrito"
+                      asp-controller="Carrito"
+                      asp-action="AgregarItemCarrito_Codigo"
+                      method="post">
+
+                    <input type="hidden" class="form-control w-75" name="Codigo" value="1378" aria-label="Search">
+
+                    <input type="hidden" name="UrlRetorno" value="@ViewContext.HttpContext.Request.PathAndQuery()">
+                    <input type="hidden" name="BusquedaCliente" value="true">
+
+                    <button type="submit" class="dropdown-item"><i class="fab fa-slack"></i> Prod. Generico </button>
+
+                </form>
+            }
+        }
+
+
+        <a class="dropdown-item disabled"
+           asp-route-urlRetorno="@ViewContext.HttpContext.Request.PathAndQuery()">
+            <i class="fas fa-exchange-alt"></i> Cambiar L. Precios
+        </a>
+
+        <a class="dropdown-divider"></a>
+
+        <a id="link-cambiar-categoria-cliente" data-url-action="@urlCambioComprobante" class="dropdown-item" onclick="cambiarCategoriaCliente()"
+           asp-route-urlRetorno="@ViewContext.HttpContext.Request.PathAndQuery()">
+            <i class="fas fa-drumstick-bite"></i>  Pasar a Otros.
+        </a>
+
+        <a class="dropdown-divider"></a>
+
+        @if (rol == 4 && id > 0)
+        {
+            <a class="dropdown-item" asp-area="Carrito"
+               asp-action="EliminarCarrito"
+               asp-controller="Carrito">
+                <i class="fas fa-minus-circle"></i> @(rol==4?"Eliminar Pedido":"Eliminar Compra")
+            </a>
+        }
+
+    </div>
+</div>

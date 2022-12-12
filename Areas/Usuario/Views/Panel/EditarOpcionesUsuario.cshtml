@@ -1,0 +1,156 @@
+﻿@model LibreriaBase.Areas.Usuario.DatoConfiguracion
+
+@{
+    ViewData["Title"] = "EditarOpcionesUsuario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h4>Editar</h4>
+
+<hr />
+
+@{
+    if(Model.Codigo == 1) //Lista personalizada de DM
+    {
+
+        <div class="row">
+            <div class="col-md-8">
+                <form asp-action="EditarOpUsuario" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Type" class="form-control" />
+
+                    <input type="hidden" asp-for="Codigo" class="form-control" />
+
+                    <div class="form-group">
+                        <label asp-for="Descripcion" class="control-label"></label>
+                        <input asp-for="Descripcion" readonly class="form-control" />
+                        <span asp-validation-for="Descripcion" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Activo
+                            </label>
+                        </div>
+
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Inactivo
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Valor</label>
+                        <input asp-for="Extra" class="form-control" />
+                        <span asp-validation-for="Extra" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit" value="Guardar" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+    else if (Model.Codigo == 2) //Vendedor Selecciona su LP
+    {
+
+        <div class="row">
+            <div class="col-md-8">
+                <form asp-action="EditarOpUsuario" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Type" class="form-control" />
+
+                    <input type="hidden" asp-for="Codigo" class="form-control" />
+
+                    <div class="form-group">
+                        <label asp-for="Descripcion" class="control-label"></label>
+                        <input asp-for="Descripcion" readonly class="form-control" />
+                        <span asp-validation-for="Descripcion" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Activo
+                            </label>
+                        </div>
+
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Inactivo
+                            </label>
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label class="control-label">Lista de Precios: </label>
+
+                        <select id="cbExtra" asp-for="Extra">
+                            @{
+                                var listaPrecios = (List<ProductoLista>)ViewData["listaPrecios"];
+
+                                <option value="-1"> </option>
+                                foreach (ProductoLista lp in listaPrecios)
+                                {
+                                    if(!String.IsNullOrEmpty( Model.Extra))
+                                    {
+                                        if(Model.Extra.EsNumerico())
+                                        {
+                                            Int16 numero = Convert.ToInt16(Model.Extra);
+
+                                            if (lp.ListaPrecId == numero)
+                                            {
+                                                <option selected value="@lp.ListaPrecId">@lp.Descripcion</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@lp.ListaPrecId">@lp.Descripcion</option>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <option value="@lp.ListaPrecId">@lp.Descripcion</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option value="@lp.ListaPrecId">@lp.Descripcion</option>
+                                    }
+
+
+                                }
+                            }
+                        </select>
+
+                        <input type="hidden" class="form-control"  asp-for="Extra" />
+
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <input type="submit" value="Guardar" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+}
+
+
+
+

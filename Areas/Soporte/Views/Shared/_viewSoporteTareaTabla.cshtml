@@ -1,0 +1,198 @@
+﻿@model IEnumerable<SoporteCaso>
+@{
+    FiltroSoporte filtro = (FiltroSoporte)ViewBag.Filtro;
+
+}
+
+
+
+<table class="sortable table table-sm">
+    <thead class="thead-light">
+        <tr class="d-flex">
+            <th   class="col-md-1 d-none d-sm-table-cell">
+                Agendado
+            </th>
+            <th class="col-md-2 d-none d-sm-table-cell">
+                Tarea
+            </th>
+            <th class="col-md-1 d-none d-sm-table-cell">
+                Registro
+            </th>
+            <th class="col-md-1 d-none d-sm-table-cell">
+                Tecnico
+            </th>
+            <th class="col-md-6 d-none d-sm-table-cell">
+                Información
+            </th>
+            <th class="col-md-1 d-none d-sm-table-cell"></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @{
+            if (Model?.Count() > 0)
+            {
+                int indice = 1;
+
+                foreach (var item in Model)
+                {
+                    String contacto = "[" + item.ContactoId + "] " + item.ContactoNombre;
+                    String cliente = "[" + item.ClienteId + "] " + item.Cliente.EntidadSuc.Entidad.RazonSocial;
+
+
+                    foreach (var scTarea in item.SoporteCasoTarea)
+                    {
+                        if (filtro?.TecnicoSoporteId > 0)
+                        {
+                            if (scTarea.TecnicoSoporteId != filtro?.TecnicoSoporteId)
+                            {
+                                continue;
+                            }
+                        }
+
+                        String tarea = scTarea.TareaId + " " + cliente;
+
+                        String tecnico = "[" + scTarea?.TecnicoSoporte?.TecnicoSoporteId + "] " + scTarea?.TecnicoSoporte?.DenominacionAdicionel;
+
+                        String registro = "["+scTarea.AlmaUserId + "] " + scTarea.RegistroCaso;
+
+                        Boolean fotoTarea = false;
+                        String rutaImagen = "";
+                        var op_archivo = scTarea?.OperacionArchivo?.FirstOrDefault();
+                        if (op_archivo != null)
+                        {
+                            if (op_archivo.Archivo != null)
+                            {
+                                fotoTarea = true;
+                                rutaImagen = op_archivo.Archivo.RutaImagenJpg();
+                            }
+                        }
+
+                        String nombrePrioridad = "";
+                        if (scTarea.PrioridadId <= 4)
+                        {
+                            nombrePrioridad = "Baja";
+                        }
+                        else if (scTarea.PrioridadId <= 9)
+                        {
+                            nombrePrioridad = "Media";
+                        }
+                        else
+                        {
+                            nombrePrioridad = "Alta";
+                        }
+
+                        String textoCompleto = "["+item.DescripcionProblema+"] ";
+
+                        if (scTarea.EtapaId == 30)
+                        {
+                            //Finalizada.....
+                            textoCompleto += " Finalizado: " + scTarea.FechaHoraCompletado?.FechaCorta();
+                            textoCompleto += " Estado: " + scTarea?.Etapa?.Descripcion;
+                            Decimal importe = 0;
+                            try
+                            {
+                                importe =Math.Round( (scTarea?.ImporteNeto ?? 0) * (scTarea.CantidadFacturado ?? 0)/60,2);
+                            }
+                            catch (Exception)
+                            {
+                                importe = 0;
+                            }
+
+                            textoCompleto += " " + importe.FormatoMoneda();
+                        }
+                        else
+                        {
+                            //Registrado - otro.
+                            textoCompleto += "Prioridad: " + nombrePrioridad;
+                            textoCompleto += " Estado: " + scTarea?.Etapa?.Descripcion;
+                        }
+
+
+
+
+
+                <tr class="d-flex  @(indice.EsPar()==true?"colorPar":"colorImpar")   @(scTarea.EtapaId==30?"tareaFinaliza":" ")">
+
+                    <td class="col-md-1 d-none d-sm-table-cell">
+                        @scTarea.FechaHoraAsigando.Fecha_Hs_Soporte()
+                    </td>
+
+                    <td class="col-md-2 d-none d-sm-table-cell">
+                        @tarea
+                    </td>
+                    <td class="col-md-1 d-none d-sm-table-cell">
+                        @registro
+                    </td>
+
+                    <td class="col-md-1 d-none d-sm-table-cell">
+                        @tecnico
+                    </td>
+
+
+                    <td class="col-md-6 d-none d-sm-table-cell">
+                        <p>@textoCompleto</p>
+                        @if (String.IsNullOrEmpty(scTarea.DatosFacturacion))
+                        {
+                            <p class="text-success">
+                                @scTarea.DatosFacturacion
+                            </p>
+                        }
+                    </td>
+
+                    <td class="col-md-1 d-none d-sm-table-cell">
+                        <div class="btn-group-vertical">
+                            <a asp-action="EditarTarea"
+                               asp-controller="Soporte"
+                               asp-area="Soporte"
+                               asp-route-tareaId="@scTarea.TareaId"
+                               class="btn btn-sm btn-success">Editar</a>
+
+                            <a class="mt-1 btn btn-sm  btn-primary" asp-controller="Soporte"
+                               asp-action="AgregarTarea"
+                               asp-route-casoId="@item.CasoId">Agregar</a>
+                        </div>
+
+                    </td>
+
+
+
+                    @* Solo se ve cuando el tamaño es para los celulares *@
+                <td class="d-block d-sm-block d-md-none">
+                    <p>@scTarea.FechaHoraAsigando</p>
+                    <p>@tarea</p>
+                    <p>@registro</p>
+                    <p>@tecnico</p>
+                    <p>@textoCompleto</p>
+                    @if (String.IsNullOrEmpty(scTarea.DatosFacturacion))
+                    {
+                        <p class="text-success">
+                            @scTarea.DatosFacturacion
+                        </p>
+                    }
+                    <div>
+                        <a asp-action="EditarTarea"
+                           asp-controller="Soporte"
+                           asp-area="Soporte"
+                           asp-route-tareaId="@scTarea.TareaId"
+                           class="btn btn-sm btn-success">Editar</a>
+
+                        <a class="ml-1 btn btn-sm  btn-primary" asp-controller="Soporte"
+                           asp-action="AgregarTarea"
+                           asp-route-casoId="@item.CasoId">Agregar</a>
+                    </div>
+                </td>
+
+                </tr>
+
+
+                        indice += 1;
+                    }
+
+                }
+            }
+        }
+
+
+    </tbody>
+</table>

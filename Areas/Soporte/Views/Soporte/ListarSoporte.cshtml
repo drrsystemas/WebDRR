@@ -1,0 +1,160 @@
+﻿@model IEnumerable<SoporteCaso>
+
+@{
+    ViewData["Title"] = "ListarSoporte";
+
+    Layout = "~/Views/Shared/_LayoutSoporte.cshtml";
+
+    String urlRetorno = (String)ViewData["UrlRetorno"];
+
+    FiltroSoporte filtro = (FiltroSoporte)ViewBag.Filtro;
+
+}
+
+
+@section Estilos
+{
+    <link rel="stylesheet" href="~/css/soporte.css" />
+}
+
+
+
+@section Menu
+{
+    <div class="d-flex  bd-highlight">
+
+        @* Btn de Los filtros para ver o esconder... *@
+        <button class="ml-3 my-2  btn btn-light" type="button" data-toggle="collapse"
+                data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <i class="fas fa-bars fa-1x"></i>
+        </button>
+        @{
+            if (filtro.Vista == 1)
+            {
+                <h3 class="float-left ml-2 mt-2">Listado de Casos</h3>
+
+
+                <div class=" ml-auto p-2 bd-highlight">
+
+
+
+                    <!-- Default dropleft button -->
+                    <div class="btn-group dropleft ">
+                        <button type="button" class="btn  btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-bars fa-1x"></i>
+                        </button>
+                        <div class="dropdown-menu">
+
+                            <a class="dropdown-item  cursor-pointer" asp-area="Soporte" asp-action="NuevoSoporteCaso" asp-controller="Soporte">
+                                <i class="fas fa-plus-circle"></i> Nuevo Caso
+                            </a>
+
+                        </div>
+                    </div>
+
+
+
+                </div>
+            }
+            else
+            {
+                <h3 class="float-left ml-2">Listado de Tareas</h3>
+            }
+        }
+
+
+
+
+
+
+
+
+    </div>
+
+    <partial name="_viewFiltroSoporteCaso" model="@filtro" view-data="ViewData" />
+}
+
+
+<partial name="_aviso" />
+<a id="urlVolver" href="@urlRetorno" hidden></a>
+
+<hr />
+
+<div class="mb-2">
+
+    @{
+
+
+        if (filtro.Vista == 1)
+        {
+
+        }
+        else
+        {
+            <a class="ml-2 btn btn-warning"
+               @*asp-area="Soporte"
+           asp-action="GenerarPdfListaTareas"
+           asp-controller="Soporte"
+           asp-route-filtro="@filtro"*@
+               href="@Url.Action("GenerarPdfListaTareas","Soporte", filtro)">
+                <i class="fas fa-print"></i> Imprimir
+            </a>
+        }
+
+    }
+
+
+</div>
+
+
+@if (filtro.Vista == 1)
+{
+    <partial name="_viewSoporteCasoTabla" model="Model" />
+}
+else
+{
+    <partial name="_viewSoporteTareaTabla" model="Model" view-data="ViewData" />
+}
+
+
+
+
+
+
+
+<div class="modal fade right" id="modalVerImagenes"
+     tabindex="-1" role="dialog" aria-labelledby="exampleModalPreviewLabel" aria-hidden="true">
+
+    <div class="modal-dialog-full-width modal-dialog momodel modal-fluid" role="document">
+
+        <div class="modal-content-full-width modal-content ">
+            <div class=" modal-header-full-width   modal-header text-center">
+                <h5 class="modal-title w-100" id="exampleModalPreviewLabel">Foto</h5>
+                <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                    <span style="font-size: 1.3em;" aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <img id="imgPantallaModal" class="img-fluid">
+
+            </div>
+            <div class="modal-footer-full-width  modal-footer">
+                <button type="button" class="btn btn-danger btn-md btn-rounded"
+                        data-dismiss="modal">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+    @section Scripts {
+
+        <script src="~/script/soporte/soporte.js"></script>
+        <script src="~/lib/sorttable/sorttable.js"></script>
+    }

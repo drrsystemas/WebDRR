@@ -1,0 +1,97 @@
+﻿@model LibreriaBase.Areas.Acceso.CrearCuenta
+
+@{
+    ViewData["Title"] = "CrearCuenta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container p-4">
+
+    <partial name="_aviso" />
+
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card text-center">
+                <div class="card-header">
+                    <h3>Crear Cuenta de Usuario</h3>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="CrearCuenta">
+                        
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <h5>Completar el Formulario</h5>
+                        
+                        <div class="form-group">
+                            <label class="control-label">Número de documento</label>
+                            <input type="number" asp-for="Documento" class="form-control" />
+                            <span asp-validation-for="Documento" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Nombre y Apellido</label>
+                            <input asp-for="NombreyApellido" class="form-control" />
+                            <span asp-validation-for="NombreyApellido" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Domicilio</label>
+                            <input type="text" class="form-control"
+                                   asp-for="@Model.Direccion">
+                            <span asp-validation-for="@Model.Direccion" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Teléfono</label>
+
+                            <input type="text" class="form-control"
+                                   asp-for="@Model.Telefono">
+                            <span asp-validation-for="@Model.Telefono" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Correo Electrónico</label>
+                            <input id="txt_Correo" asp-for="CorreoElectronico" class="form-control" />
+                            <span asp-validation-for="CorreoElectronico" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Cree una contraseña para la cuenta</label>
+                            <input id="txt_Cont" asp-for="Contraseña" class="form-control" />
+                            <span asp-validation-for="Contraseña" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Repita la contraseña ingresada arriba</label>
+                            <input asp-for="ContraseñaVerificacion" class="form-control" />
+                            <span asp-validation-for="ContraseñaVerificacion" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Aceptar" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+<br />
+<br />
+
+@section Scripts {
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var correo = $('#txt_Correo');
+            correo.removeAttr('autocomplete');
+
+            var clave = $('#txt_Cont');
+            clave.removeAttr('autocomplete');
+
+        });
+    </script>
+
+}

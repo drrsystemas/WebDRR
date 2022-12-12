@@ -1,0 +1,95 @@
+﻿
+@{
+    ViewData["Title"] = "SeleccionarFamilia";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    String parametro = "";
+
+    if (!String.IsNullOrEmpty(ViewBag.dato))
+    {
+        parametro = ViewBag.dato;
+    }
+}
+
+<div class="container">
+
+    @await Component.InvokeAsync("FiltroFamilia", new { dato = parametro })
+
+</div>
+
+<br/>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        //function myFunction() {
+
+        //    var input, filter, table, tr, td, i, j, visible;
+
+        //    input = document.getElementById("myInput");
+
+        //    filter = input.value.toUpperCase();
+
+        //    table = document.getElementById("myTable");
+
+        //    tr = table.getElementsByTagName("tr");
+
+        //    for (i = 0; i < tr.length; i++) {
+        //        visible = false;
+        //        td = tr[i].getElementsByTagName("td");
+        //        for (j = 0; j < td.length; j++)
+        //        {
+        //            if (td[j] && td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+        //                visible = true;
+        //            }
+        //        }
+        //        if (visible === true)
+        //        {
+        //            tr[i].style.display = "";
+        //        } else
+        //        {
+        //            tr[i].style.display = "none";
+        //        }
+        //    }
+        //}
+
+
+
+        function funcionFiltrarFamilias()
+        {
+            var input, filter, table, listaEnlaces, enlace, i, visible;
+
+            input = document.getElementById("txtFiltro");
+
+            filter = input.value.toUpperCase();
+
+            table = document.getElementById("menuItems");
+
+            listaEnlaces = table.getElementsByTagName("a");
+
+             for (i = 0; i < listaEnlaces.length; i++)
+             {
+                visible = false;
+                enlace = listaEnlaces[i];
+
+                 if (enlace && enlace.innerHTML.toUpperCase().indexOf(filter) > -1)
+                 {
+                    visible = true;
+                }
+                
+                if (visible === true)
+                {
+                    enlace.style.display = "";
+                }
+                else
+                {
+                    enlace.style.display = "none";
+                }
+            }
+        }
+    </script>
+
+}

@@ -1,0 +1,131 @@
+﻿@model LibreriaBase.Areas.Home.DatosQr
+
+@{
+    Layout = null;
+    String url = ViewData["url"].ToString();
+}
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DRR Systemas - AFIP Datos QR</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+
+
+
+
+    <div class=" container">
+
+
+        <h3>Decodificación de la URL Codifica de AFIP - Segun la Resolución General N° 4.291</h3>
+
+        @*<h4>La url generada por el QR es : @url</h4>*@
+        <hr />
+        <h4>Los datos del Comprobante son los siguiente: </h4>
+
+
+        <div>
+
+            <dl class="row">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.ver)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.ver)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.fecha)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.fecha)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.cuit)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.cuit)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.ptoVta)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.ptoVta)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.tipoCmp)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.tipoCmp)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.nroCmp)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.nroCmp)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.importe)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.importe)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.moneda)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.moneda)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.ctz)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.ctz)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.tipoDocRec)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.tipoDocRec)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.nroDocRec)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.nroDocRec)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.tipoCodAut)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.tipoCodAut)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.codAut)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.codAut)
+                </dd>
+            </dl>
+        </div>
+
+    </div>
+
+
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script type="text/javascript">
+
+    </script>
+</body>
+</html>

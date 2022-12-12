@@ -1,0 +1,221 @@
+﻿@model IEnumerable<SoporteCaso>
+
+
+
+
+<table class="table table-sm">
+    <thead class="thead-light">
+        <tr>
+            <th class="d-none d-sm-table-cell">
+                Id
+            </th>
+            <th class="d-none d-sm-table-cell">
+                Cliente-Contacto
+            </th>
+            <th class="d-none d-sm-table-cell">
+                Registro
+            </th>
+            <th class="d-none d-sm-table-cell">
+                Problema
+            </th>
+            <th class="d-none d-sm-table-cell"></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @{
+            if (Model?.Count() > 0)
+            {
+                Int32 indiceFila = 1;
+
+                foreach (var item in Model)
+                {
+                    String contacto = "[" + item.ContactoId + "] " + item.ContactoNombre;
+                    String cliente = "[" + item.ClienteId + "] " + item.Cliente.EntidadSuc.Entidad.RazonSocial;
+
+
+
+
+                <tr class="filaCaso">
+
+                            <td class="d-none d-sm-table-cell ancho-columna-soporte-id">
+                                @*@Html.DisplayFor(modelItem => item.CasoId)*@
+
+                                <a asp-action="GenerarPdfCaso"
+                                   asp-controller="Soporte"
+                                   asp-area="Soporte"
+                                   asp-route-casoId="@item.CasoId"
+                                   class="btn btn-sm btn-link">@item.CasoId</a>
+
+                            </td>
+
+                    <td class="d-none d-sm-table-cell ancho-columna-soporte-cliente-contacto">
+                        <p class="m-0"><span>Cliente: </span> @cliente</p>
+                        <p class="m-0"><span>Contacto: </span> @contacto</p>
+                    </td>
+
+                    <td class="d-none d-sm-table-cell ancho-columna-soporte-registro">
+                        @Html.DisplayFor(modelItem => item.FechaHora)
+                    </td>
+
+                    <td class="d-none d-sm-table-cell ancho-columna-soporte-problema">
+                        @Html.DisplayFor(modelItem => item.DescripcionProblema)
+                    </td>
+
+                    <td class="d-none d-sm-table-cell ancho-columna-soporte-botones">
+                        <a asp-action="NuevoSoporteCaso"
+                           asp-controller="Soporte"
+                           asp-area="Soporte"
+                           asp-route-op="2"
+                           asp-route-id="@item.CasoId"
+                           class="btn btn-primary"> <i class="far fa-edit"></i> Editar</a>
+                    </td>
+
+
+
+                    <td class="d-block d-sm-block d-md-none @(indiceFila.EsPar()==true ? " colorPar":" colorImpar" ) ">
+                        <p><span>Id: </span>@item.CasoId</p>
+                        <p><span>Cliente: </span>@cliente</p>
+                        <p><span>Contacto: </span>@contacto</p>
+                        <p><span>Fecha/hs: </span>@item.FechaHora</p>
+                        <p>@item.DescripcionProblema </p>
+                        <a asp-action="NuevoSoporteCaso"
+                           asp-controller="Soporte"
+                           asp-area="Soporte"
+                           asp-route-op="2"
+                           asp-route-id="@item.CasoId"
+                           class="btn btn-sm btn-primary"> <i class="far fa-edit"></i> Editar</a>
+                    </td>
+
+
+
+                </tr>
+
+
+
+                    foreach (var scTarea in item.SoporteCasoTarea)
+                    {
+                        Boolean fotoTarea = false;
+                        String rutaImagen = "";
+                        var op_archivo = scTarea?.OperacionArchivo?.FirstOrDefault();
+                        if (op_archivo != null)
+                        {
+                            if (op_archivo.Archivo != null)
+                            {
+                                fotoTarea = true;
+                                rutaImagen = op_archivo.Archivo.RutaImagenJpg();
+                            }
+                        }
+
+                        String nombrePrioridad = "";
+                        if (scTarea.PrioridadId <= 4)
+                        {
+                            nombrePrioridad = "Baja";
+                        }
+                        else if (scTarea.PrioridadId <= 9)
+                        {
+                            nombrePrioridad = "Media";
+                        }
+                        else
+                        {
+                            nombrePrioridad = "Alta";
+                        }
+
+                        String textoCompleto = "[" + scTarea.TareaId + "]";
+
+                        if (scTarea.EtapaId == 30)
+                        {
+                            //Finalizada.....
+                            textoCompleto += " Tecnico: " + scTarea?.TecnicoSoporte?.Empleado?.EntidadSuc?.Entidad?.RazonSocial;
+                            textoCompleto += " Finalizado: " + scTarea.FechaHoraCompletado?.FechaCorta();
+                            textoCompleto += " Estado: " + scTarea?.Etapa?.Descripcion;
+
+                            //Decimal importe = 0;
+                            //try
+                            //{
+                            //    importe = Math.Round((scTarea?.ImporteNeto ?? 0) * (scTarea.CantidadFacturado ?? 0) / 60, 2);
+                            //}
+                            //catch (Exception)
+                            //{
+                            //    importe = 0;
+                            //}
+
+
+                            //textoCompleto += " " + importe.FormatoMoneda();
+                        }
+                        else
+                        {
+                            //Registrado - otro.
+                            textoCompleto += " Tecnico: " + scTarea?.TecnicoSoporte?.Empleado?.EntidadSuc?.Entidad?.RazonSocial;
+                            textoCompleto += " Prioridad: " + nombrePrioridad;
+                            textoCompleto += " Agendado: " + scTarea.FechaHoraAsigando?.FechaCorta();
+                            textoCompleto += " Estado: " + scTarea?.Etapa?.Descripcion;
+                        }
+
+    <tr class="@(scTarea.EtapaId==30?"tareaFinaliza":" ")">
+
+        <td class="d-none d-sm-table-cell pl-md-5">
+            <a asp-action="EditarTarea"
+               asp-controller="Soporte"
+               asp-area="Soporte"
+               asp-route-tareaId="@scTarea.TareaId"
+               class="btn btn-sm btn-success">Editar</a>
+        </td>
+
+        <td class="d-none d-sm-table-cell" colspan="3">
+            <p onclick="verImagenTarea(this)" class="@(fotoTarea == true ? "text-primary cursorClick" : " ") m-0"
+               id="pVerImagenTarea"
+               data-imagen="@rutaImagen">
+                @textoCompleto
+            </p>
+
+            @if (!String.IsNullOrEmpty(scTarea.DatosFacturacion))
+            {
+                <p class="m-0 text-danger font-weight-bold">
+                    @scTarea.DatosFacturacion
+                </p>
+            }
+
+        </td>
+        <td class="d-none d-sm-table-cell">
+        </td>
+
+
+
+
+        <td class="d-block d-sm-block d-md-none">
+            <p onclick="verImagenTarea(this)" class="@(fotoTarea == true ? "text-primary cursorClick" : " ") m-0"
+               id="pVerImagenTarea"
+               data-imagen="@rutaImagen">
+                @textoCompleto
+            </p>
+
+            @if (!String.IsNullOrEmpty(scTarea.DatosFacturacion))
+            {
+                <p class="m-0 text-danger font-weight-bold">
+                    @scTarea.DatosFacturacion
+                </p>
+            }
+
+            <a asp-action="EditarTarea"
+               asp-controller="Soporte"
+               asp-area="Soporte"
+               asp-route-tareaId="@scTarea.TareaId"
+               class="btn btn-sm btn-success">Editar</a>
+        </td>
+
+
+
+    </tr>
+                    }
+
+                    indiceFila = indiceFila + 1;
+                }
+
+                
+            }
+         }
+
+
+                </tbody>
+            </table>

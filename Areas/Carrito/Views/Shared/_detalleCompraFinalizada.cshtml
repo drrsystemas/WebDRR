@@ -1,0 +1,226 @@
+﻿@model CarritoIndexViewModel
+
+@{
+    var lista = Model.Carrito.Lista;
+}
+
+
+
+<table id="tablaProductos" class="table table-striped">
+
+    <thead>
+        <tr>
+            @{
+
+                <th class="d-none d-sm-table-cell"> Código</th>
+
+                <th class="d-none d-sm-table-cell mx-auto"> Cant. </th>
+
+                <th class="d-none d-sm-table-cell"> Producto </th>
+
+                <th class="d-none d-sm-table-cell"> Precio </th>
+
+                <th class="d-none d-sm-table-cell"> Subtotal </th>
+
+            }
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in lista)
+        {
+        <tr>
+            @{
+
+                String nombreCantidad = "txtCantidad" + item.IdItemCarrito;
+
+                String codigo = "";
+
+                if (Model.TipoEmpresa != (int)EnumTiposEmpresas.Representada)
+                {
+                    codigo = item.Producto.ProductoId.ToString();
+                }
+                else
+                {
+                    codigo = item.Producto.CodigoProveedor;
+                }
+
+                String precioSinBonificacion = "";
+                String precioNeto = "";
+                String Iva = "";
+                String precio = "";
+                string subTotal = "";
+                String precioF = "";
+                string subTotalF = "";
+                Boolean bonificacion = item.Producto.Bonificacion > 0 ? true : false;
+
+
+                precioSinBonificacion = item.Producto.Bruto.FormatoMoneda();
+                precio = item.Producto.PrecioBruto.FormatoMoneda();
+                subTotal = item.SubTotal.FormatoMoneda();
+
+
+
+
+
+                <td class="d-block d-sm-block d-md-none @( item.IdItemCarrito.EsPar()==true ? " fondoGrisPar":" fondoGrisImpar" ) ">
+
+
+                    @{
+
+                        String nombre = codigo + " - ";
+
+                        if (item.PresentacionId == 0)
+                        {
+                            nombre += "(B) ";
+                        }
+                        else
+                        {
+                            nombre += "(U) ";
+                        }
+
+                        nombre += item.Producto.Marca + " " + item.Producto.NombreCompleto;
+                        if (item.PresentacionId == 0)
+                        {
+                            nombre += " {x" + item.Producto.Cantidad.MostrarEntero() + "}";
+                        }
+
+
+                        String esquemaDetalle = item.Cantidad.MostrarEntero() + " x " + precio;
+
+                        if (item.Producto.Bonificacion > 0)
+                        {
+                            esquemaDetalle += " (" + item.Producto.Bonificacion.MostrarEntero() + "% Bf)";
+                        }
+
+                        <div class="d-flex flex-column bd-highlight">
+                            <div class="d-flex bd-highlight">
+                                <div class="flex-fill bd-highlight">
+                                    @nombre
+                                </div>
+                                <div class="flex-fill bd-highlight">
+                                    @esquemaDetalle
+                                </div>
+                                <div class=" flex-fill bd-highlight">
+                                    <p class="text-right txtSinSaltos"><strong>@subTotal</strong></p>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    }
+                </td>
+
+
+                <td class="d-none d-sm-table-cell">
+                    <p>@codigo</p>
+                </td>
+
+                <td class="d-none d-sm-table-cell mx-auto">
+                    <p>@item.Cantidad.MostrarEntero()</p>
+
+                </td>
+                String nombreProducto = "";
+
+                if (item.PresentacionId == 0)
+                {
+                    nombreProducto += "(B) ";
+                }
+                else
+                {
+                    nombreProducto += "(U) ";
+                }
+
+
+                nombreProducto += item.Producto.Marca + " " + item.Producto.NombreCompleto;
+                //Bulto.
+                if (item.PresentacionId == 0)
+                {
+                    nombreProducto += " {x" + item.Producto.Cantidad.MostrarEntero() + "}";
+
+                }
+
+                if (!String.IsNullOrEmpty(item.Producto.DetallaCliente))
+                {
+                    nombreProducto += " (" + item.Producto.DetallaCliente + ")";
+                }
+
+                if (item.Producto.ProductoOfertaID > 0)
+                {
+
+                    <td class="d-none d-sm-table-cell">
+                        <p>  <i class="fas fa-fire fa-1x" style="color:red;"></i> @nombreProducto</p>
+                    </td>
+                }
+                else
+                {
+                    <td class="d-none d-sm-table-cell">
+                        <p>@nombreProducto </p>
+                    </td>
+                }
+
+
+
+
+                <td class="d-none d-sm-table-cell">
+                    @{
+                        if (bonificacion == true)
+                        {
+                            <p class="m-0 txtSinSaltos" style="font-size:11px;">
+                                <strike>   @precioSinBonificacion </strike>
+                            </p>
+                        }
+                    }
+                    <p class="m-0 txtSinSaltos">
+                        @precio
+                    </p>
+                </td>
+
+
+                <td class="d-none d-sm-table-cell">
+                    <p class="txtSinSaltos">
+                        @subTotal
+                    </p>
+                </td>
+
+
+
+
+
+            }
+        </tr>
+        }
+
+    </tbody>
+</table>
+
+
+
+
+@* Esto hay que separar en otra vista parcial porque es bastantante grande. *@
+
+<div class="row mt-2">
+    <div class="col-12 col-sm-6 col-md-3">
+        @{
+            LibreriaBase.Areas.Carrito.Subtotales subtotales = Model?.Carrito?.Get_Totales();
+            String subtotalNeto = "S.N: " + subtotales?.SubTotalNeto.FormatoMoneda();
+            String descuento = "Desc: %" + Model.Carrito.Descuento.MostrarEntero().ToString();
+            String neto = "Neto: " + subtotales?.Neto.FormatoMoneda();
+            String iva = "Iva: " + subtotales?.Iva.FormatoMoneda();
+            String iibb = "IIBB: " + subtotales?.IIBB.FormatoMoneda();
+            String total = "Total: " + subtotales?.Total.FormatoMoneda();
+
+
+            <h4>
+                @total
+            </h4>
+
+
+        }
+
+    </div>
+</div>
+
+

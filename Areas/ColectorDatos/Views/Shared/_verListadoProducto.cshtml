@@ -1,0 +1,61 @@
+﻿@model List<LibreriaBase.Areas.Carrito.Clases.ProductoMinimo>
+
+@{
+    if (Model != null)
+    {
+
+
+    <div class="container">
+        <div class="row row-cols-1 row-cols-md-2  row-cols-lg-3">
+
+            @foreach (var item in Model)
+            {
+
+                <div class="col mb-1">
+                    <h5 class="mx-1 my-1 text-center">@item.NombreCompleto</h5>
+                    <div class="row">
+
+                        <div class="col-6">
+                            <img class="img-fluid" src="@item.Imagen?.RutaImagenJpg()" />
+
+                        </div>
+                        <div class="col-6">
+                            <p class="mb-1">Id: @item.ProductoId</p>
+                            <p class="mb-1">Cod. Barras: @item.CodigoBarras</p>
+                            <p class="mb-1">P. Neto: @item.PrecioNeto.FormatoMoneda()</p>
+                            <p class="mb-1">P. Final: @item.PrecioBruto.FormatoMoneda()</p>
+                            <p class="mb-1">Stock: @item.Stock.MostrarEntero()</p>
+
+                            <div class=" d-flex justify-content-end align-items-center">
+                                <button data-producto-id="@item.ProductoId" onclick="seleccionarProducto(this)"
+                                        class="btn btn-primary mb-1 mr-2" type="button" id="btnSeleccionar">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            }
+
+
+        </div>
+        <div class=" d-flex justify-content-end align-items-center">
+            <button onclick="btnLimpiarProducto()" class="btn btn-danger mb-1 mr-2" type="button" id="btnQuitar"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+                }
+                else
+                {
+                <h4 class="mx-1 my-1 text-center text-danger">"No se encontro el producto!!!"</h4>
+                <div class=" d-flex justify-content-end align-items-center">
+                    <button onclick="btnLimpiarProducto()" class="btn btn-danger mb-1 mr-2" type="button" id="btnQuitar"><i class="fas fa-times"></i></button>
+                </div>
+                }
+
+
+                }
+
+
+

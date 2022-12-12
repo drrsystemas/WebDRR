@@ -1,0 +1,24 @@
+﻿@model List<String>
+
+@{
+
+    String notificacion = Model[0];
+
+    String color = Model[1];
+
+
+    if (!String.IsNullOrEmpty(notificacion))
+    {
+        <div class="alert alert-@(color=="Rojo"?"danger":"success") alert-dismissible  fade show rounded" role="alert">
+
+            <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+
+            <p class="font-weight-bold mb-1 pb-1"><i class="mt-1 ml-2 fas fa-exclamation-circle fa-2x"></i> @notificacion</p>
+        </div>
+
+    }
+}
+
+

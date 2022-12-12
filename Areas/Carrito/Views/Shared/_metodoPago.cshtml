@@ -1,0 +1,42 @@
+﻿@model LibreriaBase.Areas.Usuario.ViewPago
+@using  LibreriaBase.Areas.Usuario;
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="GuardarMetodoPago" asp-area="Carrito" asp-controller="Pedido">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group">
+                    <label>Tipo Pago </label>
+
+                    <select id="cbPago" asp-for="IdPago">
+                        @{
+                            foreach (DatoConfiguracion envio in ViewBag.ListaTipoPago)
+                            {
+                                <option value="@envio.Codigo">@envio.Descripcion</option>
+                            }
+                        }
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Observacion" class="control-label"></label>
+                    <input asp-for="Observacion" class="form-control" />
+                    <span asp-validation-for="Observacion" class="text-danger"></span>
+                </div>
+
+                <input type="hidden" asp-for="NombreIdPago" id="txtNombreIdPago" />
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+</div>

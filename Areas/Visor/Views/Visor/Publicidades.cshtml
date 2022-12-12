@@ -1,0 +1,102 @@
+﻿@model IEnumerable<DRR.Core.DBEmpresaEjemplo.Models.Publicidad>
+
+@{
+    ViewData["Title"] = "Publicidades";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Publicidades</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PublicidadId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Fecha)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Titulo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Contenido)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PublicidadTipoId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Video)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SectorId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SucursalId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Imagen)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Inhabilitado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DiasVigencia)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaModificacion)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PublicidadId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fecha)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Titulo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Contenido)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PublicidadTipoId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Video)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SectorId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SucursalId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Imagen)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Inhabilitado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DiasVigencia)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaModificacion)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

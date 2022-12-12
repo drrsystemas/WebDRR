@@ -1,0 +1,42 @@
+﻿@model IEnumerable<LibreriaBase.Areas.Usuario.ViewEstadoCuenta>
+
+@{
+    ViewData["Title"] = "MiEstadoDeCuenta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    String urlRetorno = ViewData["urlRetorno"].ToString();
+
+    String razonSocial = "";
+
+    if(ViewData["RazonSocial"]!=null)
+    {
+        razonSocial = ViewData["RazonSocial"].ToString();
+    }
+
+    Decimal? limiteCredito = null;
+    if(ViewData.ContainsKey("LimiteCredito"))
+    {
+        limiteCredito = (decimal?)ViewData["LimiteCredito"];
+    }
+}
+
+
+<h3>Estado De Cuenta - <u>@razonSocial</u> </h3>
+
+<p class="my-2">Limite de Credito: @(limiteCredito==null?"sin espeficar ": limiteCredito.FormatoMoneda())</p>
+
+
+<partial name="_estadoCuenta"  model="Model" />
+
+
+<br />
+<a class="btn btn-success" target="_blank"
+   asp-controller="Cliente" 
+   asp-action="GenerarPdfEstadoDeCuenta"
+   asp-route-EntidadSucId="@ViewData["EntidadSucId"].ToString()"
+    asp-route-cliente="@ViewData["RazonSocial"].ToString()"
+   
+   >Generar Rte</a>
+<br />
+<br/>
+<br />

@@ -1,0 +1,103 @@
+﻿@using LibreriaBase.Areas.Visor
+@model List<ViewVisorContenido>
+
+@{
+    ViewData["Title"] = "Visor Videos";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+    List<String> listaTitulos = new List<string>();
+}
+
+
+<!DOCTYPE html>
+<html lang="es-ar">
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <style type="text/css">
+        .color-fondo {
+            background-color: #ffcb82;
+        }
+
+        .precio-oferta {
+            color: black;
+            font-family: Verdana;
+            font-size: 72px;
+        }
+
+        .precio-oferta-tachado {
+            color: red;
+            text-decoration: line-through;
+            font-family: Verdana;
+            font-size: 50px;
+        }
+
+        .producto-oferta {
+            color: black;
+            font-family: fantasy;
+            font-size: 50px;
+        }
+
+        .producto-oferta-esquema {
+            color: black;
+            font-family: fantasy;
+            font-size: 30px;
+        }
+
+        .producto-oferta-datos {
+            color: darkblue;
+            font-family: 'Buxton Sketch';
+            font-size: 20px;
+        }
+    </style>
+
+    <link rel="stylesheet" href="~/lib/fotorama/fotorama.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/bootstrap.min.css" />
+
+</head>
+<body>
+
+    <div class="container-fluid color-fondo">
+
+        @{
+
+
+
+            <div class="fotorama" data-loop="true">
+
+                @{
+                    for (int i = 0; i < Model?.Count(); i++)
+                    {
+                        var pub = Model[i];
+
+                        <a href="@pub.RutaVideo"></a>
+
+
+
+                    }
+                }
+
+            </div>
+
+
+        }
+
+    </div>
+
+
+    <script type="text/javascript" src="~/lib/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="~/lib/popper.js/umd/popper.min.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
+
+    <script type="text/javascript" src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script type="text/javascript" src="~/lib/fotorama/fotorama.js"></script>
+
+    <script type="text/javascript" src="~/script/visor/visor.js"></script>
+
+</body>
+</html>

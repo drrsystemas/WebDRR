@@ -1,0 +1,35 @@
+﻿@model SessionAcceso
+
+<nav id="barraPrincipal" class="navbar navbar-expand navbar-light bg-light navbar-light bg-white border-bottom box-shadow mb-1">
+    <div class="container-fluid">
+        <button class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target=".navbar-collapse"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="navbar-collapse collapse d-sm-inline-flex ">
+   
+                    
+            <div class="nav-item flex-grow-1">
+                <a class="nav-link text-dark" asp-area="Carrito"
+                       asp-controller="Reparto"
+                       asp-action="DetalleReparto">
+                    <i class="fas fa-shipping-fast fa-2x iconoscolor"></i>
+                    <b class="pl-1 d-none d-sm-inline iconoscolorletra">Reparto</b>
+                </a>
+            </div>
+
+               
+            <partial name="_LoginPartial" model="Model" />
+
+        </div>
+
+    </div>
+
+</nav>
+

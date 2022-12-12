@@ -1,0 +1,14 @@
+﻿@model IEnumerable<DRR.Core.DBEmpresaEjemplo.Models.Publicidad>
+
+<div class="fotorama">
+    @{
+        for (int i = 0; i < Model.Count(); i++)
+        {
+            Publicidad item = Model.ElementAt(i);
+
+            <div data-img="@item.Imagen.RutaImagenJpg()" style="width:auto;height:200px;object-fit:scale-down;display:block;margin:auto;" class="img-fluid">
+                <h4 class="text-center">@item.Titulo</h4>
+            </div>
+        }
+    }
+</div>

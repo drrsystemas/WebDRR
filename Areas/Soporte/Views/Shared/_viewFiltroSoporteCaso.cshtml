@@ -1,0 +1,209 @@
+﻿@model FiltroSoporte
+
+@{
+
+    List<TecnicoView> listaTecnicos = (List<TecnicoView>)ViewData["ListaTecnicos"];
+
+    List<ZonaGeografica> listaZonas = (List<ZonaGeografica>)ViewData["ListaZonas"];
+
+    List<SoporteTareasEtapas> listaEtapas = (List<SoporteTareasEtapas>)ViewData["ListaEtapas"];
+
+
+    List<SupervisorView> listaSupervisores =  (List<SupervisorView>)ViewData["ListaSupervisores"];
+
+    String urlbuscarCliente = Url.Action("ListadoClientes", "Soporte");
+
+    String urlbuscar= Url.Action("BuscarCliente", "UsuarioWeb");
+}
+
+<div class="collapse" id="collapseExample">
+    <div class="px-2 mb-2 border border-secondary">
+
+
+
+        <form method="post" asp-area="Soporte" asp-controller="Soporte" asp-action="getFiltro">
+
+
+            <input asp-for="@Model.Vista" type="hidden">
+
+
+            <div class="form-group">
+                <label class="control-label">Zonas</label>
+                <select class="custom-select" asp-for="@Model.ZonaId"
+                        asp-items="@(new SelectList(listaZonas,"ZonaId","Descripcion"))">
+                    <option value="0" selected="selected">Todos</option>
+                </select>
+            </div>
+
+
+            <div class="input-group my-3">
+                <label class="control-label mr-3">Cliente</label>
+                <div class="input-group-prepend">
+                    @*<button onclick="buscarClientes_Filtro($('#datoFiltroCliente').val(),'@urlbuscarCliente')" class="btn btn-outline-secondary" type="button">Buscar</button>*@
+
+                    <button onclick="abrirBuscarCliente()" class="btn btn-outline-success" type="button">Seleccionar</button>
+                    <button onclick="quitarDatosCliente()" class="btn btn-outline-danger" type="button">Quitar</button>
+                </div>
+
+                <input asp-for="DatoCliente"
+                       readonly
+                       type="text"
+                       id="datoFiltroCliente"
+                       class="form-control"
+                       aria-describedby="basic-addon2">
+
+                <input type="hidden" id="txtIdCliente" asp-for="ClienteId"
+                       class="form-control"
+                       placeholder="Nombre/Cuit del cliente" aria-describedby="basic-addon2">
+
+            </div>
+
+            <div class="row mt-1">
+                <div class="col">
+                    <div class="form-group">
+                        <label class="control-label">Tecnico</label>
+                        <select class="custom-select" asp-for="@Model.TecnicoSoporteId"
+                                asp-items="@(new SelectList(listaTecnicos,"IdTecnico","Nombre"))">
+                            <option value="0" selected="selected">Todos</option>
+                        </select>
+                    </div>
+
+                </div>
+
+
+                <div class="col">
+
+
+
+                    <div class="form-group">
+                        <label class="control-label">Estados</label>
+                        @{
+                            foreach (var etapa in listaEtapas)
+                            {
+                                bool existe = Model.ListaEstados.Any(c => c == etapa.EtapaId);
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                           value="@etapa.EtapaId"
+                                           name="check@(etapa.EtapaId)"
+                                           id="check@(etapa.EtapaId)"
+                                           @(existe == true ? "checked" : " ")>
+                                    <label class="form-check-label" for="check@(etapa.EtapaId)">
+                                        @etapa.Descripcion
+                                    </label>
+                                </div>
+                            }
+
+                        }
+                    </div>
+
+
+                </div>
+
+
+                <div class="col">
+
+                    <div class="form-group">
+                        <label class="control-label">Supervisor</label>
+                        <select class="custom-select" asp-for="@Model.SupervisorId"
+                                asp-items="@(new SelectList(listaSupervisores,"SupervisorId","Nombre"))">
+                            <option value="0" selected="selected">Todos</option>
+                        </select>
+                    </div>
+
+
+                </div>
+            </div>
+
+
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="1" checked>
+                <label class="form-check-label" for="exampleRadios1">
+                    Fecha de Registro
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" disabled name="exampleRadios" id="exampleRadios2" value="2">
+                <label class="form-check-label" for="exampleRadios2">
+                    Fecha Agendado
+                </label>
+            </div>
+
+            <div class="row ">
+
+                <div class="col-sm-4">
+                    <div class="form-group pmd-textfield pmd-textfield-floating-label">
+                        <label class="control-label" for="datepicker-start">Desde: </label>
+                        <input asp-for="@Model.FechaDesde" type="date" class="form-control" id="datepicker-start">
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group pmd-textfield pmd-textfield-floating-label">
+                        <label class="control-label" for="datepicker-end">Hasta: </label>
+                        <input asp-for="@Model.FechaHasta" type="date" class="form-control" id="datepicker-end">
+                    </div>
+                </div>
+
+
+                <div class="col-sm-3">
+                    <div class="form-check mt-md-4 mt-xl-4">
+                        <input asp-for="@Model.TodasLasFechas" type="checkbox" class="form-check-input mb-1" id="exampleCheck1">
+                        <label class="form-check-label font-weight-bold mb-1" for="exampleCheck1">Todos</label>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class=" d-flex justify-content-end align-items-center">
+                <button class="btn btn-success mb-1" type="submit"><i class="fas fa-filter"></i> Filtrar</button>
+            </div>
+
+        </form>
+
+
+
+    </div>
+</div>
+
+
+
+
+@* 17/08/2021 *@
+<div id="modalBuscarCliente" class="modal fade" data-backdrop="static" tabindex="-1" role="dialog" style="max-height:500px;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 id="tituloModalCliente" class="modal-title">Seleccionar</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div id="divBuscar">
+                    <form id="frmbusquedaAjax" class="form-inline">
+                        <div class="form-group mx-sm-3 mb-2">
+                            <input type="text" class="form-control"
+                                   data-urlaction="@urlbuscar"
+                                   id="inputDatoBusqueda" placeholder="Nombre - Cuit - Dni - Id">
+                        </div>
+                        <button type="button" onclick="buscarDatos()" class="btn btn-primary mb-2">Buscar</button>
+                    </form>
+                </div>
+
+                <div id="divDatos">
+
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+</div>

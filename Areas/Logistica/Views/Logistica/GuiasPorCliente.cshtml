@@ -1,0 +1,268 @@
+﻿@model Model_GuiaEstado;
+
+@{
+    ViewData["Title"] = "GuiasPorCliente";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+@if (Model == null)
+{
+    <h3>El Rol del login actual no es de un/a cliente/a</h3>
+}
+else
+{
+    <h2>Guía de @Model.MisDatos.NombreUsuario</h2>
+    <br />
+
+
+
+    @*
+             //El Cliente no quiere la web con filtros.
+
+            <div id="accordion">
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <h5 class="mb-0">
+
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Filtros y ordenamiento
+                        </button>
+
+                    </h5>
+                </div>
+
+
+                @if (String.IsNullOrEmpty(Model.MisDatos.Estado))
+                {
+                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body">
+
+                            <form id="frmFiltros" asp-action="GuiasPorCliente_filtros" asp-controller="Logistica" method="post">
+                                <div class="row">
+
+                                    <input type="hidden" asp-for="ListadoGuias" />
+                                    <input type="hidden" asp-for="ListaEstados" />
+
+
+                                    <div class="col">
+
+                                        @Html.LabelFor(c => c.MisDatos.Estado)
+                                        @Html.DropDownListFor(c => c.MisDatos.Estado,
+                                       new SelectList(Model.ListaEstados, "Nombre", "Nombre"), "",
+                                       new { @class = "form-control" })
+
+                                        @Html.ValidationMessageFor(c => c.MisDatos.Estado)
+
+
+                                    </div>
+                                    <div class="col">
+
+                                        @Html.Label("ordenFecha", "Orden por fecha")
+                                        <br />
+
+
+                                        @if (Model.MisDatos.OrdenFecha == "1")
+                                        {
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="radio" class="form-check-input" value=1 name="ordenFecha" checked>Asc.
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="radio" class="form-check-input" value=2 name="ordenFecha">Des.
+                                                </label>
+                                            </div>
+
+                                        }
+                                        else
+                                        {
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="radio" class="form-check-input" value=1 name="ordenFecha">Asc.
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="radio" class="form-check-input" value=2 name="ordenFecha" checked>Des.
+                                                </label>
+                                            </div>
+                                        }
+
+
+
+                                    </div>
+                                </div>
+                            </form>
+
+
+
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body">
+
+                            <form id="frmFiltros" asp-action="GuiasPorCliente_filtros" asp-controller="Logistica" method="post">
+                                <div class="row">
+
+                                    <input type="hidden" asp-for="ListadoGuias" />
+                                    <input type="hidden" asp-for="ListaEstados" />
+
+
+                                    <div class="col">
+
+                                        @Html.LabelFor(c => c.MisDatos.Estado)
+                                        @Html.DropDownListFor(c => c.MisDatos.Estado,
+                                       new SelectList(Model.ListaEstados, "Nombre", "Nombre"), "",
+                                       new { @class = "form-control" })
+
+                                        @Html.ValidationMessageFor(c => c.MisDatos.Estado)
+
+
+                                    </div>
+                                    <div class="col">
+
+                                        @Html.Label("ordenFecha", "Orden por fecha")
+                                        <br />
+
+
+                                        @if (Model.MisDatos.OrdenFecha == "1")
+                                        {
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="radio" class="form-check-input" value=1 name="ordenFecha" checked>Asc.
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="radio" class="form-check-input" value=2 name="ordenFecha">Des.
+                                                </label>
+                                            </div>
+
+                                        }
+                                        else
+                                        {
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="radio" class="form-check-input" value=1 name="ordenFecha">Asc.
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="radio" class="form-check-input" value=2 name="ordenFecha" checked>Des.
+                                                </label>
+                                            </div>
+                                        }
+
+
+
+                                    </div>
+                                </div>
+                            </form>
+
+
+
+                        </div>
+                    </div>
+                }
+
+
+
+            </div>
+        </div>*@
+
+
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    Guía
+                </th>
+                <th class="d-none d-sm-table-cell">
+                    N° Remito
+                </th>
+                <th>
+                    Fecha
+                </th>
+                <th class="d-none d-sm-table-cell">
+                    Estado
+                </th>
+                <th class="d-none d-sm-table-cell">
+                    Remitente
+                </th>
+                <th class="d-none d-sm-table-cell">
+                    Destinatario
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in Model.ListadoGuias)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NroGuia)
+                </td>
+                <td class="d-none d-sm-table-cell">
+                    @Html.DisplayFor(modelItem => item.NroRemito)
+                </td>
+                <td>
+
+
+                    @item.FechaGuia.ToString("dd/MM/yyyy HH:mm")
+
+                </td>
+                <td class="d-none d-sm-table-cell">
+                    @Html.DisplayFor(modelItem => item.Estado)
+                </td>
+                <td class="d-none d-sm-table-cell">
+                    @Html.DisplayFor(modelItem => item.Remitante)
+                </td>
+                <td class="d-none d-sm-table-cell">
+                    @Html.DisplayFor(modelItem => item.Destinatario)
+                </td>
+                <td>
+                    | @Html.ActionLink("Detalle", "DatosGuia", new { numero = item.NroGuia })
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <br />
+    <br />
+}
+
+
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script type="text/javascript">
+
+        $(function () {
+            $("#frmFiltros").change(function () {
+                $("#frmFiltros").submit();
+            });
+        });
+
+        function test() {
+            alert('Cambio el combo box -- estado');
+        }
+
+    </script>
+}

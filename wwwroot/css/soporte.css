@@ -1,0 +1,120 @@
+﻿.filaCaso {
+    background-color: #ff8f251a;
+}
+
+.tareaFinaliza {
+    background-color: #b9e22b3b;
+}
+
+.colorNaranja {
+    background-color: #f67315;
+    color: white;
+}
+
+
+
+.colorImpar {
+    background-color: seashell;
+}
+
+.colorPar {
+    background-color: cornsilk;
+}
+
+.cursorClick {
+    cursor: pointer;
+}
+
+.modal-dialog-full-width {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+}
+
+.modal-content-full-width {
+    height: auto !important;
+    min-height: 100% !important;
+    border-radius: 0 !important;
+    background-color: #ececec !important
+}
+
+.modal-header-full-width {
+    border-bottom: 1px solid #9ea2a2 !important;
+}
+
+.modal-footer-full-width {
+    border-top: 1px solid #9ea2a2 !important;
+}
+
+
+.colorBuscarCliente {
+    background-color: aliceblue;
+}
+
+.colorBuscarContacto {
+    background-color: lavender;
+}
+
+.error {
+    color: red;
+}
+
+.errorLetra {
+    font-size: x-large;
+}
+
+
+.requerido {
+    color: black;
+    content: ' *';
+    display: inline;
+    font-weight: bold;
+}
+
+/*        .fullscreen-modal .modal-dialog {
+                margin: 0;
+                margin-right: auto;
+                margin-left: auto;
+                width: 100%;
+            }
+
+            @@media (min-width: 768px) {
+                .fullscreen-modal .modal-dialog {
+                    width: 750px;
+                }
+            }
+
+            @@media (min-width: 992px) {
+                .fullscreen-modal .modal-dialog {
+                    width: 970px;
+                }
+            }
+
+            @@media (min-width: 1200px) {
+                .fullscreen-modal .modal-dialog {
+                    width: 1170px;
+                }
+            }*/
+
+
+
+.ancho-columna-soporte-id {
+    width: 5%;
+}
+
+.ancho-columna-soporte-cliente-contacto {
+    width: 35%;
+}
+
+.ancho-columna-soporte-registro {
+    width: 10%;
+}
+
+.ancho-columna-soporte-problema {
+    width: 40%;
+}
+.ancho-columna-soporte-botones {
+    width: 20%;
+}

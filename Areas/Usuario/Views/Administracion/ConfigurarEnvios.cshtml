@@ -1,0 +1,65 @@
+﻿@model IEnumerable<DatoConfiguracion>
+
+@{
+    ViewData["Title"] = "ConfigurarEnvios";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+
+
+    <h3>Configurar Envios</h3>
+
+    <div class="my-1">
+        
+        <a asp-area="Usuario"
+           asp-controller="Administracion"
+           asp-action="Flete" class="btn btn-sm btn-outline-secondary">Flete</a>
+
+        <a  asp-area="Usuario"
+           asp-controller="Administracion"
+           asp-action="EnvioGratis" class="ml-2 btn btn-sm btn-outline-secondary">Envio Gratis</a>
+
+    </div>
+
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Descripcion)
+                </th>
+                <th>
+                    Estado
+                </th>
+                <th>
+                    Importe
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Descripcion)
+                </td>
+                <td>
+                    @item.Extra
+                </td>
+                <td>
+                    @item.Valor.FormatoMoneda()
+                </td>
+                <td>
+                    @Html.ActionLink("Modificar", "ModificarEnvio", new { codigoEnvio = item.Codigo })
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <br />
+    <br />
+    <br />
+

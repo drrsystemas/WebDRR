@@ -1,0 +1,83 @@
+﻿@model InfoEventos
+
+
+@{
+    ViewData["Title"] = "Lista Eventos";
+
+    Layout = "~/Views/Shared/_LayoutSoporte.cshtml";
+
+    FiltroSoporte filtro = (FiltroSoporte)ViewBag.Filtro;
+
+    String urlRetorno = Url.ActionLink("Principal", "Soporte");
+
+}
+
+
+@section Estilos
+{
+    <link rel="stylesheet" href="~/css/soporte.css" />
+
+}
+
+
+@*@section Atras
+    {
+    <a class="btn bd-white mr-1"
+       asp-controller="Soporte" asp-action="Principal">
+        <i class="fas fa-angle-left"></i> <p class="d-none d-sm-inline">Atrás</p>
+    </a>
+}*@
+<partial name="_aviso" />
+<a id="urlVolver" href="@urlRetorno" hidden></a>
+
+
+
+
+<h3>Listado de Eventos</h3>
+<hr />
+
+<table class="table table-sm">
+    <thead class="thead-light">
+        <tr>
+            <th>Calendario</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @{
+            foreach (var item in Model.ListadoEventos)
+            {
+                <tr>
+                    <td> @item </td>
+                </tr>
+            }
+        }
+
+
+    </tbody>
+
+</table>
+
+
+
+
+
+@section Scripts {
+
+    <script type="text/javascript">
+
+        window.onbeforeunload = function (e) {
+            let url = document.getElementById("urlVolver").getAttribute("href");
+
+            if (url === "")
+            {
+                url = history.go(-1);
+            }
+
+            document.location = url;
+        };
+
+
+    </script>
+
+}

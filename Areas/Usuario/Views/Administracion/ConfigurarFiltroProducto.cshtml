@@ -1,0 +1,85 @@
+﻿@model LibreriaBase.Areas.Carrito.Clases.FiltroProducto
+
+@{
+    ViewData["Title"] = "Configurar Filtro Producto";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+    DatoConfiguracion configuracion = (DatoConfiguracion)ViewData["Configuracion"];
+    var listaRubros = (List<SelectListItem>)ViewData["ListaRubros"];
+    var listaMarcas = (List<SelectListItem>)ViewData["ListaMarcas"];
+}
+
+<h4>Configurar Filtro Producto</h4>
+
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="ConfigurarFiltroProducto" asp-controller="Administracion" asp-area="Usuario" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" name="configuracion" value="@configuracion.ToJson()"/>
+
+            <div >
+                <p class="font-weight-bold">@configuracion.Descripcion</p>
+            </div>
+
+            <div class="custom-control custom-switch">
+                <input name="valorLlave" data-inicial="@configuracion.Valor.MostrarEntero()" type="checkbox" class="custom-control-input" id="customSwitch1">
+                <label id="lbLlave" class="custom-control-label" for="customSwitch1">aaa</label>
+            </div>
+            
+            <div class="form-group mt-1">
+                <label asp-for="MarcaId" class="control-label">Marca:</label>
+                @*<input asp-for="MarcaId" class="form-control" />*@
+
+                <select  class="form-control" asp-for="MarcaId" asp-items="@listaMarcas">
+                    <option> </option>
+                </select>
+
+                <span asp-validation-for="MarcaId" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="FamiliaId" class="control-label">Rubro/Familia: </label>
+                @*<input asp-for="FamiliaId" class="form-control" />*@
+
+                <select class="form-control" asp-for="FamiliaId" asp-items="@listaRubros">
+                    <option> </option>
+                </select>
+
+                <span asp-validation-for="FamiliaId" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="Dato" class="control-label">Buscar</label>
+                <input asp-for="Dato" class="form-control" />
+                <span asp-validation-for="Dato" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group mt-1">
+                <input type="submit" value="Guardar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<br />
+
+<div>
+    <a asp-action="ConfigurarViewDatosProductos" asp-controller="Administracion">Volver a la Lista</a>
+</div>
+
+<br />
+<br />
+
+@section Scripts {
+
+
+    <script asp-append-version="true" type="text/javascript" src="~/script/administracion/configurarFiltroProducto.js"></script>
+
+
+}

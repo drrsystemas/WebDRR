@@ -1,0 +1,128 @@
+﻿@model LibreriaBase.Areas.Acceso.DatosUsuarioVM
+
+
+@{
+    ViewData["Title"] = "ConfirmarRegistro";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container p-2">
+
+    <div class="row">
+
+        <div class="col-md-8 mx-auto">
+
+            <div class="card text-center">
+
+                <div class="card-header">
+                    <h3>Confirmar Registro Usuario</h3>
+                </div>
+
+                <br />
+
+                <div class="card-body">
+                    <br />
+                    <h5>Se le envio un correo con la código de activación, ingrese el código que recibio por correo.</h5>
+
+                    <form method="post" asp-area="Acceso" asp-controller="Acceso" asp-action="AgregarUsuarioWeb">
+
+                        <div class="form-group">
+                            <input asp-for="@Model.Usuario.Correo" placeholder="Correo Electronico" class="form-control" />
+                            <span asp-validation-for="@Model.Usuario.Correo" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <input asp-for="@Model.CodigoEnviado" placeholder="Clave" class="form-control" />
+                            <span asp-validation-for="@Model.CodigoEnviado" class="text-danger"></span>
+                        </div>
+
+                        <input type="hidden" asp-for="@Model.Json" class="form-control" />
+
+                        <br />
+
+                        <h5>Datos de personales</h5>
+
+                        <fieldset class="form-group">
+
+                            <div class="form-group row">
+                                <label asp-for="@Model.UsuarioConfiguracion.ApellidoyNombre" class="col-sm-2 col-form-label">Apellido y Nombre</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" asp-for="@Model.UsuarioConfiguracion.ApellidoyNombre">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label asp-for="@Model.UsuarioConfiguracion.Documento" class="col-sm-2 col-form-label">N° de Documento</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" asp-for="@Model.UsuarioConfiguracion.Documento">
+                                </div>
+                            </div>
+
+
+                        </fieldset>
+                        <br />
+                        <h5>Datos de Envio</h5>
+                        <fieldset class="form-group">
+                            <div class="form-group row">
+                                <label asp-for="@Model.UsuarioConfiguracion.Provincia" class="col-sm-2 col-form-label">Provincia</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" asp-for="@Model.UsuarioConfiguracion.Provincia">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label asp-for="@Model.UsuarioConfiguracion.Localidad" class="col-sm-2 col-form-label">Localidad</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" asp-for="@Model.UsuarioConfiguracion.Localidad">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label asp-for="@Model.UsuarioConfiguracion.Celular" class="col-sm-2 col-form-label">Celular</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" asp-for="@Model.UsuarioConfiguracion.Celular">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label asp-for="@Model.UsuarioConfiguracion.Direccion" class="col-sm-2 col-form-label">Celular</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" asp-for="@Model.UsuarioConfiguracion.Direccion">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label asp-for="@Model.UsuarioConfiguracion.Referencias" class="col-sm-2 col-form-label">Referencias</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" asp-for="@Model.UsuarioConfiguracion.Referencias">
+                                </div>
+                            </div>
+
+
+
+
+                        </fieldset>
+
+                        <br />
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary btn-block">Aceptar</button>
+
+                        </div>
+                        <p class="text-danger">@ViewBag.ErrorMessage</p>
+                        <br />
+                    </form>
+                    <br />
+                    <a asp-controller="Home" asp-action="Index">Finalizar luego</a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<br />
+<br />
+<br />
+

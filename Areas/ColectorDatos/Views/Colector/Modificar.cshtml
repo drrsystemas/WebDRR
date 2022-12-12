@@ -1,0 +1,61 @@
+﻿@model LibreriaBase.Areas.ColectorDatos.ViewColector
+
+@{
+    ViewData["Title"] = "Modificar";
+    Layout = "~/Areas/ColectorDatos/Views/Shared/_Layout.cshtml";
+    String urlSumarRestar = Url.Action("SumarRestarColector", "Colector");
+
+    String ir = Url.Action("Index", "Colector");
+
+    String producto = $"[{Model.CodigoId}] - {Model.CodigoBarra} {Model.Descripcion}";
+}
+
+
+<h4>Producto</h4>
+<hr />
+<div class="row justify-content-md-center">
+    <div class="col-md-8">
+        <form method="post" asp-controller="Colector" asp-action="Modificar">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CodigoId" />
+            <input type="hidden" asp-for="Registro" />
+            <div class="form-group">
+                <label>Producto</label>
+                <input type="text" readonly class="form-control" value="@producto">
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="Cantidad"></label>
+                <input asp-for="Cantidad" class="form-control" />
+                <span asp-validation-for="Cantidad" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <input type="submit" value="Guardar" class="btn btn-primary" />
+
+                <a class="ml-2 btn btn-secondary" asp-action="Index">Cancelar</a>
+
+                <a class="float-right btn btn-danger"  onclick="eliminar_colector('@Model.CodigoId','@Model.Registro','2','@urlSumarRestar','@ir')" >Eliminar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<br />
+<br />
+<br />
+
+@section Scripts
+{
+
+    <script asp-append-version="true" type="text/javascript" src="~/script/colector/colector.js"></script>
+
+    <script type="text/javascript">
+
+        @*_haySucursal = '@sucurdal';*@
+
+    </script>
+}

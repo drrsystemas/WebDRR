@@ -1,0 +1,453 @@
+﻿@model SessionAcceso
+
+<nav id="barraPrincipal" class="navbar navbar-expand navbar-light bg-light navbar-light bg-white border-bottom box-shadow mb-1">
+    <div class="container-fluid">
+        <button class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target=".navbar-collapse"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="navbar-collapse collapse d-sm-inline-flex ">
+            @if (Model?.Sistema?.EmpresaId != 29)
+            {
+                @*@RenderSection("Atras", required: false)*@
+
+                @if (Model?.Usuario?.IdAlmaWeb > 0)
+                {
+
+                    if (Model?.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo ==
+                    (int)ConfPortal.EnumConfPortal.MenuPrincipal_Desactivar)?.Valor.MostrarEntero() == 1)
+                    {
+
+
+                        <div class="nav-item flex-grow-1">
+                            <a class="nav-link text-dark" asp-area=""
+                               asp-controller="Home" asp-action="Principal">
+                                <i class="fa fa-home fa-2x iconoscolor"></i>
+                                <b class="pl-1 d-none d-sm-inline iconoscolorletra">Principal</b>
+                            </a>
+                        </div>
+
+                    }
+                    else
+                    {
+                        <ul class="navbar-nav dropdown flex-grow-1">
+
+                            <a class="nav-link text-dark dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-home fa-2x"></i>
+                                <b class="d-none d-sm-inline">
+                                    @{
+                                        if (Model?.Sistema?.Nombre != "")
+                                        {
+                                            if (Model?.Sistema.SectorId == null || Model?.Sistema.SectorId == 0)
+                                            {
+                                                @Model?.Sistema?.Nombre
+                                            }
+                                            else
+                                            {
+                                                if (Model.Usuario?.Rol == (int)EnumRol.Vendedor)
+                                                {
+                                                    String nombre = "[" + Model?.Sistema?.SectorId + "] " + Model?.Sistema?.NombreRepresentada;
+                                                    @nombre
+                                                }
+                                                else
+                                                {
+                                                    @Model?.Sistema?.NombreRepresentada
+                                                }
+
+                                            }
+                                        }
+                                    }
+                                </b>
+                            </a>
+
+                            <ul class="dropdown-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark iconoscolorletra" asp-area=""
+                                       asp-controller="Home" asp-action="Principal">
+                                        <i class="fab fa-font-awesome-flag iconoscolor"></i> Principal
+                                    </a>
+                                </li>
+
+
+                                @{
+
+                                    if (!String.IsNullOrEmpty(Model?.UrlRetornoPaginaEmpresa))
+                                    {
+                                        <a class="nav-link text-dark" href="@Model.UrlRetornoPaginaEmpresa">
+                                            <i class="fas fa-external-link-alt iconoscolor"></i> Volver
+                                        </a>
+                                    }
+
+
+
+
+
+
+                                    if (Model?.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo == 1)?.Valor == 0)
+                                    {
+                                        if (Model?.Usuario?.IdAlmaWeb > 0)
+                                        {
+                                            <li class="nav-item">
+                                                <a class="nav-link text-dark"
+                                                   asp-area="Carrito"
+                                                   asp-controller="Producto"
+                                                   asp-action="Productos">
+                                                    <i class="fas fa-weight-hanging"></i> Productos
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark"
+                                               asp-area="Carrito"
+                                               asp-controller="Producto"
+                                               asp-action="Productos">
+                                                <i class="fas fa-weight-hanging"></i> Productos
+                                            </a>
+                                        </li>
+                                    }
+
+                                    if (Model?.Configuracion?.ConfiguracionesViewDatosProductos?.FirstOrDefault(c => c.Codigo == 12)?.Valor.MostrarEntero() == 1)
+                                    {
+
+                                        if (Model.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo == 11)?.Valor == 0)
+                                        {
+                                            if (Model?.Usuario?.IdAlmaWeb > 0)
+                                            {
+                                                <li class="nav-item">
+                                                    <a asp-area="Carrito" asp-controller="Marca" asp-action="Listado" class="nav-link text-dark">
+                                                        <i class="fas fa-bookmark"></i> Marcas @*<b class="pl-1 d-none d-sm-inline">Marcas</b>*@
+                                                    </a>
+                                                </li>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <li class="nav-item">
+                                                <a asp-area="Carrito" asp-controller="Marca" asp-action="Listado" class="nav-link text-dark">
+                                                    <i class="fas fa-bookmark"></i> Marcas
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+
+
+
+
+                                    if (Model?.Usuario?.Rol == 4)
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark"
+                                               asp-area="Usuario"
+                                               asp-controller="Cliente"
+                                               asp-action="ListarClientes"><i class="fas fa-users"></i> Clientes</a>
+                                        </li>
+
+
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark"
+                                               asp-area="Carrito"
+                                               asp-controller="Pedido"
+                                               asp-action="ListarPedidos"><i class="fas fa-dolly"></i> Pedidos</a>
+                                        </li>
+
+
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark"
+                                               asp-area="Cobro"
+                                               asp-controller="Cobro"
+                                               asp-action="Index"><i class="fas fa-cash-register"></i> Cobros</a>
+                                        </li>
+
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark"
+                                               asp-area="Carrito"
+                                               asp-controller="Reparto"
+                                               asp-action="DetalleReparto"><i class="fas fa-shipping-fast"></i> Repartos</a>
+                                        </li>
+
+                                    }
+                                    else
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark"
+                                               asp-area="Carrito"
+                                               asp-controller="Pedido"
+                                               asp-action="ListarPedidos"><i class="fas fa-dolly"></i> Compras</a>
+                                        </li>
+                                    }
+
+
+                                    if (Model?.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo == (Int32)ConfPortal.EnumConfPortal.ModuloSoporte)?.Valor.MostrarEntero() == 1)
+                                    {
+                                        if (Model?.Usuario?.EntidadSucId > 0)
+                                        {
+                                            <li class="nav-item">
+                                                <a asp-area="Soporte" asp-controller="Soporte" asp-action="Principal" class="nav-link text-dark">
+                                                    <i class="fas fa-headset"></i> Soporte
+                                                </a>
+                                            </li>
+                                        }
+
+                                    }
+
+                                    if (Model?.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo == (Int32)ConfPortal.EnumConfPortal.ModuloColector)?.Valor.MostrarEntero() == 1)
+                                    {
+
+                                        <li class="nav-item">
+                                            <a  asp-area="ColectorDatos"
+                               asp-controller="Colector"
+                               asp-action="Index"class="nav-link text-dark">
+                                                <i class="fas fa-table"></i> Colector
+                                            </a>
+                                        </li>
+                                    }
+
+
+
+
+                                    <li class="dropdown-divider"></li>
+
+                                    if (Model?.Usuario?.IdAlmaWeb > 0)
+                                    {
+
+                                        @*
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area=""
+                       asp-controller="Home" asp-action="Index">
+                        <i class="fas fa-building"></i> Empresa
+                    </a>
+                </li>*@
+
+
+                                        if (Model?.Sistema?.TipoEmpresa == (Int32)EnumTiposEmpresas.EmpresaMultisector)
+                                        {
+                                            <li class="nav-item">
+                                                <a class="nav-link text-dark" asp-controller="Home"
+                                                   asp-action="Representada"><i class="fas fa-briefcase"></i> Sector</a>
+                                            </li>
+                                        }
+                                        else if (Model?.Sistema?.TipoEmpresa == (Int32)EnumTiposEmpresas.Representada)
+                                        {
+                                            <li class="nav-item">
+                                                <a class="nav-link text-dark" asp-controller="Home"
+                                                   asp-action="Representada"><i class="fas fa-briefcase"></i> Representada</a>
+                                            </li>
+                                        }
+                                    }
+
+                                    if (!String.IsNullOrEmpty(Model?.Sistema?.WhatsappSector))
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" href="@Model?.Sistema?.WhatsappSector" target="_blank">
+                                                <i class="fab fa-whatsapp"></i> WhatsApp
+                                            </a>
+                                        </li>
+                                    }
+
+
+
+
+
+                                }
+
+
+
+
+                            </ul>
+                        </ul>
+                    }
+
+
+                }
+                else
+                {
+                    <div class="nav-item flex-grow-1">
+                        @{
+                            if (String.IsNullOrEmpty(Model?.UrlRetornoPaginaEmpresa))
+                            {
+                                if (Model?.Sistema.TipoEmpresa == (Int32)EnumTiposEmpresas.Representada)
+                                {
+
+                                    <a class="nav-link text-dark" asp-area=""
+                                       asp-controller="Home" asp-action="Representada">
+                                        <i class="fa fa-home fa-2x iconoscolor"></i>
+                                        <b class="pl-1 d-none d-sm-inline iconoscolorletra">Principal</b>
+                                    </a>
+                                }
+                                else
+                                {
+                                    if (Model?.Usuario?.Rol != (Int32)EnumRol.Root)
+                                    {
+                                        if (Model?.Sistema.TipoEmpresa == (Int32)EnumTiposEmpresas.EmpresaMultisector)
+                                        {
+                                            <a class="nav-link text-dark" asp-area=""
+                                               asp-controller="Home" asp-action="Principal">
+                                                <i class="fa fa-home fa-2x iconoscolor"></i>
+                                                <b class="pl-1 d-none d-sm-inline iconoscolorletra">Principal</b>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a class="nav-link text-dark" asp-area=""
+                                               asp-controller="Home" asp-action="Index">
+                                                <i class="fa fa-home fa-2x iconoscolor"></i>
+                                                <b class="pl-1 d-none d-sm-inline iconoscolorletra">Principal</b>
+                                            </a>
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <a class="nav-link text-dark" asp-area="Usuario"
+                                           asp-controller="Panel" asp-action="Root">
+                                            <i class="fa fa-home fa-2x iconoscolor"></i>
+                                            <b class="pl-1 d-none d-sm-inline iconoscolorletra">Principal</b>
+                                        </a>
+                                    }
+
+
+                                }
+
+                            }
+                            else
+                            {
+
+                                <a class="nav-link text-dark" href="@Model.UrlRetornoPaginaEmpresa">
+                                    <i class="fa fa-home fa-2x iconoscolor"></i>
+                                    <b class="pl-1 d-none d-sm-inline iconoscolorletra">Principal</b>
+                                </a>
+                            }
+
+                        }
+
+                    </div>
+                }
+
+
+
+
+                var opcion = Model?.Configuracion?.ConfiguracionesViewDatosProductos.FirstOrDefault(x => x.Codigo == 17);
+                if (opcion?.Valor == 1)
+                {
+
+                    if (Model?.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo == 1)?.Valor.MostrarEntero() == 0)
+                    {
+                        if (Model?.Usuario?.IdAlmaWeb > 0)
+                        {
+                            <div class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Carrito"
+                                   asp-controller="Producto" asp-action="Productos">
+                                    <i class="fas fa-weight-hanging fa-2x iconoscolor"></i>
+                                    <b class="pl-1 d-none d-sm-inline iconoscolorletra">Productos</b>
+                                </a>
+                            </div>
+                        }
+
+                    }
+                    else
+                    {
+                        <div class="nav-item">
+                            <a class="nav-link text-dark" asp-area="Carrito" asp-controller="Producto" asp-action="Productos">
+                                <i class="fas fa-weight-hanging fa-2x iconoscolor"></i>
+                                <b class="pl-1 d-none d-sm-inline iconoscolorletra">Productos</b>
+                            </a>
+                        </div>
+                    }
+
+
+                }
+
+
+
+
+                @*@await Component.InvokeAsync("Carrito")*@
+
+                @await Component.InvokeAsync("Carrito")
+            }
+            else
+            {
+
+
+
+
+                @if (Model?.Usuario?.IdAlmaWeb > 0)
+                {
+                    if (Model.Usuario.IdAlmaWeb == 29 && Model.Usuario.Clave == "4483300")
+                    {
+                        <ul class="navbar-nav dropdown flex-grow-1">
+
+                            <a class="nav-link text-dark dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-home fa-2x"></i>
+                                <b class="d-none d-sm-inline">
+                                    @Model?.Sistema?.Nombre
+                                </b>
+                            </a>
+
+
+
+                            <ul class="dropdown-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="Logistica" asp-controller="Cliente" asp-action="BuscarCliente">Buscar Clientes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="Logistica" asp-controller="Logistica" asp-action="NumeroGuia" asp-route-tipo="1">Buscar Guias</a>
+                                </li>
+                            </ul>
+
+
+
+                        </ul>
+                    }
+                    else
+                    {
+                        <li class="navbar-nav">
+                            <i class="fa fa-home fa-2x"></i>
+                            <b class="d-none d-sm-inline mt-1 mr-1">
+                                @Model?.Sistema?.Nombre
+                            </b>
+                        </li>
+
+                        <li class="navbar-nav mr-auto">
+                            <a class="nav-link text-dark" asp-area="Logistica"
+                               asp-controller="Logistica" asp-action="GuiasPorCliente">Guías</a>
+                        </li>
+
+
+
+                    }
+
+
+
+                }
+                else
+                {
+                    <div class="nav-item flex-grow-1">
+
+
+
+                        <a class="nav-link text-dark" asp-area="Logistica"
+                           asp-controller="Logistica" asp-action="GuiasPorCliente">
+                            <i class="fa fa-home fa-2x"></i>
+                            <b class="pl-1 d-none d-sm-inline">Guías</b>
+                        </a>
+                    </div>
+                }
+            }
+
+            <partial name="_LoginPartial" model="Model" />
+
+        </div>
+
+    </div>
+
+</nav>
+

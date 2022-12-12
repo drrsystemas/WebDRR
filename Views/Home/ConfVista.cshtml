@@ -1,0 +1,42 @@
+﻿
+@{
+    ViewData["Title"] = "ConfVista";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Int32 web = 1;
+    Int32 mobile = 2;
+}
+
+<h1>Configurar Vista</h1>
+
+<div class="row">
+
+    <div class="col-sm-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="card-title">Web</h4>
+                <p class="card-text">
+                    Vista por defecto, ideal para trabajar en equipos donde la resolucion es mayor a 400X600
+                </p>
+                <a asp-controller="Home" asp-action="ConfVista" asp-route-opcion="@web" class="btn btn-secondary"><i class="fas fa-laptop fa-2x"></i></i></a>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+    <div class="col-sm-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="card-title">Celular</h4>
+                <p class="card-text">
+                    Vista optimizada para trabajar con dispositivos mobiles.
+                </p>
+                <a asp-controller="Home" asp-action="ConfVista" asp-route-opcion="@mobile" class="btn btn-secondary"><i class="fas fa-mobile-alt fa-2x"></i></a>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<br />
+<br />

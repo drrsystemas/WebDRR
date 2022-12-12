@@ -1,0 +1,251 @@
+﻿@using LibreriaBase.Areas.Visor
+@model List<ViewVisorContenido>
+
+@{
+    ViewData["Title"] = "Visor Ofertas";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+    List<String> listaTitulos = new List<string>();
+}
+
+
+<!DOCTYPE html>
+<html lang="es-ar">
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <style type="text/css">
+        .color-fondo {
+            background-color: black;
+        }
+
+            .producto-oferta {
+                color: antiquewhite;
+                font-family: cursive;
+                font-size: 46px;
+            }
+
+            .producto-oferta-esquema {
+                color: yellow;
+                font-family: fantasy;
+                font-size: 30px;
+            }
+
+            .precio-oferta-tachado {
+                color: red;
+                text-decoration: line-through;
+                font-family: Verdana;
+                font-size: 50px;
+            }
+
+            .precio-oferta {
+                color: white;
+                font-family: Verdana;
+                font-size: 100px;
+            }
+
+            .producto-oferta-datos {
+                color: white;
+                font-family: 'Buxton Sketch';
+                font-size: 20px;
+            }
+
+        /* Por debajo de 700px */
+        @@media screen and (max-width: 1200px) {
+
+            .producto-oferta {
+                color: antiquewhite;
+                font-family: cursive;
+                font-size: 40px;
+            }
+
+            .producto-oferta-esquema {
+                color: yellow;
+                font-family: fantasy;
+                font-size: 28px;
+            }
+
+            .precio-oferta-tachado {
+                color: red;
+                text-decoration: line-through;
+                font-family: Verdana;
+                font-size: 45px;
+            }
+
+            .precio-oferta {
+                color: white;
+                font-family: Verdana;
+                font-size: 80px;
+            }
+
+            .producto-oferta-datos {
+                color: white;
+                font-family: 'Buxton Sketch';
+                font-size: 16px;
+            }
+        }
+
+       /* Por debajo de 700px */
+        @@media screen and (max-width: 800px){
+
+            .producto-oferta {
+                color: antiquewhite;
+                font-family: cursive;
+                font-size: 30px;
+            }
+
+            .producto-oferta-esquema {
+                color: yellow;
+                font-family: fantasy;
+                font-size: 20px;
+            }
+
+            .precio-oferta-tachado {
+                color: red;
+                text-decoration: line-through;
+                font-family: Verdana;
+                font-size: 35px;
+            }
+
+            .precio-oferta {
+                color: white;
+                font-family: Verdana;
+                font-size: 60px;
+            }
+
+            .producto-oferta-datos {
+                color: white;
+                font-family: 'Buxton Sketch';
+                font-size: 14px;
+            }
+
+        }
+
+        /* Por debajo de 700px */
+        @@media screen and (max-width: 450px) {
+            .producto-oferta {
+                color: antiquewhite;
+                font-size: 16px;
+            }
+
+            .producto-oferta-esquema {
+                color: yellow;
+                font-family: fantasy;
+                font-size: 10px;
+            }
+
+            .precio-oferta-tachado {
+                color: red;
+                text-decoration: line-through;
+                font-family: Verdana;
+                font-size: 10px;
+            }
+
+            .precio-oferta {
+                color: white;
+                font-family: Verdana;
+                font-size: 16px;
+            }
+
+            .producto-oferta-datos {
+                color: white;
+                font-family: 'Buxton Sketch';
+                font-size: 7px;
+            }
+        }
+
+       
+
+       
+
+
+
+        
+
+       
+
+
+    </style>
+
+    <link rel="stylesheet" href="~/lib/fotorama/fotorama.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
+
+</head>
+<body>
+
+    <div class="container-fluid color-fondo">
+
+        @{
+            var listaPublicidad = Model?.Where(x => x.Imagen != null).ToList();
+
+            listaTitulos = listaPublicidad?.Select(x => x.Titulo).ToList();
+
+
+                <div class="fotorama" data-loop="true">
+
+                    @{
+                        for (int i = 0; i < listaPublicidad?.Count(); i++)
+                        {
+                            var pub = @listaPublicidad[i];
+
+                            <div class="row m-1">
+
+                                <div class="col-8 col-md-7">
+                                    <p class="producto-oferta mb-2 justify-content-center">@pub.Contenido</p>
+
+                                    <p class="producto-oferta-esquema m-0 p-0">@pub.DatoReferidoOferta</p>
+
+                                    @if (pub.SubTipo == 5)
+                                    {
+                                        <p class="precio-oferta-tachado m-0 p-0">@pub.Precio.FormatoMoneda()</p>
+                                        <p class="precio-oferta m-0 p-0">@pub.PrecioOferta.FormatoMoneda()</p>
+
+                                    }
+                                    else
+                                    {
+
+                                        <p class="precio-oferta m-0 p-0">@pub.Precio.FormatoMoneda()</p>
+
+                                    }
+
+                                    <div class="d-flex align-items-end">
+                                        <p class="float-left producto-oferta-datos m-0 p-0">@pub.Presentacion // @pub.RSS // @pub.Categoria</p>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-4 col-md-5 d-flex align-items-center">
+                                    <img class="img-fluid border border-primary rounded" src="@pub.Imagen.RutaImagenJpg()">
+                                </div>
+
+                            </div>
+
+
+
+                        }
+                    }
+
+                </div>
+
+
+        }
+
+    </div>
+
+
+    <script type="text/javascript" src="~/lib/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="~/lib/popper.js/umd/popper.min.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
+
+    <script type="text/javascript" src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script type="text/javascript" src="~/lib/fotorama/fotorama.js"></script>
+
+    <script type="text/javascript" src="~/script/visor/visor.js"></script>
+
+</body>
+</html>

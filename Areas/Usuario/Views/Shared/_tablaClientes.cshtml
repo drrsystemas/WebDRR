@@ -1,0 +1,104 @@
+﻿@model ViewModelCliente
+
+@{
+    if (Model?.Lista.Count() > 0)
+    {
+        <table class="sortable table">
+            <thead>
+                <tr>
+                    <th>
+                        Cod Cliente
+                    </th>
+                    <th>
+                        Nombre
+                    </th>
+                    <th>
+                        Domicilio
+                    </th>
+                    <th>
+                        N° Identificación
+                    </th>
+                    @*<th>
+                            Lista
+                        </th>*@
+                    @{
+                        if (Model.Filtro.BusquedaCliente == true)
+                        {
+                            <th>
+
+                            </th>
+                        }
+                    }
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Lista)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NroClienteAsignado)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RazonSocial)
+                        </td>
+                        <td>
+
+                            @if (!String.IsNullOrEmpty(item.GoogleMaps))
+                            {
+                                <a target="_blank" href="@item.GoogleMaps" class="pr-1"> @item.Domicilio </a>
+                            }
+                            else
+                            {
+                                @item.Domicilio
+                            }
+
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NroIdentificacion)
+                        </td>
+                        @*<td>
+                                @Html.DisplayFor(modelItem => item.ListaPrecID)
+                            </td>*@
+                        @{
+                            if (Model.Filtro.BusquedaCliente == true)
+                            {
+                                                <td>
+                                                                            <form asp-area="Usuario"
+                                                                                  asp-controller="Cliente"
+                                                                                  asp-action="AgregarCliente_Carrito"
+                                                                                  method="post">
+                                                                                <input type="hidden" name="urlAtras" value="@Model.Filtro.UrLRetorno" />
+                                                                                <input type="hidden" name="ClienteID" value="@item.ClienteID" />
+                                                                                <input type="hidden" name="NroClienteAsignado" value="@item.NroClienteAsignado" />
+                                                                                <input type="hidden" name="ListaPrecID" value="@item.ListaPrecID" />
+                                                                                <input type="hidden" name="ListaPrecID_Nombre" value="@item.ListaPrecID_Nombre" />
+                                                                                <input type="hidden" name="DescuentoUno" value="@item.DescuentoUno" />
+                                                                                <input type="hidden" name="DescuentoDos" value="@item.DescuentoDos" />
+                                                                                <input type="hidden" name="TipoBonificProducto" value="@item.TipoBonificProducto" />
+                                                                                <input type="hidden" name="EntidadSucId" value="@item.EntidadSucId" />
+                                                                                <input type="hidden" name="RazonSocial" value="@item.RazonSocial" />
+                                                                                <input type="hidden" name="NroIdentificacion" value="@item.NroIdentificacion" />
+                                                                                <input type="hidden" name="ImpuestoId" value="@item.ImpuestoId" />
+                                                                                <input type="hidden" name="EximidoHasta" value="@item.EximidoHasta" />
+                                                                                <input type="hidden" name="CategoriaImpuestoID_Nombre" value="@item.CategoriaImpuestoID_Nombre" />
+
+                                                                                <span class="card-text p-1">
+                                                                                    <button type="submit"
+                                                                                            class="btn btn-primary btn-sm pull-right">
+                                                                                        <i class="fas fa-check"></i>
+                                                                                    </button>
+                                                                                </span>
+                                                                            </form>
+
+
+                                                </td>
+                            }
+                        }
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}

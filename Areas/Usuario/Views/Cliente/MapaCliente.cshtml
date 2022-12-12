@@ -1,0 +1,105 @@
+﻿@model LibreriaBase.Areas.Usuario.ViewCliente
+
+@{
+    ViewData["Title"] = "Mapa Cliente";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    //double lat = -26.402501;
+    //double lon = -54.588052;
+
+    //if (Model?.Latitud == null || Model?.Latitud == 0)
+    //{
+    //    Model.Latitud = (decimal)lat;
+    //}
+
+    //if (Model?.Longitud == null || Model?.Longitud == 0)
+    //{
+    //    Model.Longitud = (decimal)lon;
+    //}
+
+
+    //string urlRetorno = ViewBag.urlAtras;
+
+    string url = Url.Action("GuardarMapaCliente", "Cliente");
+
+    String direccion = "";
+
+    if (Model.View_Ciudad != null)
+    {
+        direccion = Model.Domicilio + " " + Model.View_Ciudad.Ciudad + ", " + Model.View_Ciudad.Provincia;
+
+    }
+}
+
+@section Estilos
+{
+    <style type="text/css">
+        #map {
+            height: 400px;
+            border: 1px solid #000;
+        }
+    </style>
+}
+
+
+
+<h4 id="titulo_rs" class="mb-3">Ubicación - @Model.RazonSocial</h4>
+
+<div class="form-group mt-2 mb-1">
+    <div class="input-group mb-2">
+        <div class="input-group-append">
+            <button class="btn btn-outline-success" id="btnBuscarDireccion" name="btnBuscarDireccion">Buscar</button>
+        </div>
+        <input type="text" class="form-control" asp-for="@direccion" name="direccion" readonly id="txtDomicilio">
+
+    </div>
+</div>
+
+
+
+<div class="row my-2">
+    <div class="col-sm-6 col-md-3">
+        <label>Latitud</label>
+        <input type="text" readonly class="form-control" id="latitudActual" value="@Model.Latitud" />
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <label>Longitud</label>
+        <input type="text" readonly class="form-control" id="longitudActual" value="@Model.Longitud" />
+    </div>
+    <div class="col-sm-6 col-md-3 d-flex align-items-end">
+        <button class="btn  btn-success mt-2 " type="button" onclick="getLocation()"><i class="fas fa-map-marked-alt"></i> Obtener Localización</button>
+    </div>
+    <div class="col-sm-12">
+        <label>Dirección</label>
+        <input type="text" readonly class="form-control" id="dirActual" />
+    </div>
+</div>
+
+
+<div id="geolocalizacion"></div>
+<div id="map"></div>
+
+
+
+<form class="mt-4" asp-action="GuardarMapaCliente" asp-controller="Cliente" method="post">
+    <input type="hidden" id="cliente" name="clienteId" value="@Model.ClienteID" />
+    <input type="hidden" id="latitud" name="lat" value="" />
+    <input type="hidden" id="longitud" name="log" value="" />
+
+    <button class="btn btn-primary" type="submit"><i class="far fa-save"></i> Guardar</button>
+</form>
+
+
+<br />
+<br />
+<br />
+
+@section Scripts
+{
+    <script src="~/lib/jquery-locationpicker/locationpicker.jquery.js"></script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCIqii7LhF9rAB4rtgWrVWZtyngiaHHvYo&sensor=true&language=es&libraries=places"></script>
+    
+    <script asp-append-version="true" type="text/javascript" src="~/script/cliente/mapa.js"></script>
+
+}

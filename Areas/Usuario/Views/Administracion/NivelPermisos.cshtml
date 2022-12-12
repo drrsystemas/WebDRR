@@ -1,0 +1,224 @@
+﻿@model IEnumerable<LibreriaBase.Areas.Usuario.DatoConfiguracion>
+
+@{
+    ViewData["Title"] = "NivelPermisos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<SelectListItem> listaWebInicio = (List<SelectListItem>)ViewData["lwi"];
+
+    String empresaId = ViewData["EmpresaID"].ToString();
+
+    String urlAtras = Url.Action("IrA", "Panel", new { parametro = 1 });
+
+}
+
+@section Estilos
+{
+    <link rel="stylesheet" href="~/css/administracion.css" />
+}
+
+
+<h3>Configuraciones del Portal</h3>
+
+<table class="sortable table table-sm table-striped">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Categoría
+            </th>
+            <th>
+                Descripción
+            </th>
+            <th>
+                Valor
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @for (int i = 0; i < Model?.Count(); i++)
+        {
+            var item = Model.ElementAt(i);
+
+
+
+
+            @*<tr class="@(i.EsPar()?"tb-par":"tb-impar")">*@
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Codigo)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Descripcion)
+                </td>
+                <td>
+
+                    @{
+
+                        switch (item.Codigo)
+                        {
+                            case 1:
+                            case 2:
+                            case 3:
+                            case 9:
+                            case 10:
+                            case 11:
+                            case 15:
+                            case 18:
+                            case 19:
+                            case 20:
+                            case 21:
+                            case 22:
+                            case 23:
+                            case 24:
+                            case 25:
+                            case 27:
+                            case 30:
+                            case 31:
+                            case 32:
+                            case 33:
+                            case 34:
+                            case 35:
+                            case 36:
+                            case 39:
+                            case 40:
+                            case 41:
+                            case 42:
+                            case 43:
+                            case 44:
+                            case 45:
+                            case 46:
+                            case 47:
+                            case 48:
+                            case 49:
+                            case 50:
+                            case 51:
+                            case 52:
+                            case 53:
+                            case 54:
+                            case 55:
+                            case 56:
+                                //case 57:
+                                {
+                                    @item.Valor.Activo_Inactivo()
+                                    break;
+                                }
+                            case 4:
+                                {
+
+                                    String dato = empresaId + "-" + "0";
+                                    dato = dato.Encriptar();
+
+                                    @dato;
+
+                                    break;
+                                }
+                        }
+
+
+                        if (item.Codigo >= 5 && item.Codigo <= 8)
+                        {
+                            @item.Extra
+                        }
+                        else if (item.Codigo == 12 || item.Codigo == 13 || item.Codigo == 14 || item.Codigo == 17)
+                        {
+                            @item.Extra
+                        }
+                        else if (item.Codigo == 26)
+                        {
+                            @item.Valor.Activo_Inactivo()
+                        }
+                        else if (item.Codigo == 28)
+                        {
+                            @item.Extra
+                        }
+                        else if (item.Codigo == 29)
+                        {
+                            @item.Extra
+
+
+                        }
+                        else if (item.Codigo == (int)ConfPortal.EnumConfPortal.Limite_Imagenes_Max_Kb)//37
+                        {
+                            @item.Valor.Activo_Inactivo()
+                        }
+                        else if (item.Codigo == (int)ConfPortal.EnumConfPortal.Hosting_Asignado)//38
+                        {
+                            String valor = item.Valor.Activo_Inactivo();
+
+                            if (!String.IsNullOrEmpty(item.Extra))
+                            {
+                                byte valorHost = 0;
+
+                                Boolean ok = byte.TryParse(item.Extra, out valorHost);
+
+                                if (ok == true)
+                                {
+                                    if (valorHost == (byte)ConfiguracionHosting.Servidores.Produccion)
+                                    {
+                                        valor += " - Produccion";
+                                    }
+                                    else if (valorHost == (byte)ConfiguracionHosting.Servidores.Testing)
+                                    {
+                                        valor += " - Testing";
+                                    }
+                                }
+                            }
+
+                            @valor
+
+
+                        }
+                    }
+
+
+
+                </td>
+                <td>
+                    @if (item.Codigo != 4)
+                    {
+                        <a class="btn btn-sm btn-outline-success"
+                           asp-action="ModificarPermiso"
+                           asp-route-codigopermiso="@item.Codigo">
+                            Modificar
+                        </a>
+                    }
+
+
+                    @*@Html.ActionLink("Modificar", "ModificarPermiso", new { codigoPermiso = item.Codigo } , new {class="b" } )*@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a class="my-2 btn btn-outline-primary" asp-action="Root" asp-controller="Panel" asp-area="Usuario">Ir Panel</a>
+@*<a class="my-2 btn btn-outline-primary" onclick="agregarHistoria()" >Probar</a>*@
+<br />
+<br />
+<br />
+
+@section Scripts {
+
+    <script src="~/script/administracion/administracion.js"></script>
+    <script src="~/lib/sorttable/sorttable.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            _urlAtras = "@urlAtras";
+            //_history.pushState(null, null, _urlAtras);
+             //modificarUrlAtras(urlAtras);
+
+            //noatras();
+        });
+
+    </script>
+}

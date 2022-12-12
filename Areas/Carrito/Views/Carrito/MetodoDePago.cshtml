@@ -1,0 +1,108 @@
+﻿@*
+    Pantalla encargada de mostrar los medios de pago
+    Ultima modificación 21/08/2021
+*@
+
+@model LibreriaBase.Areas.Usuario.ViewPago
+@using  LibreriaBase.Areas.Usuario;
+
+
+@{
+    ViewData["Title"] = "Forma Pago";
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    TransferenciaBancaria transfBria = new TransferenciaBancaria();
+
+    if (ViewBag.TransferenciaB != null)
+    {
+        transfBria = (TransferenciaBancaria)ViewBag.TransferenciaB;
+    }
+
+    String urlDecidir = Url.Action("FormularioDatos", "Decidir");
+}
+
+
+<div class="container">
+    <i class="fas fa-cash-register fa-2x"></i><h4 class="d-inline-block ml-2"> Forma de Pago</h4>
+    <hr />
+
+
+    <div class="row">
+
+
+        <div class="col-12 col-md-6">
+            <form method="post" asp-action="MetodoDePago" asp-area="Carrito" asp-controller="Carrito">
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="row">
+
+                    <div class="col-10 col-md-3 col-lg-4 form-group">
+                        <img class="img-fluid" src=""  id="imgFormaPago"/>
+                    </div>
+
+
+                    <div class="col-10 col-md-9 col-lg-8 form-group">
+                        <label class="control-label">Seleccione el medio de pago</label>  <br />
+
+                        @*<select onchange="Changed_MetodosDePago()" class="form-control" id="cbPago" asp-for="IdPago">*@
+                        <select onchange="Changed_MetodosDePago()" class="form-control" id="cbPago" asp-for="IdPago">
+                            @{
+                                foreach (DatoConfiguracion envio in ViewBag.ListaTipoPago)
+                                {
+                                    <option value="@envio.Codigo">@envio.Descripcion</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+
+                <input type="hidden" asp-for="NombreIdPago" id="txtNombreIdPago" />
+                <input type="hidden" asp-for="Transferencia.Banco" id="txtBco" value="@transfBria.Banco" />
+                <input type="hidden" asp-for="Transferencia.CBU" id="txtCbu" value="@transfBria.CBU" />
+                <input type="hidden" asp-for="Transferencia.Alias" id="txtAlias" value="@transfBria.Alias" />
+
+
+                <div class="form-group mt-2">
+                    <button id="btnSiguiente" type="submit" class="btn btn-primary">
+                        Siguiente
+                        <i class="fas fa-angle-right"></i>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="ocultarDiv" id="divTransferencia">
+        <p id="p_txtBco"></p>
+        <p id="p_txtCbu"></p>
+        <p id="p_txtAlias"></p>
+    </div>
+
+
+    <br />
+    <br />
+
+    <div class="ocultarDiv" id="divTarjetas" data-action="@urlDecidir">
+
+
+    </div>
+
+</div>
+
+<br />
+<br />
+<br />
+
+
+@section Scripts{
+
+    <script type="text/javascript" src="~/script/carrito/metodoDePago.js"></script>
+    <script type="text/javascript" src="~/script/decidir/formularioDatos.js"></script>
+}

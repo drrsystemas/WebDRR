@@ -1,0 +1,173 @@
+﻿@model Carrito
+
+@{
+
+    SessionAcceso session = Context.Session.GetJson<SessionAcceso>("SessionAcceso");
+
+    if (session != null)
+    {
+       
+
+
+        if (session?.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo == 
+        (Int32)ConfPortal.EnumConfPortal.TipoAcceso_de_PaginaPedido)?.Valor == 0)
+        {
+            if (session?.Usuario?.IdAlmaWeb > 0)
+            {
+                if (Model.Lista.Count() == 0)
+                {
+                    <li class="navbar-nav ">
+                        <a class="nav-link text-dark" id="linkCarrito"
+                           asp-area="Carrito"
+                           asp-controller="Carrito"
+                           asp-action="Index"
+                           asp-route-urlRetorno="@ViewContext.HttpContext.Request.PathAndQuery()">
+                            <i class="fa fa-shopping-cart fa-2x iconoscolor"></i>
+                            @{
+
+                                if (session.Sistema.TipoEmpresa ==(Int32)EnumTiposEmpresas.Representada || session?.Usuario?.Rol == (Int32)EnumRol.Vendedor)
+                                {
+                                    <b class="caret d-none d-sm-inline iconoscolorletra">Pedido</b>
+                                }
+                                else
+                                {
+                                    <b class="caret d-none d-sm-inline iconoscolorletra">Carrito</b>
+                                }
+
+                                <b id="infoCarrito" class="caret">
+                                </b>
+                            }
+
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="navbar-nav ">
+                        <a id="linkCarrito" class="nav-link text-dark"
+                           asp-area="Carrito"
+                           asp-controller="Carrito"
+                           asp-action="Index" 
+                           asp-route-urlRetorno="@ViewContext.HttpContext.Request.PathAndQuery()">
+                            <i class="fa fa-shopping-cart fa-2x"></i>
+
+                            @{
+
+                                Boolean preciosBrutos = true;
+
+                                var confPrecios = session.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo == 12);
+
+                                if (confPrecios?.Valor == 1)
+                                {
+                                    preciosBrutos = false;
+                                }
+
+                                if (preciosBrutos == true)
+                                {
+                                    <b id="infoCarrito" class="caret">
+                                        [@Model.Lista.Sum(x => x.Cantidad)]
+                                        (@Model.TotalCarrito().FormatoMoneda())
+                                    </b>
+                                }
+                                else
+                                {
+                                    <b id="infoCarrito" class="caret">
+                                        [@Model.Lista.Sum(x => x.Cantidad)]
+                                        @Model.TotalNetoCarrito().FormatoMoneda()
+                                    </b>
+                                }
+
+                            }
+                        </a>
+                    </li>
+                }
+            }
+
+        }
+        else
+        {
+            if (session?.Sistema?.EmpresaId != 29)
+            {
+                if (Model.Lista.Count() == 0)
+                {
+                    <li class="navbar-nav ">
+                        <a class="nav-link text-dark" id="linkCarrito"
+                           asp-area="Carrito"
+                           asp-controller="Carrito"
+                           asp-action="Index"
+                           asp-route-urlRetorno="@ViewContext.HttpContext.Request.PathAndQuery()">
+                            <i class="fa fa-shopping-cart fa-2x iconoscolor" ></i>
+
+                            @{
+
+                                if (session.Sistema.TipoEmpresa == (Int32)EnumTiposEmpresas.Representada || session?.Usuario?.Rol == (Int32)EnumRol.Vendedor)
+                                {
+                                    <b class="caret d-none d-sm-inline iconoscolorletra">Pedido</b>
+                                }
+                                else
+                                {
+                                    <b class="caret d-none d-sm-inline iconoscolorletra">Carrito</b>
+                                }
+
+                                <b id="infoCarrito" class="caret">
+                                </b>
+
+                            }
+
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="navbar-nav ">
+                        <a class="nav-link text-dark" id="linkCarrito"
+                           asp-area="Carrito"
+                           asp-controller="Carrito"
+                           asp-action="Index" 
+                           asp-route-urlRetorno="@ViewContext.HttpContext.Request.PathAndQuery()">
+                            <i class="fa fa-shopping-cart fa-2x iconoscolor"></i>
+
+                            @{
+
+                                    Boolean preciosBrutos = true;
+                                    var confPrecios = session.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo == 12);
+
+                                    if (confPrecios?.Valor == 1)
+                                    {
+                                        preciosBrutos = false;
+                                    }
+
+                                    if (preciosBrutos == true)
+                                    {
+                                        <b id="infoCarrito" class="caret text-primary">
+                                            [@Model.Lista.Sum(x => x.Cantidad)]
+                                            @Model.TotalCarrito().FormatoMoneda()
+                                        </b>
+                                    }
+                                    else
+                                    {
+                                        <b id="infoCarrito" class="caret text-primary">
+                                            [@Model.Lista.Sum(x => x.Cantidad)]
+                                            @Model.TotalNetoCarrito().FormatoMoneda()
+                                        </b>
+                                    }
+
+
+                            }
+
+
+
+                        </a>
+                    </li>
+                }
+            }
+
+
+        }
+    }
+
+
+}
+
+
+

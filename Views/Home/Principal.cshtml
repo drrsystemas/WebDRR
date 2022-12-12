@@ -1,0 +1,1239 @@
+﻿@model LibreriaBase.Clases.SessionAcceso
+
+
+@{
+    ViewData["Title"] = "Principal";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    String leyenda = "Buscar productos";
+
+    String cliente = "";
+    String clienteId = "";
+
+    if (ViewData["Cliente"] != null)
+    {
+        cliente = ViewData["Cliente"].ToString();
+        clienteId = ViewData["ClienteId"].ToString();
+    }
+
+    if (ViewData["leyenda_bp"] != null)
+    {
+        leyenda = ViewData["leyenda_bp"].ToString();
+    }
+
+    Boolean filtro33 = false;
+    if (ViewData.ContainsKey("Filtro33"))
+    {
+        filtro33 = (Boolean)ViewData["Filtro33"];
+    }
+
+    Boolean verBuscardor = false;
+    if (ViewData.ContainsKey("VerBuscador"))
+    {
+        verBuscardor = (Boolean)ViewData["VerBuscador"];
+    }
+
+    List<String> listaTitulos = new List<string>();
+
+    List<Noticia> listaNoticias = null;
+    if (ViewData.ContainsKey("ListaNoticias"))
+    {
+        listaNoticias = (List<Noticia>)ViewData["ListaNoticias"];
+    }
+
+
+
+
+    String urlConsulta = Url.Action("AbrirFormularioContacto", "Home");
+
+
+
+}
+
+@section Estilos
+{
+    <link rel="stylesheet" href="~/lib/fotorama/fotorama.css" />
+
+
+    <style>
+        .mejorarBordes {
+            border-color: orange;
+            border-width: 4px;
+            border-style: double;
+        }
+
+        .fondoG {
+            background-color: #b6ff00;
+        }
+
+        .fondoR {
+            background-color: #00ff90;
+        }
+
+
+
+
+        @@media screen and (max-width:480px) {
+            .altoTarjeta {
+                margin-top: auto;
+            }
+
+            .pading {
+                padding: 1px;
+                margin-bottom: 5px;
+                background: content-box;
+                border: 0px;
+            }
+        }
+
+        @@media screen and (min-width:481px) {
+            .altoTarjeta {
+                min-height: 225px;
+            }
+        }
+
+
+
+
+
+        .margenArriba {
+            margin-top: 10px;
+        }
+
+
+
+        .novedades {
+            background-color: whitesmoke;
+        }
+
+        .imgLogo {
+            width: auto;
+            height: 60px;
+        }
+
+        .cursosEnlace {
+            cursor: pointer;
+        }
+    </style>
+}
+
+
+
+<partial name="_aviso" />
+
+
+
+@{
+    if (verBuscardor == true)
+    {
+        <div class="row justify-content-center ">
+            <div class="col-md-2 d-none d-sm-block ">
+                <div class="text-left">
+                    <img src="@Model.Sistema.Logo" class="img-fluid imgLogo">
+                </div>
+            </div>
+
+            <div class="col-md-7 p-2 d-none d-sm-block ">
+                @{
+                    if (Model.Configuracion?.ConfiguracionesPortal?.
+                        FirstOrDefault(c => c.Codigo == (int)ConfPortal.EnumConfPortal.TipoAcceso_de_PaginaProducto)?.Valor == 0) //1
+                    {
+                        if (Model?.Usuario?.IdAlmaWeb > 0)
+                        {
+                            @* Formulario de busqueda principal del sistema. *@
+                            <form asp-area="Carrito" asp-controller="Producto" asp-action="Productos" method="get">
+
+                                <div class="form-group row">
+
+                                    <div class="col-9 pr-1">
+                                        <input class="form-control  form-control-lg" name="Dato" type="search" placeholder="@leyenda" aria-label="Search">
+                                    </div>
+
+                                    <div class="col-2 pl-1">
+                                        <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-search fa-1x"></i></button>
+                                    </div>
+                                </div>
+
+
+                            </form>
+                        }
+
+                    }
+                    else
+                    {
+                        @* Formulario de busqueda principal del sistema. *@
+                        <form asp-area="Carrito" asp-controller="Producto" asp-action="Productos" method="get">
+
+                            <div class="form-group row">
+
+                                <div class="col-9 pr-1">
+                                    <input class="form-control  form-control-lg" name="Dato" type="search" placeholder="Buscar productos" aria-label="Search">
+                                </div>
+                                <div class="col-2 pl-1">
+                                    <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-search fa-1x"></i></button>
+                                </div>
+                            </div>
+
+
+                        </form>
+
+                    }
+                }
+            </div>
+
+            @if (Model?.Sistema?.EmpresaId == 118)
+            {
+                <div class="col-md-3">
+                    <div class="text-right">
+                        <p class="m-0">
+                            <small class="font-weight-bold">
+
+                                <a href="mailto:ventascarlosmurner@gmail.com">ventascarlosmurner@gmail.com</a>
+                            </small>
+                        </p>
+                        <p class="d-inline mr-md-2 my-0"><small>3743-460252</small></p>
+                        <p id="wpEmpresaContacto"
+                           data-numero="5493743410447"
+                           data-url="https://wa.me/"
+                           class="d-inline my-0"><small><a class="cursosEnlace" onclick="abrirWhatsApp(this)">3743-410447</a></small></p>
+                    </div>
+                </div>
+            }
+
+
+
+
+        </div>
+
+
+        if (listaNoticias != null && listaNoticias.Count() > 0)
+        {
+            <div class="novedades mb-2">
+                <h5 class="ml-2 text-primary">Novedades</h5>
+                <partial name="~/Areas/Visor/Views/Shared/_verNoticiasInternas.cshtml" model="@listaNoticias" />
+            </div>
+        }
+
+
+        @*<hr class="d-none d-sm-block " />*@
+    }
+    else
+    {
+
+        if (listaNoticias != null && listaNoticias.Count() > 0)
+        {
+            <div class="novedades">
+                <h5 class="ml-2 text-primary">Novedades</h5>
+                <partial name="~/Views/Shared/_verPublicidades.cshtml" model="@listaNoticias" />
+            </div>
+            <hr class="d-none d-sm-block " />
+        }
+
+    }
+
+
+    if (Model?.Usuario?.AlmaUserID == null || Model?.Usuario?.AlmaUserID == 0)
+    {
+        if (Model?.Usuario?.IdAlmaWeb.IsNullOrValue(0) == true)
+        {
+            //CONSUMIDOR FINAL ---
+            <div class="d-none d-sm-block text-center">
+                <img width="400" height="350"
+                     src="@Model.Sistema.Logo" class="img-fluid">
+            </div>
+            <br />
+        }
+
+    }
+
+
+    if (Model?.Sistema.TipoEmpresa == (Int32)EnumTiposEmpresas.Representada)
+    {
+
+
+        <div class="row">
+            <div class="col-sm-6">
+
+                @if (!String.IsNullOrEmpty(Model?.Sistema?.NombreRepresentada))
+                {
+                    <h5 class="text-center text-primary">
+                        Se esta operando con:
+                        <a asp-controller="Home"
+                           asp-action="VerRepresentada" asp-route-sectorId="@Model?.Sistema?.SectorId">
+                            @Model?.Sistema?.NombreRepresentada
+                        </a>
+                    </h5>
+                }
+                else
+                {
+                    <h5 class="text-center text-danger">Recuerde que para empezar a operar necesita seleccionar una representada.</h5>
+                }
+            </div>
+
+            @if (Model?.Usuario.Rol == (int)EnumRol.Vendedor)
+            {
+                <div class="col-sm-6">
+                    @if (!String.IsNullOrEmpty(cliente))
+                    {
+                        <h5 class="text-center text-primary">
+                            Cliente seleccionado:
+
+                            <a asp-controller="Cliente"
+                               asp-action="VerCliente" asp-route-clienteId="@clienteId"
+                               asp-route-urlAtras="@ViewContext.HttpContext.Request.PathAndQuery()">
+                                @cliente
+                            </a>
+                        </h5>
+                    }
+                    else
+                    {
+                        <h5 class="text-center text-danger">No hay ningun cliente seleccionado.</h5>
+                    }
+                </div>
+            }
+        </div>
+
+    }
+    else
+    {
+        if (Model?.Usuario.Rol == (int)EnumRol.Vendedor)
+        {
+            if (ViewData.ContainsKey("DiaTrabajoVendedor"))
+            {
+                DiaTrabajoVendedor diaTrabajoVendedor = (DiaTrabajoVendedor)ViewData["DiaTrabajoVendedor"];
+
+                <partial name="_diaTrabajoVendedor" model="diaTrabajoVendedor"/>
+
+
+                            }
+
+
+
+
+<div class="row">
+    <div class="col-sm-6">
+        @if (!String.IsNullOrEmpty(cliente))
+        {
+            <h5 class="text-center text-primary">
+                Cliente seleccionado:
+
+
+                <a asp-controller="Cliente"
+                   asp-action="VerCliente" asp-route-clienteId="@clienteId"
+                   asp-route-urlAtras="@ViewContext.HttpContext.Request.PathAndQuery()">
+                    @cliente
+                </a>
+            </h5>
+        }
+        else
+        {
+            <h5 class="text-center text-danger">No hay ningun cliente seleccionado.</h5>
+        }
+    </div>
+
+
+    @if (Model?.Sistema.TipoEmpresa == (Int32)EnumTiposEmpresas.EmpresaMultisector)
+    {
+        <div class="col-sm-6">
+
+            @if (!String.IsNullOrEmpty(Model?.Sistema?.NombreRepresentada))
+            {
+                <h5 class="text-center text-primary">
+                    Se esta operando con:
+                    <a asp-controller="Home"
+                       asp-action="Representada" >
+                        @Model?.Sistema?.NombreRepresentada
+                    </a>
+                </h5>
+            }
+            else
+            {
+                <h5 class="text-center text-danger">Recuerde que para empezar a operar necesita seleccionar un sector.</h5>
+            }
+        </div>
+    }
+
+
+
+
+
+
+
+</div>
+                    }
+                    }
+                    }
+
+                    <div class="row">
+
+                        @{
+                            if (Model?.Usuario?.Rol != 4 && Model?.Usuario?.IdAlmaWeb > 0)
+                            {
+
+
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                    <div class="card border-dark   text-center altoTarjeta">
+
+                                        <div class="card-body">
+                                            <h4 class="card-title">Productos</h4>
+                                            <p class="card-text">
+                                                Listado de productos, con la posibilidad de aplicar distintos filtros de busquedas.
+                                            </p>
+
+                                        </div>
+
+
+                                        <div class="card-footer">
+                                            <a asp-area="Carrito"
+                                               asp-controller="Producto"
+                                               asp-action="Productos"
+                                               asp-route-Filtro_33="@filtro33"
+                                               class="btn btn-primary"><i class="fas fa-weight-hanging fa-2x"></i></a>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+
+
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                    <div class="card border-dark   text-center altoTarjeta">
+
+                                        <div class="card-body">
+                                            <h4 class="card-title">Ofertas</h4>
+                                            <p class="card-text">
+                                                Listado de productos en Oferta, con la posibilidad de aplicar distintos filtros de busquedas.
+                                            </p>
+
+                                        </div>
+
+                                        <div class="card-footer">
+                                            <a asp-area="Carrito"
+                                               asp-controller="Producto"
+                                               asp-action="Productos" asp-route-Ofertas="true"
+                                               class="btn btn-primary"><i class="fab fa-free-code-camp fa-2x"></i></a>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+
+
+
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                    <div class="card border-dark   text-center altoTarjeta">
+                                        <div class="card-body">
+                                            <h4 class="card-title">Marcas</h4>
+                                            <p class="card-text">
+                                                Listado de marcas, con la posibilidad de ver todos los productos de la misma.
+                                            </p>
+
+                                        </div>
+
+
+                                        <div class="card-footer">
+                                            <a asp-area="Carrito"
+                                               asp-controller="Marca"
+                                               asp-action="Listado" class="btn btn-primary"><i class="fas fa-bookmark fa-2x"></i></a>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+
+
+
+
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                    <div class="card border-dark   text-center altoTarjeta">
+                                        <div class="card-body">
+                                            <h4 class="card-title">Compras</h4>
+                                            <p class="card-text">
+                                                El usuario puede ver su historial de compras, descargar los reportes, ver los estados, etc.
+                                            </p>
+
+                                        </div>
+
+                                        <div class="card-footer">
+                                            <a class="btn btn-primary"
+                                               asp-area="Carrito"
+                                               asp-controller="Pedido"
+                                               asp-action="ListarPedidos"><i class="fas fa-dolly fa-2x"></i></a>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+
+
+                                if (Model?.Usuario?.Rol == (Int32)EnumRol.ClienteFidelizado)
+                                {
+                                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                        <div class="card border-dark   text-center altoTarjeta">
+                                            <div class="card-body">
+                                                <h4 class="card-title">Cuenta Corriente</h4>
+                                                <p class="card-text">
+                                                    Estado de cuenta del cliente (Compras/Pagos)
+                                                </p>
+
+                                            </div>
+
+                                            <div class="card-footer">
+                                                <a asp-area="Usuario"
+                                                   asp-controller="Cliente"
+                                                   asp-action="EstadoCta"
+                                                   asp-route-id="@Model?.Usuario?.EntidadSucId"
+                                                   asp-route-rz="@Model?.Usuario?.Nombre"
+                                                   class="btn btn-primary"><i class="fas fa-tasks fa-2x"></i></a>
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+
+
+                                }
+
+
+                                if (Model.Sistema.EmpresaId == 118)//DM
+                                {
+
+
+
+
+
+
+                                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                        <div class="card border-dark   text-center altoTarjeta">
+                                            <div class="card-body">
+                                                <h4 class="card-title">Buscador Fram</h4>
+                                                <p class="card-text">
+                                                    Catálogo de Productos | Argentina
+                                                </p>
+
+                                                @* Aca va despues un if para si es o no representada. *@
+
+
+                                            </div>
+
+                                            <div class="card-footer">
+                                                <a class="btn btn-primary" target="_blank"
+                                                   href="https://catalogo.fram.com.ar/"><i class="fas fa-filter fa-2x"></i></a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+
+
+                                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                        <div class="card border-dark   text-center altoTarjeta">
+                                            <div class="card-body">
+                                                <h4 class="card-title">Lista de Precios</h4>
+                                                <p class="card-text">
+                                                    Listados de precios para descargar
+                                                </p>
+
+                                                @* Aca va despues un if para si es o no representada. *@
+
+
+                                            </div>
+
+
+                                            <div class="card-footer">
+                                                <a class="btn btn-primary" target="_blank"
+                                                   href="https://drive.google.com/open?id=162T29my3KOaxVmNWQzL0xSFgUeUuakMA"><i class="fas fa-money-bill-wave fa-2x"></i></a>
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                        <div class="card border-dark   text-center altoTarjeta">
+                                            <div class="card-body">
+                                                <h4 class="card-title">Medios de Pago</h4>
+                                                <p class="card-text">
+                                                </p>
+
+                                            </div>
+
+
+                                            <div class="card-footer">
+
+                                                <a class="btn btn-primary" target="_blank"
+                                                   href="https://drive.google.com/drive/folders/1Y8nVMdLWBbh7zrowKf4Th3QVuzi_dSHa?usp=sharing"><i class="fas fa-cash-register fa-2x"></i></a>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                }
+
+
+
+
+
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                    <div class="card border-dark   text-center altoTarjeta">
+                                        <div class="card-body">
+                                            <h4 class="card-title">Consultas/Reclamos</h4>
+                                            <p class="card-text">
+                                                Utilice este medio para realizar cualquier consulta o reclamo.
+                                            </p>
+                                        </div>
+
+
+                                        <div class="card-footer">
+                                            <a class="btn btn-primary" onclick="frmConsulta('@urlConsulta')"><i class="fas fa-bullhorn fa-2x"></i></a>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+
+
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                    <div class="card border-dark   text-center altoTarjeta">
+                                        <div class="card-body">
+                                            <h4 class="card-title">Datos</h4>
+                                            <p class="card-text">
+                                                El usuario podrá gestionar su información personal, direcciones de envío, etc.
+                                            </p>
+
+                                        </div>
+
+                                        <div class="card-footer">
+                                            <a asp-area="Usuario"
+                                               asp-controller="Panel"
+                                               asp-action="EditarDatos" class="btn btn-primary"><i class="fas fa-book-reader fa-2x"></i></a>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                if (Model?.Usuario?.Rol == (Int32)EnumRol.ClienteFidelizado)
+                                {
+                                    @*Se hace el testing aca -- para lo que es configuraciones *@
+                                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                        <div class="card border-dark   text-center altoTarjeta">
+                                            <div class="card-body">
+                                                <h4 class="card-title">Conf. Usuario</h4>
+                                                <p class="card-text">
+                                                    Opciones para personalizar el portal a gusto del usuario.
+                                                </p>
+
+                                            </div>
+
+                                            <div class="card-footer">
+                                                <a asp-area="Usuario"
+                                                   asp-controller="Panel"
+                                                   asp-action="OpcionesUsuario"
+                                                   class="btn btn-primary"><i class="fas fa-gamepad fa-2x"></i></a>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                }
+
+
+                            }
+                            else if (Model?.Usuario?.IdAlmaWeb > 0)
+                            {
+                                if (Model?.Sistema.TipoEmpresa == (Int32)EnumTiposEmpresas.Representada)
+                                {
+                                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                        <div class="card border-dark   text-center altoTarjeta">
+                                            <div class="card-body">
+                                                <h4 class="card-title">Representada</h4>
+                                                <p class="card-text">
+                                                    Seleccione la representada con la que quiere operar
+                                                </p>
+
+                                            </div>
+
+
+                                            <div class="card-footer">
+                                                <a asp-controller="Home"
+                                                   asp-action="Representada" class="btn btn-primary"><i class="fas fa-briefcase fa-2x"></i></a>
+
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+                                }
+
+
+
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                    <div class="card border-dark   text-center altoTarjeta">
+                                        <div class="pading card-body">
+                                            <h4 class="card-title">Clientes</h4>
+                                            <p class="card-text d-none d-sm-block">
+                                                Se pueden visualizar los clientes del vendedor
+                                            </p>
+
+                                            @* Aca va despues un if para si es o no representada. *@
+
+                                        </div>
+
+
+                                        <div class="pading card-footer">
+
+                                            <a class="btn btn-primary"
+                                               asp-area="Usuario"
+                                               asp-controller="Cliente"
+                                               asp-action="ListarClientes"><i class="fas fa-users fa-2x"></i></a>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                    <div class="card border-dark   text-center altoTarjeta">
+                                        <div class="card-body pading">
+                                            <h4 class="card-title">Productos</h4>
+                                            <p class="card-text d-none d-sm-block">
+                                                Listado de productos, con la posibilidad de aplicar distintos filtros de busquedas.
+                                            </p>
+
+                                        </div>
+
+                                        <div class="card-footer pading">
+
+                                            <a asp-area="Carrito"
+                                               asp-controller="Producto"
+                                               asp-action="Productos"
+                                               asp-route-Filtro_33="@filtro33"
+                                               class="btn btn-primary"><i class="fas fa-weight-hanging fa-2x"></i></a>
+
+                                        </div>
+
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                    <div class="card border-dark   text-center altoTarjeta">
+                                        <div class="card-body pading">
+                                            <h4 class="card-title">Ofertas</h4>
+                                            <p class="card-text d-none d-sm-block">
+                                                Listado de productos en Oferta, con la posibilidad de aplicar distintos filtros de busquedas.
+                                            </p>
+
+                                        </div>
+
+                                        <div class="card-footer pading">
+
+                                            <a asp-area="Carrito"
+                                               asp-controller="Producto"
+                                               asp-action="Productos" asp-route-Ofertas="true" class="btn btn-primary"><i class="fab fa-free-code-camp fa-2x"></i></a>
+
+                                        </div>
+
+
+
+                                    </div>
+
+                                </div>
+
+
+
+
+
+                                var verMarcas = Model?.Configuracion?.ConfiguracionesPortal?.
+                                        FirstOrDefault(x => x.Codigo == (Int32)LibreriaBase.Areas.Usuario.ConfPortal.EnumConfPortal.TipoAcceso_de_PaginaMarca);
+
+                                if (verMarcas?.Valor.MostrarEntero() == 1)
+                                {
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                        <div class="card border-dark   text-center altoTarjeta">
+                                            <div class="card-body pading">
+                                                <h4 class="card-title">Marcas</h4>
+                                                <p class="card-text d-none d-sm-block">
+                                                    Listado de marcas, con la posibilidad de ver todos los productos de la misma.
+                                                </p>
+
+                                            </div>
+
+                                            <div class="card-footer pading">
+
+                                                <a asp-area="Carrito"
+                                                   asp-controller="Marca"
+                                                   asp-action="Listado" class="btn btn-primary"><i class="fas fa-bookmark fa-2x"></i></a>
+
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+
+                                }
+
+
+
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                    <div class="card border-dark   text-center altoTarjeta">
+                                        <div class="card-body pading">
+                                            <h4 class="card-title ">Pedidos</h4>
+                                            <p class="card-text d-none d-sm-block">
+                                                El vendedor puede ver su historial de pedidos, descargar los reportes, ver los estados, etc.
+                                            </p>
+
+                                        </div>
+
+
+                                        <div class="card-footer pading">
+
+                                            <a class="btn btn-primary"
+                                               asp-area="Carrito"
+                                               asp-controller="Pedido"
+                                               asp-action="ListarPedidos"><i class="fas fa-dolly fa-2x"></i></a>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                    <div class="card border-dark   text-center altoTarjeta">
+                                        <div class="card-body pading">
+                                            <h4 class="card-title ">Cobranza</h4>
+                                            <p class="card-text d-none d-sm-block">
+                                                El vendedor/cobrador puede ver el estado de cuentas del cliente y registrar las cobranzas
+                                            </p>
+
+                                        </div>
+
+
+                                        <div class="card-footer pading">
+
+                                            <a class="btn btn-primary"
+                                               asp-area="Cobro"
+                                               asp-controller="Cobro"
+                                               asp-action="Index"><i class="fas fa-cash-register fa-2x"></i></a>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                    <div class="card border-dark   text-center altoTarjeta">
+                                        <div class="card-body pading">
+                                            <h4 class="card-title">Reparto</h4>
+                                            <p class="card-text d-none d-sm-block">
+                                                Se visualiza todos los datos de 1 reparto.
+                                            </p>
+
+                                        </div>
+
+
+                                        <div class="card-footer pading">
+
+                                            <a class="btn btn-primary"
+                                               asp-area="Carrito"
+                                               asp-controller="Reparto"
+                                               asp-action="DetalleReparto"><i class="fas fa-shipping-fast fa-2x"></i></a>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+
+
+                                if (Model?.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo == (Int32)ConfPortal.EnumConfPortal.ModuloSoporte)?.Valor.MostrarEntero() == 1)
+                                {
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                        <div class="card border-dark   text-center altoTarjeta">
+                                            <div class="card-body pading">
+                                                <h4 class="card-title">Soporte</h4>
+                                                <p class="card-text d-none d-sm-block">
+                                                    Módulo de Soporte - Casos/Tareas
+                                                </p>
+
+                                            </div>
+
+
+                                            <div class="card-footer pading">
+
+                                                <a class="btn btn-primary"
+                                                   asp-area="Soporte"
+                                                   asp-controller="Soporte"
+                                                   asp-action="Principal"> <i class="fas fa-headset fa-2x"></i> </a>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                }
+
+
+
+                                var verVisor = Model?.Configuracion?.ConfiguracionesPortal?.
+                        FirstOrDefault(x => x.Codigo == (Int32)LibreriaBase.Areas.Usuario.ConfPortal.EnumConfPortal.Visor);
+
+                                if (verVisor?.Valor.MostrarEntero() == 1)
+                                {
+                    <div class="col-6 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                        <div class="card border-dark   text-center altoTarjeta">
+                            <div class="card-body pading">
+                                <h4 class="card-title">Visor</h4>
+                                <p class="card-text d-none d-sm-block">
+                                    Nos da la posibilidad de mostrar publicidad, noticias y contenidos de redes
+                                </p>
+
+                            </div>
+
+
+                            <div class="card-footer pading">
+
+                                <a asp-area="Visor"
+                                   asp-controller="Visor"
+                                   asp-action="Index" class="btn btn-primary"><i class="fas fa-photo-video fa-2x"></i></a>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                                }
+
+
+
+                                if (Model?.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo == (Int32)ConfPortal.EnumConfPortal.ModuloColector)?.Valor.MostrarEntero() == 1)
+                                {
+                    <div class="col-6 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                        <div class="card border-dark   text-center altoTarjeta">
+                            <div class="card-body pading">
+                                <h4 class="card-title">Colector</h4>
+                                <p class="card-text d-none d-sm-block">
+                                    Módulo Colector de Datos
+                                </p>
+
+                            </div>
+
+                            <div class="card-footer pading">
+
+                                <a class="btn btn-primary"
+                                   asp-area="ColectorDatos"
+                                   asp-controller="Colector"
+                                   asp-action="Index"> <i class="fas fa-table fa-2x"></i> </a>
+                            </div>
+
+
+
+                        </div>
+
+                    </div>
+
+
+                                }
+
+
+
+
+
+
+
+                                if (Model.Sistema.EmpresaId == 118)//DM
+                                {
+                                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                        <div class="card border-dark   text-center altoTarjeta">
+                                            <div class="card-body">
+                                                <h4 class="card-title">Buscador Fram</h4>
+                                                <p class="card-text">
+                                                    Catálogo de Productos | Argentina
+                                                </p>
+
+                                                @* Aca va despues un if para si es o no representada. *@
+
+
+                                            </div>
+
+
+                                            <div class="card-footer">
+
+                                                <a class="btn btn-primary" target="_blank"
+                                                   href="https://catalogo.fram.com.ar"><i class="fas fa-filter fa-2x"></i></a>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                        <div class="card border-dark   text-center altoTarjeta">
+                                            <div class="card-body">
+                                                <h4 class="card-title">Lista de Precios</h4>
+                                                <p class="card-text">
+                                                    Listados de precios para descargar
+                                                </p>
+
+                                                @* Aca va despues un if para si es o no representada. *@
+
+
+                                            </div>
+
+
+                                            <div class="card-footer">
+                                                <a class="btn btn-primary" target="_blank"
+                                                   href="https://drive.google.com/open?id=162T29my3KOaxVmNWQzL0xSFgUeUuakMA"><i class="fas fa-money-bill-wave fa-2x"></i></a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                                        <div class="card border-dark   text-center altoTarjeta">
+                                            <div class="card-body">
+                                                <h4 class="card-title">Medios de Pago</h4>
+                                                <p class="card-text">
+                                                </p>
+
+
+                                            </div>
+
+
+                                            <div class="card-footer">
+                                                <a class="btn btn-primary" target="_blank"
+                                                   href="https://drive.google.com/drive/folders/1Y8nVMdLWBbh7zrowKf4Th3QVuzi_dSHa?usp=sharing"><i class="fas fa-cash-register fa-2x"></i></a>
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                }
+
+
+
+                            }
+                            else
+                            {
+
+
+
+                                @*listaPublicidad = (List<Publicidad>
+                                            )ViewBag.listaPublicidad;
+
+                                        listaPublicidad = listaPublicidad?.Where(x => x.Imagen != null).ToList();
+
+                                        listaTitulos = listaPublicidad?.Select(x => x.Titulo).ToList();
+
+                                        <div class="col-12 mx-auto justify-content-center">
+
+                                            <div class="fotorama"
+                                                 data-width="100%"
+                                                 data-height="50%"
+                                                 data-nav="thumbs">
+                                                @{
+                                                    for (int i = 0; i < listaPublicidad?.Count(); i++)
+                                                    {
+                                                        <a href="@listaPublicidad[i].Imagen.RutaImagenJpg()">
+                                                            <img src="@listaPublicidad[i].Imagen.RutaImagenJpg()"
+                                                                 width="144"
+                                                                 height="96">
+                                                        </a>-->
+                                                        //<img src="" >        </div>
+
+                                        <br />
+                                    </div>
+                                    < *@
+                            }
+
+
+
+
+                            //Aca irian los productos Vedette -
+                            List<ProductoMinimo>
+                                listaProducto = ViewBag.listaProductos;
+
+                            if (listaProducto?.Count() > 0)
+                            {
+                                <div class="col-12 mx-auto justify-content-center">
+
+                                    <div class="row">
+                                        @{
+
+                                            foreach (var item in listaProducto)
+
+                                            {
+
+                                                String urlVerProducto = Url.Action("VerProducto",
+                                                "Producto",
+                                                new
+                                                {
+                                                    codigo = item.ProductoId
+                                                });
+
+
+
+
+                                                <div onclick="verProducto('@urlVerProducto')" class="col m-3 mejorarBordes rounded" style="cursor: pointer;">
+
+                                                    <div class="text-center bg-white">
+
+
+                                                        @if (!String.IsNullOrEmpty(item.RutaImagen))
+                                                        {
+                                                            <img class="imagenTarjeta_DetalleProducto img-fluid" src="@item.RutaImagen">
+                                                        }
+                                                        else
+                                                        {
+                                                            <img class="imagenTarjeta_DetalleProducto img-fluid" src="~/img/sinImagen.png">
+                                                        }
+
+                                                        <p class="text-dark">@item.NombreCompleto</p>
+                                                        <br />
+                                                        <h4 class="text-danger">@item.PrecioBruto.FormatoMoneda()</h4>
+
+                                                    </div>
+
+
+                                                </div>
+
+
+
+                                            }
+
+
+                                        }
+
+                                    </div>
+                                </div>
+                            }
+
+
+
+                        }
+
+
+                    </div>
+
+
+
+
+                    <br />
+                    <br />
+
+
+
+                    @*<div class="modal" tabindex="-1" role="dialog" id="ventanaNotificaciones">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Notificaciones</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+
+                                        @{
+
+                                            if (listaPublicidad?.Count() > 0)
+                                            {
+                                                foreach (var item in listaPublicidad)
+                                                {
+                                                    String esquema = "(G)";
+                                                    if (item?.SectorId > 0)
+                                                    {
+                                                        esquema = "(R)";
+                                                    }
+                                                    <div class="@(esquema =="(G)"?"fondoG":"fondoR")">
+
+                                                        <h4>@(esquema+" "+item.Titulo)</h4>
+                                                        <p>@item.Contenido</p>
+                                                    </div>
+                                                    <hr />
+                                                }
+                                            }
+                                        }
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+
+
+                    <div id="frm-consulta-reclamo">
+
+                    </div>
+
+
+
+
+
+                    @section Scripts
+{
+                        <script asp-append-version="true" type="text/javascript" src="~/script/home/principal.js"></script>
+
+                        <script type="text/javascript" src="~/lib/fotorama/fotorama.js"></script>
+
+                        @*<script type="text/javascript"  src="_framework/blazor.webassembly.js"></script>*@
+                        @*<script>
+
+                                var lista;
+
+                                $(document).ready(
+                                    function () {
+                                        lista = @Html.Raw(Json.Serialize(listaTitulos));
+
+
+                                    });
+
+                                $(function () {
+                                    $('.fotorama')
+                                        // Listen to the events
+                                        .on('fotorama:show ',       // Video iframe is removed
+                                            function (e, fotorama, extra) {
+
+                                                //onEventoCambiaImg(fotorama, lista);
+                                            }
+                                        )
+                                });
+                            </script>*@
+                    }

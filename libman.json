@@ -1,0 +1,42 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "font-awesome@6.0.0",
+      "destination": "wwwroot/lib/font-awesome/"
+    },
+    {
+      "library": "popper.js@2.4.0",
+      "destination": "wwwroot/lib/popper.js/"
+    },
+    {
+      "library": "fotorama@4.6.4",
+      "destination": "wwwroot/lib/fotorama/"
+    },
+    {
+      "library": "jquery-locationpicker@0.1.12",
+      "destination": "wwwroot/lib/jquery-locationpicker/"
+    },
+    {
+      "library": "bootstrap@4.6.0",
+      "destination": "wwwroot/lib/bootstrap/"
+    },
+    {
+      "library": "jquery@3.6.0",
+      "destination": "wwwroot/lib/jquery/"
+    },
+    {
+      "library": "jquery-validation-unobtrusive@3.2.12",
+      "destination": "wwwroot/lib/jquery-validation-unobtrusive/"
+    },
+    {
+      "library": "jquery-validate@1.19.3",
+      "destination": "wwwroot/lib/jquery-validate/"
+    },
+    {
+      "library": "OwlCarousel2@2.3.4",
+      "destination": "wwwroot/lib/OwlCarousel2/"
+    }
+  ]
+}

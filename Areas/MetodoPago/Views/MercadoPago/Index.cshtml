@@ -1,0 +1,79 @@
+﻿@model ViewDatosPago
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Mercado Pago</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="container">
+        <h3>Sistema de Pagos de DRR Systemas integrado con Mercado Pago. </h3>
+
+
+
+        <div class="jumbotron">
+            <form method="post"
+                  asp-area="MetodoPago" asp-controller="MercadoPago" asp-action="GenerarBoton">
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="NyA">Nombre y Aplellido:</label>
+                    <input asp-for="NyA" class="form-control" />
+                    <span asp-validation-for="NyA" class="text-danger"></span>
+
+                </div>
+                <div class="form-group">
+                    <label asp-for="Detalle">Detalle:</label>
+                    <input asp-for="Detalle" type="text" class="form-control" />
+                    <span asp-validation-for="Detalle" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Importe">Importe:</label>
+                    <input asp-for="Importe" class="form-control" />
+                    <span asp-validation-for="Importe" class="text-danger"></span>
+                </div>
+
+
+                @*<div class="form-group col-md-6">
+
+                        <label for="title">Nombre y Apellido</label>
+                        <input type="text" class="form-control" name="title" id="nyp" autofocus>
+                        <br />
+                        <label for="description">Detalle</label>
+                        <input type="text" class="form-control" name="description" id="detalle">
+                        <br />
+                        <label for="unitPrice">Importe</label>
+                        <input type="text" class="form-control" name="unitPrice" id="importe">
+                    </div>*@
+
+                <p class="text-danger">@ViewBag.ErrorMessage</p>
+                <button type="submit" class="btn btn-primary">Aceptar</button>
+            </form>
+
+        </div>
+
+
+
+
+
+
+    </div>
+
+
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="~/lib/popper/popper.min.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>
+
+

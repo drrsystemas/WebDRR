@@ -1,0 +1,34 @@
+﻿@model List<ViewDetalleVenta_ModoRemito>
+@{
+    Boolean impar = true;
+}
+
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th>N°</th>
+            <th>Producto</th>
+            <th>Subtotal<span class="text-white">...</span></th>
+        </tr>
+        </thead>
+    <tbody>
+
+
+        @foreach (var item in Model)
+        {
+
+            <tr class="@(impar==true?"fondoGris":"")">
+                <td>@item.Item</td>
+                <td>@item.Producto</td>
+                <td>@item.Subtotal.FormatoMoneda()</td>
+            </tr>
+            <tr class="@(impar==true?"fondoGris":"")">
+                <td colspan="3">Cant: @item.Cantidad.MostrarEntero() - P/U: @item.PrecioBruto.FormatoMoneda() - Bonf: @item.Bonificacion.MostrarEntero() </td>
+            </tr>
+
+            impar = !impar;
+        }
+    </tbody>
+
+
+</table>

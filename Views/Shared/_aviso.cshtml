@@ -1,0 +1,64 @@
+﻿@*
+    La gan cagada de aca es el nombre del tempData que en un principio se usaba para las representadas
+        y hoy se utiliza para casi todos los msj de error.
+*@
+
+@{
+
+    String notificacion = null;
+
+    String color = "Rojo";
+
+    if (TempData.ContainsKey("ErrorRepresentada"))
+    {
+        notificacion = TempData["ErrorRepresentada"].ToString();
+        TempData.Remove("ErrorRepresentada");
+    }
+
+    if (TempData.ContainsKey("ErrorRepresentadaColor"))
+    {
+        color = TempData["ErrorRepresentadaColor"].ToString();
+        TempData.Remove("ErrorRepresentadaColor");
+    }
+
+    if (!String.IsNullOrEmpty(notificacion))
+    {
+        <div class="alert alert-@(color=="Rojo"?"danger":"success") alert-dismissible  fade show rounded" role="alert">
+
+            <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+
+            <p ><i class="fas fa-exclamation-circle fa-2x"></i> <span class="font-weight-bold mb-1 pb-1">@notificacion</span> </p>
+        </div>
+    }
+
+
+    <!--if (!String.IsNullOrEmpty(notificacion))
+    {
+
+
+
+
+        <div class="alert alert-@(color=="Rojo"?"danger":"success") alert-dismissible  fade show rounded" role="alert">
+
+            <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+
+            <p class="font-weight-bold mb-1 pb-1"><i class="mt-1 ml-2 fas fa-exclamation-circle fa-2x"></i> @notificacion</p>
+        </div>-->
+
+
+    @*<div class="alert alert-info alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            @notificacion
+        </div>*@
+
+
+    <!--}-->
+}
+
+

@@ -1,0 +1,39 @@
+﻿@model LibreriaBase.Areas.Usuario.DatoConfiguracion
+
+@{
+    ViewData["Title"] = "EnvioGratis";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Envio Gratis</h3>
+<partial name="_btnSuperiorAtras"
+         model='new DireccionView { Area = "Usuario",
+    Controlador = "Administracion",
+    Action = "ConfigurarEnvios" }' />
+<p>Si se ingresa un valor mayor que cero se activa el envio gratis.</p>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" asp-action="EnvioGratis" asp-controller="Administracion" asp-area="Usuario">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @*<div class="form-group">
+                <label asp-for="Descripcion" class="control-label"></label>
+                <input asp-for="Descripcion" class="form-control" />
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+            </div>*@
+            <div class="form-group">
+                <label asp-for="Valor" class="control-label"></label>
+                <input asp-for="Valor" class="form-control" />
+                <span asp-validation-for="Valor" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Guardar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+

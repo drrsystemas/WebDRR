@@ -1,0 +1,399 @@
+﻿@model CobroViewModel
+
+@{
+    ViewData["Title"] = "Agregar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+    string urlSeleccionar = Url.Action("AgregarQuitarCombrobantesSeleccionados", "Cobro");
+    string titulo = "";
+
+    if (Model?.TipoOeracion == 1)
+    {
+        Model.Esquema = 1;//Importe
+        titulo = "Cobro - " + Model?.CobroWeb?.P_ClienteNombre;
+    }
+    else
+    {
+        titulo = "Editar Cobro - " + Model?.CobroWeb?.CobroWebId;
+        
+    }
+
+
+
+}
+
+
+@section Estilos
+{
+    <style type="text/css">
+
+        @@media screen and (max-width:480px) {
+            .ingresarCobro {
+                width: 50%;
+                float: right;
+            }
+        }
+
+        @@media screen and (min-width:481px) {
+
+            .ingresarCobro {
+                width: 100%;
+            }
+        }
+    </style>
+}
+
+
+
+<h4>@titulo</h4>
+
+<hr class="d-none d-md-block" />
+
+<div class="rounded border border-secondary p-2">
+
+    <div class="form-check">
+        <input onclick="radioEsquemaClick(this)" 
+               class="form-check-input" type="radio" name="radioEsquema" id="radioEsquemaUno" value="1">
+        <label class="form-check-label" for="radioEsquemaUno">
+            Por importe
+        </label>
+    </div>
+
+    <div class="form-check">
+        <input onclick="radioEsquemaClick(this)"
+               class="form-check-input" type="radio" name="radioEsquema" id="radioEsquemaDos" value="2">
+        <label class="form-check-label" for="radioEsquemaDos">
+            Por selección
+        </label>
+    </div>
+
+
+</div>
+
+
+@{
+
+
+    <div id="esquemaUno" class="@(Model.Esquema==2?"ocultarDiv":"")">
+        <h4>Estado de Cuenta</h4>
+
+        <form>
+            <table class="table table-sm table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th class="d-none d-md-table-cell">
+                            TipoOperacion
+                        </th>
+                        <th>
+                            Fecha
+                        </th>
+                        <th>
+                            Comprobante
+                        </th>
+                        <th class="d-none d-md-table-cell">
+                            Total
+                        </th>
+                        <th>
+                            Saldo
+                        </th>
+                        <th class="d-none d-md-table-cell">
+                            Adelanto
+                        </th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (Model?.ListaEstadoCuenta?.Count() > 0)
+                        {
+                            int indice = 1;
+
+                            foreach (var item in Model.ListaEstadoCuenta)
+                            {
+                                DateTime fecha = (DateTime)item.FechaComprobante;
+
+                                String dato = item.TipoOperacion + " - " + item.RegistroOperacionID;
+                                <tr>
+                                    <td class="d-none d-md-table-cell">
+
+                                        <label>@dato</label>
+
+                                    </td>
+
+                                    <td>
+                                        @fecha.FechaCorta()
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Comprobante)
+                                    </td>
+                                    <td class="d-none d-md-table-cell">
+                                        @Html.DisplayFor(modelItem => item.Total)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SaldoCtaCte)
+                                    </td>
+                                    <td class="d-none d-md-table-cell">
+                                        @Html.DisplayFor(modelItem => item.Adelanto)
+                                    </td>
+
+                                </tr>
+
+                                indice += 1;
+                            }
+                        }
+
+                    }
+                </tbody>
+            </table>
+
+        </form>
+
+        @{
+            Decimal saldoTotal = Model?.ListaEstadoCuenta?.Sum(c => c.SaldoCtaCte + c.Adelanto) ?? 0;
+        }
+
+
+        <div class="d-flex mt-2">
+            <div class="p-2 flex-grow-1"><h5>Saldo Total: @saldoTotal.FormatoMoneda()</h5></div>
+            <div class="p-2">
+                <a onclick="seleccionarSaldoTotal('@Math.Round(saldoTotal,2)')" class="btn btn-sm btn-outline-secondary">Selecionar</a>
+            </div>
+        </div>
+
+
+
+
+
+
+
+        <form class="mt-2" id="frmVerificaEsquemaDos" method="post" asp-controller="Cobro" asp-action="VerificarCobro">
+            <input type="hidden" class="form-control" name="tipo" value="2">
+
+            <div class="form-group">
+                <label for="inputAddress">Importe</label>
+                <input type="text" class="form-control" name="ImporteEntregado" id="inputImporte">
+            </div>
+            <button type="button" class="btn btn-outline-primary" onclick="continuarProcesoCobranza()">Siguiente</button>
+
+            <br />
+            <h5 class="text-danger mt-1" id="msjErrorEsquema2"></h5>
+        </form>
+
+
+    </div>
+
+    <div id="esquemaDos" class="@(Model.Esquema==1?"ocultarDiv":" ")">
+
+        <h4>Estado de Cuenta</h4>
+
+        <form id="frmVerificaEsquemaUno" method="post" asp-controller="Cobro" asp-action="VerificarCobro">
+
+            <table name="tablaComprobantes" class="table table-sm table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th class="d-none d-md-table-cell">
+                            TipoOperacion
+                        </th>
+                        <th class="d-none d-md-table-cell">
+                            Cobro
+                        </th>
+                        <th class="d-none d-md-table-cell">
+                            Fecha
+                        </th>
+                        <th class="d-none d-md-table-cell">
+                            Comprobante
+                        </th>
+                        <th class="d-none d-md-table-cell">
+                            Total
+                        </th>
+                        <th class="d-none d-md-table-cell">
+                            SaldoCtaCte
+                        </th>
+                        <th class="d-none d-md-table-cell">
+                            Adelanto
+                        </th>
+
+                    </tr>
+                </thead>
+                @*<div>*@
+                <tbody>
+                    @{
+                        int cantidadElementos = Model?.ListaEstadoCuenta?.Count() ?? 0;
+
+                        if (cantidadElementos > 0)
+                        {
+                            int indice = 1;
+
+                            foreach (var item in Model.ListaEstadoCuenta)
+                            {
+                                DateTime fecha = (DateTime)item.FechaComprobante;
+
+                                String dato = item.TipoOperacion + " - " + item.RegistroOperacionID;
+
+                                <tr>
+
+                                    <td>
+
+                                        <div class="custom-control custom-switch">
+                                            <input onchange="selDesComprobante(this, '@item.Comprobante', '@urlSeleccionar','@indice')"
+                                                   type="checkbox" class="custom-control-input" id="seleccionada_@indice">
+                                            <label id="txttipoOperacion_@indice"
+                                                   data-tipoOperacionId="@item.TipoOperacionID"
+                                                   class="custom-control-label"
+                                                   for="seleccionada_@indice">@dato</label>
+                                            </div>
+
+                                        </td>
+                                        <td>
+                                            <input name="txtCobranza_@indice"
+                                                   disabled="disabled"
+                                                   class="ingresarCobro"
+                                                   value="@item.SeCobra"
+                                                   id="txtCobranza_@indice"
+                                                   data-saldo="@item.SaldoCtaCte"
+                                                   data-adelanto="@item.Adelanto"
+                                                   data-cantidad="@cantidadElementos"
+                                                   data-toggle="tooltip" data-placement="top"
+                                                   title="El cambio impacta al ingresar Enter o perder el foco" />
+                                        </td>
+                                        <td class="d-none d-md-table-cell">
+                                            @fecha.FechaCorta()
+                                        </td>
+                                        <td class="d-none d-md-table-cell">
+                                            @Html.DisplayFor(modelItem => item.Comprobante)
+                                        </td>
+                                        <td class="d-none d-md-table-cell">
+                                            @Html.DisplayFor(modelItem => item.Total)
+                                        </td>
+                                        <td class="d-none d-md-table-cell">
+                                            @Html.DisplayFor(modelItem => item.SaldoCtaCte)
+                                        </td>
+                                        <td class="d-none d-md-table-cell">
+                                            @Html.DisplayFor(modelItem => item.Adelanto)
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="2" class="d-sm-block d-md-none">
+                                            <p class="m-0">@fecha.FechaCorta() - <small>@item.Comprobante</small>  <span class="float-right font-weight-bold">@item.SaldoCtaCte.FormatoMoneda()</span></p>
+                                        </td>
+                                    </tr>
+
+
+
+                                    indice += 1;
+                                }
+
+                                String adelanto = "Adelanto";
+
+                                <tr>
+                                    <td>
+
+                                        <div class="custom-control custom-switch">
+                                            <input onchange="selDesComprobante(this, '@adelanto', '@urlSeleccionar','@indice')"
+                                                   type="checkbox" class="custom-control-input" id="seleccionada_@indice">
+                                            <label class="custom-control-label" for="seleccionada_@indice">@adelanto</label>
+                                        </div>
+
+                                    </td>
+                                    <td>
+                                        <input class="ingresarCobro" name="txtAdelanto"
+                                               disabled="disabled"
+                                               id="txtAdelanto" />
+                                    </td>
+                                    <td class="d-none d-md-table-cell">
+                                        @DateTime.Now.FechaCorta()
+                                    </td>
+                                    <td class="d-none d-md-table-cell">
+                                    </td>
+                                    <td class="d-none d-md-table-cell">
+                                    </td>
+                                    <td class="d-none d-md-table-cell">
+                                    </td>
+                                    <td class="d-none d-md-table-cell">
+                                    </td>
+
+                                </tr>
+
+                            }
+
+                    }
+                </tbody>
+                @*</div>*@
+
+
+            </table>
+
+            <h5>Saldo Total: @Model?.ListaEstadoCuenta?.Sum(c => c.SaldoCtaCte + c.Adelanto).FormatoMoneda()</h5>
+
+
+            <input type="hidden" class="form-control" name="tipo" value="1">
+
+            <h5 id="compSeleccionados" class="text-success">Comprobantes Seleccionados: </h5>
+            <h5 id="compSeleccionadosSaldo" class="text-success my-1">Total a Pagar: </h5>
+            <br />
+            <button type="button" class="btn btn-outline-primary" onclick="continuarProcesoCobranza()">Siguiente</button>
+            <br />
+            <h5 class="text-danger mt-1" id="msjError"></h5>
+
+        </form>
+
+    </div>
+
+
+}
+
+
+
+
+
+
+<br />
+<br />
+<br />
+
+
+
+
+
+@section Scripts {
+    <script asp-append-version="true" type="text/javascript" src="~/script/_drrSystemas.js"></script>
+    <script asp-append-version="true" type="text/javascript" src="~/script/cobro/cobroAgregar.js"></script>
+
+
+    <script asp-append-version="true" type="text/javascript" src="~/lib/popper.js/umd/popper.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var url = '@urlSeleccionar';
+
+            selDesComprobante(null, "", url);
+
+            esquema = '@Model.Esquema';
+
+
+            if (esquema == 1) {
+                document.getElementById("radioEsquemaUno").checked = true;
+            }
+            else {
+                document.getElementById("radioEsquemaDos").checked = true;
+            }
+
+            seleccionarEsquema(esquema);
+
+
+            let tipoOp = '@Model.TipoOeracion';
+
+            if (tipoOp == 2) {
+                if (esquema == 1) {
+                    asignarImorte_editarCobro('@Model.CobroWeb.TotalCobro');
+                }
+            }
+
+        });
+
+    </script>
+}

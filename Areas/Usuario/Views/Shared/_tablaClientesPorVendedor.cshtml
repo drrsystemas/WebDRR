@@ -1,0 +1,190 @@
+﻿@model ViewModelCliente
+
+@{
+
+    Boolean representada = Model.Filtro.Representada;
+
+    //18/02/2022
+    ViewData["UrlAtras"] = Model?.Filtro?.UrLRetorno;
+
+    if (Model?.Lista.Count() > 0)
+    {
+        <table id="table" class="table table-sm table-striped">
+            <thead class="thead-light">
+                <tr>
+                    <th id="tbBtnFicha" class="d-none d-sm-table-cell colBtn">
+                    </th>
+
+
+                    <th class="d-none d-sm-table-cell">
+                        R. Social
+                    </th>
+                    <th class="d-none d-sm-table-cell">
+                        N° Ident.
+                    </th>
+                    <th class="d-none d-sm-table-cell">
+                        Dirección
+                    </th>
+
+                    @if (Model.Parametro == "VerEstadoCuenta")
+                    {
+                        <th class="d-none d-sm-table-cell">
+                            Saldo Cta-Cte
+                        </th>
+                    }
+
+
+                    <th id="tbBtnSeleccion" class="d-none d-sm-table-cell colBtn">
+
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Lista)
+                {
+                    String dadicional = item.DenominacionAdicional;
+                    if (!String.IsNullOrEmpty(dadicional))
+                    {
+                        dadicional = "(" + dadicional + ")";
+                    }
+
+                    String codCliente = "";
+                    String razonSocial = "";
+
+                    if (representada == true)
+                    {
+                        codCliente = item?.NroClienteAsignado.ToString();
+                        razonSocial = codCliente + "-" + item.RazonSocial;
+
+                        if(item?.TipoBonificProducto>0)
+                        {
+                            razonSocial +=" {TB "+ item.TipoBonificProducto +"}";
+                        }
+
+                        razonSocial += " " + dadicional;
+                    }
+                    else
+                    {
+                        codCliente = item.ClienteID.ToString();
+                        razonSocial = codCliente + "-" + item.RazonSocial + " " + dadicional;
+                    }
+
+
+                    String domicilio = item.Domicilio;
+                    if(item.ZonaId!=null)
+                    {
+                        domicilio += " || Zona: [" + item.ZonaId + "] " + item.DatosZonaId;
+                    }
+
+                    string saldoCtaCte = "";
+                    if (Model.Parametro == "VerEstadoCuenta")
+                    {
+                        saldoCtaCte = item?.SaldoCtaCte.FormatoMoneda();
+                    }
+
+
+
+                <tr>
+                    <td>
+                        <form asp-area="Usuario"
+                              asp-controller="Cliente"
+                              asp-action="VerCliente"
+                              method="get">
+                            <input type="hidden" name="clienteId" value="@item.ClienteID" />
+                            <span class="card-text p-1">
+                                <button type="submit"
+                                        class="btn btn-success pull-right">
+                                    <i class="far fa-address-card"></i>
+                                    <b class="d-none d-sm-inline">
+                                        Ficha
+                                    </b>
+                                </button>
+                            </span>
+                        </form>
+                    </td>
+
+                    <td class="d-none d-sm-table-cell">
+                        <label>@razonSocial</label>
+                    </td>
+
+                    <td class="d-none d-sm-table-cell">
+                        @Html.DisplayFor(modelItem => item.NroIdentificacion)
+                    </td>
+                    <td class="d-none d-sm-table-cell">
+                        @domicilio
+                    </td>
+
+                    @if (Model.Parametro == "VerEstadoCuenta")
+                    {
+                <td class="d-none d-sm-table-cell">
+                  
+                    <a asp-area="Usuario"
+                       asp-action="EstadoCta"
+                       asp-controller="Cliente"
+                       asp-route-id="@item.EntidadSucId"
+                       asp-route-rz="@item.RazonSocial"><span class="text-danger"> @saldoCtaCte</span> </a>
+
+                </td>
+                    }
+
+
+                    @* Modo celular. *@
+                <td class="d-block d-sm-none">
+                    <p class="d-flex flex-row mb-1 font-weight-bold">@razonSocial</p>
+                    <p class="d-flex flex-row m-0 font-italic">@domicilio</p>
+                    <p class="d-flex flex-row m-0 font-italic mx-auto">
+                        <a asp-area="Usuario"
+                           asp-action="EstadoCta"
+                           asp-controller="Cliente"
+                           asp-route-id="@item.EntidadSucId"
+                           asp-route-rz="@item.RazonSocial"> <span class="text-danger">@saldoCtaCte</span>  </a>
+                    </p>
+                </td>
+
+
+
+                <td>
+
+                    <partial name="_agregarClienteCarrito" model="item" view-data="ViewData" />
+
+                    @*<form asp-area="Usuario"
+              asp-controller="Cliente"
+              asp-action="AgregarCliente_Carrito"
+              method="post">
+            <input type="hidden" name="urlatras" value="@Model.Filtro.UrLRetorno" />
+            <input type="hidden" name="ClienteID" value="@item.ClienteID" />
+            <input type="hidden" name="NroClienteAsignado" value="@item.NroClienteAsignado" />
+            <input type="hidden" name="ListaPrecID" value="@item.ListaPrecID" />
+            <input type="hidden" name="ListaPrecID_Nombre" value="@item.ListaPrecID_Nombre" />
+            <input type="hidden" name="DescuentoUno" value="@item.DescuentoUno" />
+            <input type="hidden" name="DescuentoDos" value="@item.DescuentoDos" />
+            <input type="hidden" name="TipoBonificProducto" value="@item.TipoBonificProducto" />
+            <input type="hidden" name="EntidadSucId" value="@item.EntidadSucId" />
+            <input type="hidden" name="RazonSocial" value="@item.RazonSocial" />
+            <input type="hidden" name="NroIdentificacion" value="@item.NroIdentificacion" />
+            <input type="hidden" name="ImpuestoId" value="@item.ImpuestoId" />
+            <input type="hidden" name="EximidoHasta" value="@item.EximidoHasta" />
+            <input type="hidden" name="CategoriaImpuestoID" value="@item.CategoriaImpuestoID" />
+            <input type="hidden" name="CategoriaImpuestoID_Nombre" value="@item.CategoriaImpuestoID_Nombre" />
+            <span class="card-text p-1">
+                <button type="submit"
+                        class="btn btn-primary pull-right">
+                    <i class="fas fa-check"></i>
+
+                    <b class="d-none d-sm-inline">
+                        Selec.
+                    </b>
+
+
+                </button>
+            </span>
+        </form>*@
+                </td>
+
+                </tr>
+                }
+            </tbody>
+        </table>
+    }
+}

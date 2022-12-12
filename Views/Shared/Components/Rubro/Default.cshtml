@@ -1,0 +1,38 @@
+﻿@model List<FamiliaMinimo>
+@{
+    byte tipoVista = (byte)ViewData["TipoVista"];
+ 
+}
+
+
+
+
+<div class="form-group">
+    @*<select class="form-control @(tipoVista!=1?"form-control-sm":" ")">*@
+    <select onchange="verProducto(this.options[this.selectedIndex].dataset.url)" class="form-control">
+        <option value="0">Rubros - Todos</option>
+        @{
+            if (Model?.Count() > 0)
+            {
+                foreach (var item in Model)
+                {
+                    string url = Url.Action("Productos", "Producto",
+                        new {
+                            FamiliaId= item.FamiliaId,
+                            NombreFamilia = item.Nombre,
+                            FamiliaOrden=item.Orden
+                        });
+
+                    <option data-url="@url" value="@item.FamiliaId">
+                        @Html.Raw(item.Nombre)
+                    </option>
+                }
+            }
+        }
+    </select>
+
+</div>
+
+
+
+

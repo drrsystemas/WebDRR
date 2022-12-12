@@ -1,0 +1,27 @@
+﻿@model List<ViewImagen>;
+@{
+}
+
+
+    <div id="fotorama"
+         class="fotorama"
+         data-auto="false"
+         data-width="100%"
+         data-ratio="800/600"
+         data-minwidth="200"
+         data-maxwidth="800"
+         data-minheight="200"
+         data-maxheight="100%"
+         data-nav="thumbs">
+        @{
+            for (int i = 0; i < Model?.Count(); i++)
+            {
+                <a href="@Model[i].Imagen">
+                    <img src="@Model[i].ImagenMiniatura" width="144" height="96">
+                </a>
+            }
+        }
+
+    </div>
+
+

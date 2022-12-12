@@ -1,0 +1,26 @@
+﻿.fondoBonificacion {
+    font-size: 9px;
+    color: black;
+    font-weight: bold;
+}
+
+.fondoDescripcion {
+    font-size: 10px;
+    color: red;
+    font-weight: bold;
+}
+
+
+
+@media screen and (max-width:480px) {
+
+    .achicarLetra {
+        font-size:12px;
+        font-display:block;
+    }
+
+    .achicarLetraTotal {
+        font-size: 15px;
+        font-display: block;
+    }
+}

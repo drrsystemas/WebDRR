@@ -1,0 +1,65 @@
+﻿@model LibreriaBase.Areas.Carrito.Clases.ProductoMinimo
+
+@{
+    Boolean suma = true;
+    if(ViewData.ContainsKey("Suma"))
+    {
+        suma = (Boolean)ViewData["Suma"];
+    }
+
+
+    if (Model != null)
+    {
+        <h5 class="mx-1 my-1 text-center">@Model.NombreCompleto</h5>
+        <div class="row">
+
+            <div class="col-6">
+                <img class="img-fluid" 
+                     src="@Model.Imagen?.RutaImagenJpg()" />
+            </div>
+
+            <div class="col-6">
+
+                <p id="parrafoVerProducto" 
+                   data-suma="@suma" 
+                   data-prodid="@Model.ProductoId" 
+                   class="mb-1">
+                    Id: @Model.ProductoId
+                </p>
+
+                <p class="mb-1">
+                    Cod. Barras: @Model.CodigoBarras
+                </p>
+
+                <p class="mb-1">
+                    P. Neto: @Model.PrecioNeto.FormatoMoneda()
+                </p>
+
+                <p class="mb-1">
+                    P. Final: @Model.PrecioBruto.FormatoMoneda()
+                </p>
+
+                <p class="mb-1">
+                    Stock: @Model.Stock.MostrarEntero()
+                </p>
+
+                <div class=" d-flex justify-content-end align-items-center">
+                    <button onclick="btnLimpiarProducto()" class="btn btn-danger mb-1 mr-2" type="button" id="btnQuitar"><i class="fas fa-times"></i></button>
+                </div>
+
+            </div>
+        </div>
+    }
+    else
+    {
+        <h4 class="mx-1 my-1 text-center text-danger">"No se encontro el producto!!!"</h4>
+            <div class=" d-flex justify-content-end align-items-center">
+                <button onclick="btnLimpiarProducto()" class="btn btn-danger mb-1 mr-2" type="button" id="btnQuitar"><i class="fas fa-times"></i></button>
+            </div>
+    }
+
+
+}
+
+
+

@@ -1,0 +1,51 @@
+﻿@model DiaTrabajoVendedor
+
+@{
+
+    if (Model != null)
+    {
+    <div class="row border-dark rounded-2 p-1">
+
+        <div class="col-6 col-md-6">
+
+
+
+                    <div class="d-flex align-items-start flex-column bd-highlight">
+                        <div class="flex-fill">N° Pedidos: @Model.CantidadPedidos</div>
+                        <div class="flex-fill"><span class="d-none d-sm-block float-left mr-1">Predidos: </span> @Model.TotalPedidos.FormatoMoneda()</div>
+                    </div>
+
+
+
+
+
+
+
+            @*<p class="m-0 text-dark">N° Pedidos: @Model.CantidadPedidos</p>
+            <p class="m-0 text-dark"><span class="d-none d-sm-block float-left mr-1">Predidos: </span> @Model.TotalPedidos.FormatoMoneda()</p>*@
+        </div>
+
+        <div class="col-6 col-md-6">
+
+
+
+
+                    <div class="d-flex align-items-start flex-column bd-highlight">
+                        <div class="flex-fill">N° Cobros: @Model.CantidadCobranzas</div>
+                        <div class="flex-fill"><span class="d-none d-sm-block float-left mr-1">Cobros: </span> @Model.TotalCobranzas.FormatoMoneda()</div>
+                    </div>
+
+
+        </div>
+
+
+            @*<p class="m-0 text-dark">N° Cobros: @Model.CantidadCobranzas</p>
+        <p class="m-0 text-dark"><span class="d-none d-sm-block float-left mr-1">Cobros: </span> @Model.TotalCobranzas.FormatoMoneda()</p>*@
+        </div>
+
+    }
+
+
+}
+
+

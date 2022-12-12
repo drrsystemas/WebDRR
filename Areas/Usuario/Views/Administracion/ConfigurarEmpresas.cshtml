@@ -1,0 +1,77 @@
+﻿@model IEnumerable<LibreriaBase.Areas.Usuario.DatosEmpresa>
+
+@{
+    ViewData["Title"] = "ConfigurarEmpresas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var listaTipoEmpresas = (List<Generica>)ViewData["ListaTiposEmpresas"];
+}
+
+<h3>Empresas</h3>
+<hr />
+<p>
+    <a class="btn btn-sm btn-primary" asp-action="CrubEmpresa" asp-controller="Administracion" asp-route-tipoOperacion="1">Agregar</a>
+</p>
+<table class="sortable table table-sm  table-striped">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Base Datos
+            </th>
+            <th>
+                Nombre
+            </th>
+            <th>
+                Activo
+            </th>
+            <th>
+                Tipo
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            string nombre = listaTipoEmpresas?.FirstOrDefault(c => c.Id == item.TipoEmpresa)?.Nombre;
+
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdEmpresa)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nombre_BaseDatos)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nombre_Empresa)
+                </td>
+                <td>
+                    @item.Activa.Activo_Inactivo()
+                </td>
+                <td>
+                    @nombre
+
+                </td>
+                <td>
+                    <a class="btn btn-success btn-sm" 
+                       asp-action="CrubEmpresa" 
+                       asp-controller="Administracion" 
+                       asp-route-entityJson="@item.ToJson()"
+                       asp-route-tipoOperacion="2">Editar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<br />
+<br />
+<br />
+
+@section Scripts {
+
+    <script src="~/lib/sorttable/sorttable.js"></script>
+
+}

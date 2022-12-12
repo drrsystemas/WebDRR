@@ -1,0 +1,64 @@
+﻿@{
+    String titulo = ViewData["Title"] + " - AlmaNET";
+}
+
+<!DOCTYPE html>
+
+<html lang="es-ar">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@titulo</title>
+
+
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
+    <link rel="stylesheet" href="~/css/drrSystemasProductos.css" />
+
+
+    <script type="text/javascript" src="~/lib/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="~/lib/popper.js/umd/popper.min.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
+    <script type="text/javascript" src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+
+    @RenderSection("Estilos", required: false)
+
+</head>
+
+<body>
+
+
+
+    <div class="container-fluid">
+        <main role="main" class="pb-2">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted d-none d-sm-block">
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    <img class="mt-2 float-left" height="40" src="~/img/almanet_web_mini.png">
+                </div>
+
+                <div class="col-6">
+                    <p class="text-right"> &copy;  <a href="https://www.drrsystemas.com" target="_blank"><img height="18" src="~/img/drr_mini.png"></a> - @DateTime.Now.ToString("dd/MM/yyyy")</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+
+</html>

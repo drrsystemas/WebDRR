@@ -1,0 +1,753 @@
+﻿@model LibreriaBase.Areas.Usuario.DatoConfiguracion
+@using DRR.Core.DBEmpresaEjemplo.Models
+
+@{
+    ViewData["Title"] = "ModificarPermiso";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<SelectListItem> listaWebInicio = (List<SelectListItem>)ViewData["lwi"];
+
+    Boolean mostrarExtra = (Boolean)ViewData["visibleExtra"];
+
+  
+}
+
+
+
+<div class="container">
+    <h4>Modificar Configuración</h4>
+
+    <div class="row">
+        <div class="col-md-10">
+            <form asp-action="Modificar" asp-controller="Administracion">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Descripcion" class="form-control" />
+
+                <div class="form-group">
+                    <label class="control-label">Descripción </label>
+                    <p class="font-weight-bold">@Model.Descripcion</p>
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+
+                @{
+
+                    switch (Model.Codigo)
+                    {
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 10:
+                        case 11:
+                        case 15:
+                        case 18:
+                        case 19:
+                        case 20:
+                        case 21:
+                        case 22:
+                        case 23:
+                        case 24:
+                        case 25:
+                        case 26:
+                        case 32:
+                        case 39:
+                        case 40:
+                        case 41:
+                        case 43:
+                        case 44:
+                        case 45:
+                        case 46:
+                        case 47:
+                        case 48:
+                        case 50:
+                        case 51:
+                        case 52:
+                        case 53:
+                        case 54:
+                        case 55:
+                        case 56:
+                            //case 57:
+                            {
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                                    <label class="form-check-label" for="radio4">
+                                        Activo
+                                    </label>
+                                </div>
+
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                                    <label class="form-check-label" for="radio5">
+                                        Inactivo
+                                    </label>
+                                </div>
+
+                                break;
+                            }
+                    }
+
+
+
+
+
+
+                    if (Model.Codigo == (int)ConfPortal.EnumConfPortal.Aviso_por_Correo)//5
+                    {
+                        mostrarExtra = false;
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Activo
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Inactivo
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">1er Correo</label>
+                            <input asp-for="Extra" class="form-control" />
+                            <span asp-validation-for="Extra" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">2do Correo</label>
+                            <input asp-for="ExtraDos" class="form-control" />
+                            <span asp-validation-for="ExtraDos" class="text-danger"></span>
+                        </div>
+
+                    }
+                    else if (Model.Codigo == 6)
+                    {
+                    }
+
+                    else if (Model.Codigo == 7 || Model.Codigo == 8)
+                    {
+                        <div class="form-group">
+                            <label class="control-label">Lista de Precios: </label>
+
+                            <select id="cbExtra" name="Valor">
+                                @{
+                                    var listaPrecios = (List<ProductoLista>)ViewData["listaPrecios"];
+
+                                    foreach (ProductoLista lp in listaPrecios)
+                                    {
+                                        if (lp.ListaPrecId == Model.Valor.MostrarEntero())
+                                        {
+                                            <option selected value="@lp.ListaPrecId">@lp.Descripcion</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@lp.ListaPrecId">@lp.Descripcion</option>
+                                        }
+                                    }
+                                }
+                            </select>
+
+                            <input type="hidden" class="form-control" id="txtExtra" asp-for="Extra" />
+
+                        </div>
+
+                    }
+                    else if (Model.Codigo == 9)
+                    {
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Activo
+                            </label>
+                        </div>
+
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Inactivo
+                            </label>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label">Correo </label>
+                            <input type="email" asp-for="Extra" class="form-control" />
+                            <span asp-validation-for="Extra" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Clave </label>
+                            <input asp-for="ExtraDos" class="form-control" />
+                            <span asp-validation-for="ExtraDos" class="text-danger"></span>
+                        </div>
+                    }
+                    else if (Model.Codigo == 12)
+                    {
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Precios Netos
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Precios Finales
+                            </label>
+                        </div>
+                    }
+                    else if (Model.Codigo == 13)
+                    {
+
+
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                1 pedido - compra.
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="2" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                2 pedidos - compras, en caso de haber productos de distintos sectores.
+                            </label>
+                        </div>
+
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="3" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                2 pedidos - compras, en caso de haber productos en oferta.
+                            </label>
+                        </div>
+
+                    }
+                    else if (Model.Codigo == 14)
+                    {
+                        <div class="form-group">
+                            <label class="control-label">Lista de Vendedores: </label>
+
+                            <select id="cbExtra" name="Valor">
+                                @{
+                                    var vendedores = (List<Generica>)ViewData["listaVendedores"];
+
+                                    foreach (Generica v in vendedores)
+                                    {
+                                        if (v.Id == Model.Valor.MostrarEntero())
+                                        {
+                                            <option selected value="@v.Id">@v.Nombre</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@v.Id">@v.Nombre</option>
+                                        }
+                                    }
+                                }
+                            </select>
+
+
+                        </div>
+
+                    }
+
+
+                    if (Model.Codigo == (int)ConfPortal.EnumConfPortal.Poner_leyenda_al_final_del_pedido)//16
+                    {
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Activo
+                            </label>
+                        </div>
+
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Inactivo
+                            </label>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label">Leyenda </label>
+                            <input asp-for="Extra" class="form-control" />
+                            <span asp-validation-for="Extra" class="text-danger"></span>
+                        </div>
+
+
+                    }
+
+                    else if (Model.Codigo == (int)ConfPortal.EnumConfPortal.Pagina_principal_ingresar_usuario)//17
+                    {
+                        <div class="form-group">
+                            <label class="control-label">Seleccione la Web: </label>
+
+                            <select id="cbExtra" name="Valor" asp-for="Valor">
+                                @{
+                                    var vendedores = (List<Generica>)ViewData["listaWeb"];
+
+                                    foreach (Generica v in vendedores)
+                                    {
+                                        if (v.Nombre == Model.Extra)
+                                        {
+                                            <option selected value="@v.Id">@v.Nombre</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@v.Id">@v.Nombre</option>
+                                        }
+                                    }
+                                }
+                            </select>
+
+
+                        </div>
+                        <br />
+                        <input id="txtExtra" type="text" asp-for="Extra" name="Extra" class="form-control" />
+                    }
+                                        else if (Model.Codigo ==27)//Hosting_redirecciona
+                    {
+                        <div class="form-group">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                                <label class="form-check-label" for="radio4">
+                                    Activo
+                                </label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                                <label class="form-check-label" for="radio5">
+                                    Inactivo
+                                </label>
+                            </div>
+                        </div>
+                        <br />
+                        <br />
+
+                        <label class="control-label">Seleccione la presentación: </label>
+
+                        <div class="form-group tb-par">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="0" id="radioHostingActivo" asp-for="Extra">
+                                <label class="form-check-label" for="radio4">
+                                    Bulto
+                                </label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="1" id="radioHostingInactivo" asp-for="Extra">
+                                <label class="form-check-label" for="radio5">
+                                    Unidad
+                                </label>
+                            </div>
+
+                        </div>
+                    }
+
+                    else if (Model.Codigo == 28)
+                    {
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Activo
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Inactivo
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">ProductosUbicacionID (-)</label>
+                            <input asp-for="Extra" class="form-control" />
+                            <span asp-validation-for="Extra" class="text-danger"></span>
+                        </div>
+
+                    }
+                    else if (Model.Codigo == 29)
+                    {
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Activo
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Inactivo
+                            </label>
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <label class="control-label">Esquema 1</label>
+                            <input asp-for="Extra" class="form-control" />
+                            <span asp-validation-for="Extra" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Esquema 2</label>
+                            <input asp-for="ExtraDos" class="form-control" />
+                            <span asp-validation-for="ExtraDos" class="text-danger"></span>
+                        </div>
+
+
+                    }
+                    else if (Model.Codigo == (int)ConfPortal.EnumConfPortal.AlmaUserId_Empresa)//30
+                    {
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Activo
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Inactivo
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">AlmaUserID</label>
+                            <input asp-for="Extra" class="form-control" />
+                            <span asp-validation-for="Extra" class="text-danger"></span>
+                        </div>
+                    }
+
+                    else if (Model.Codigo == 31) //Empresas multi-sector.
+                    {
+                        mostrarExtra = false;
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Activo
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Inactivo
+                            </label>
+                        </div>
+
+                        <p>Los Sectores se coloca el Id separado por un espacio en blanco</p>
+
+                        <input type="text" class="form-control" asp-for="Extra" />
+
+
+                        @*<p>Las Lista de Precios se coloca el Id separado por un espacio en blanco</p>
+
+                        <input type="text" class="form-control" asp-for="ExtraDos" />*@
+
+
+                    }
+                    else if (Model.Codigo == 32)
+                    {
+                        mostrarExtra = true;
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Activo
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Inactivo
+                            </label>
+                        </div>
+
+                        <p>Se recomienda en modalidad vendedor - cuando se ingresa a lugares donde no hay o la conectividad es mala o limitada.</p>
+
+
+
+
+
+                    }
+
+                    else if (Model.Codigo == 33)
+                    {
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Activo
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Inactivo
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Productos</label>
+                            <input asp-for="Extra" class="form-control" />
+                            <span asp-validation-for="Extra" class="text-danger"></span>
+                        </div>
+
+                    }
+
+                    else if (Model.Codigo == 34)
+                    {
+                        mostrarExtra = true;
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Activo
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Inactivo
+                            </label>
+                        </div>
+
+                    }
+                    else if (Model.Codigo == 35)
+                    {
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Activo
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Inactivo
+                            </label>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label">Leyenda para Pagos</label>
+                            <input asp-for="Extra" class="form-control" />
+                            <span asp-validation-for="Extra" class="text-danger"></span>
+                        </div>
+
+                    }
+
+                    else if (Model.Codigo == 36)
+                    {
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Activo
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Inactivo
+                            </label>
+                        </div>
+                    }
+
+                    else if (Model.Codigo == 38)//Hosting_redirecciona
+                    {
+                        <div class="form-group">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                                <label class="form-check-label" for="radio4">
+                                    Activo
+                                </label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                                <label class="form-check-label" for="radio5">
+                                    Inactivo
+                                </label>
+                            </div>
+                        </div>
+                        <br />
+                        <br />
+                        <div class="form-group tb-par">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="1" id="radioHostingActivo" asp-for="Extra">
+                                <label class="form-check-label" for="radio4">
+                                    Principal
+                                </label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="5" id="radioHostingInactivo" asp-for="Extra">
+                                <label class="form-check-label" for="radio5">
+                                    Sevidor Dos
+                                </label>
+                            </div>
+
+
+                          <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="6" id="radioHostingInactivo" asp-for="Extra">
+                                <label class="form-check-label" for="radio5">
+                                    Servidor Tres
+                                </label>
+                               </div> 
+                        </div>
+                    }
+                    else if (Model.Codigo == 42)
+                    {
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Activo
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Inactivo
+                            </label>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label">Leyenda para Envio/Retiro</label>
+                            <input asp-for="Extra" class="form-control" />
+                            <span asp-validation-for="Extra" class="text-danger"></span>
+                        </div>
+
+                    }
+                    else if (Model.Codigo == 49)
+                    {
+                        mostrarExtra = false;
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" id="radioActivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio4">
+                                Activo
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="0" id="radioInactivo" asp-for="Valor">
+                            <label class="form-check-label" for="radio5">
+                                Inactivo
+                            </label>
+                        </div>
+
+
+                        <div class="mt-2 form-group">
+                            <label class="control-label">Lista de Precios: </label>
+
+                            <select class="custom-select" asp-for="Extra">
+                                @{
+                                    var listaPrecios = (List<ProductoLista>)ViewData["listaPrecios"];
+
+                                    foreach (ProductoLista lp in listaPrecios)
+                                    {
+                                        short selected = 0;
+                                        bool casting = Int16.TryParse(Model.Extra, out selected);
+                                        if (casting == true)
+                                        {
+                                            if (lp.ListaPrecId == selected)
+                                            {
+                                                <option selected value="@lp.ListaPrecId">@lp.Descripcion</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@lp.ListaPrecId">@lp.Descripcion</option>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <option value="@lp.ListaPrecId">@lp.Descripcion</option>
+                                        }
+
+
+                                    }
+                                }
+                            </select>
+
+
+                        </div>
+
+                    }
+
+                    if (mostrarExtra == true)
+                    {
+                        <input type="text" class="form-control" asp-for="Extra" />
+                    }
+                }
+
+
+                <input type="hidden" asp-for="Type" class="form-control" />
+                <input type="hidden" asp-for="Codigo" class="form-control" />
+                <input type="hidden" name="tipo" value="4" class="form-control" />
+
+                <div class="form-group">
+                    <br />
+
+                    <button type="submit" class="btn btn-primary"><i class="far fa-save"></i> Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <br />
+
+</div>
+<br />
+<br />
+<br />
+
+
+@section Scripts{
+    <script type="text/javascript" src="~/script/administracion/permiso.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+         var valor = parseInt('@Model.Valor');
+
+         seleccionarRadioActInac(valor);
+
+
+            var codigo = parseInt('@Model.Codigo');
+            if (codigo === 7 || codigo === 8) {
+                var a = $("#cbExtra option:selected").text();
+                $("#txtExtra").val(a);
+
+                $('#cbExtra').on('change', function () {
+                    var a = $("#cbExtra option:selected").text();
+                    $("#txtExtra").val(a);
+                });
+            }
+
+
+
+
+
+    });
+
+    </script>
+}

@@ -1,0 +1,614 @@
+﻿@model ProductoMinimo
+@using Microsoft.AspNetCore.Routing
+@using LibreriaBase.Areas.Carrito
+
+@{
+    ViewData["Title"] = "VerProducto";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    TempData["ListaProducto"] = true;
+
+    List<LibreriaBase.Areas.Usuario.DatoConfiguracion> lisaConf =
+         (List<LibreriaBase.Areas.Usuario.DatoConfiguracion>)ViewData["Conf_VP"];
+
+
+
+    var confDescripcion = lisaConf.FirstOrDefault(c => c.Codigo == 35);
+    byte ubicacionDescripcionPruducto = 1;
+    if (confDescripcion != null)
+    {
+        if (confDescripcion.Valor.MostrarEntero() == 1)
+        {
+            if (!string.IsNullOrEmpty(confDescripcion.Extra))
+            {
+                ubicacionDescripcionPruducto = Convert.ToByte(confDescripcion.Extra);
+            }
+        }
+    }
+
+
+
+    String codigo = "";
+
+    String wp = ViewBag.wp;
+
+    String urlRetorno = ViewBag.UrlRetorno;
+    Boolean esconderPrecio = ViewBag.EsconderPrecio;
+
+
+    if (Model.Representada == false)
+    {
+        codigo = Model.ProductoId.ToString();
+    }
+    else
+    {
+        codigo = Model.CodigoProveedor;
+
+
+        if (String.IsNullOrEmpty(codigo))
+        {
+            Model.Representada = false;
+
+            codigo = Model.ProductoId.ToString();
+        }
+    }
+
+    String presentacion = "";
+    if (Model.PresentacionId == 0)
+    {
+        presentacion += "Bulto";
+    }
+    else
+    {
+        presentacion += "Unidad";
+    }
+
+    int rol = 0;
+
+    if (ViewData.ContainsKey("Rol"))
+    {
+        if (ViewData["Rol"] != null)
+        {
+            rol = (int)ViewData["Rol"];
+        }
+
+    }
+
+
+    string jsonListaProductosRelacionados = (String)ViewData["ListaProdRel"];
+
+
+    string urlListaProductosRelacionados = Url.Action("CargarProductoRelacionados", "Producto");
+
+    string urlCargarGaleriaImg = Url.Action("verImagenes", "Producto");
+
+    string urlVerObservacion = Url.Action("CargarObservacion_Producto", "Producto");
+
+
+    string actionGenerarUrl = Url.Action("GenerarUrl", "Producto");
+
+    int idProd = Model.ProductoId;
+
+
+
+    bool elaborado = false;
+    if (ViewData.ContainsKey("Elaborado"))
+    {
+        elaborado = (bool)ViewData["Elaborado"];
+    }
+
+
+    List<ViewProductoElaborado> listaElaborados = null;
+
+    if (elaborado == true)
+    {
+        if (ViewData.ContainsKey("ListaProdElaborados"))
+        {
+            listaElaborados = (List<ViewProductoElaborado>)ViewData["ListaProdElaborados"];
+        }
+        else
+        {
+            listaElaborados = new List<ViewProductoElaborado>();
+        }
+    }
+
+
+
+
+
+
+}
+
+@section Estilos
+            {
+    <link rel="stylesheet" href="~/css/drrSystemasProductos.css" />
+    <link rel="stylesheet" href="~/lib/fotorama/fotorama.css" />
+
+    <link rel="stylesheet" href="~/lib/OwlCarousel2/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/lib/OwlCarousel2/assets/owl.theme.default.min.css">
+
+    <style type="text/css" media="screen and (min-width:541px)">
+
+        .tituloGrande {
+        }
+    </style>
+
+    <style type="text/css" media="screen and (max-width:540px)">
+        #headerv4_a_logo {
+            display: none;
+        }
+
+        #barraPrincipal {
+            padding: 0px;
+        }
+    </style>
+
+
+
+}
+
+
+@*<nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Detalle</a>
+
+            @if (ubicacionDescripcionPruducto == 1)
+            {
+                <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Descripción</a>
+            }
+
+
+            @if (elaborado == true)
+            {
+                <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Insumos</a>
+            }
+
+            @if (!String.IsNullOrEmpty(jsonListaProductosRelacionados))
+            {
+                <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Relacionados</a>
+
+            }
+        </div>
+    </nav>*@
+
+<div id="div-principal-ver-productos">
+    <div class="d-flex justify-content-center">
+
+        @if (Model.ProductoOfertaID > 0)
+        {
+            <h3 class="text-primary font-weight-bold"><i class="fas fa-fire fa-2x" style="color:red;"></i> @Model.NombreCompleto</h3>
+        }
+        else
+        {
+            <h3 class="text-primary font-weight-bold">@Model.NombreCompleto</h3>
+        }
+    </div>
+
+    <br />
+
+
+    <div class="row">
+
+        <div id="galeriaImagenes" class="col-12 col-md-5 mx-auto">
+
+            <div id="cargando" class="d-flex justify-content-center">
+                <div class="spinner-border text-dark" style="width: 5rem; height: 5rem;" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class=" col-12 col-md-5 mx-auto">
+
+
+            @{
+
+                var esquedaPrecio = lisaConf?.FirstOrDefault(x => x.Codigo == 13);
+                //Case pero bueno
+                if (esquedaPrecio != null)
+                {
+                    if (esquedaPrecio.Valor.MostrarEntero() == 1)
+                    {
+                        if (esconderPrecio == true)
+                        {
+
+                        }
+                        else
+                        {
+                            if (Model.ProductoOfertaID > 0)
+                            {
+                                <h4 class="font-weight-bold mt-md-2 mt-lg-2 mt-xl-2"><strike>@Model.PrecioBrutoSinDescuento.FormatoMoneda()</strike></h4>
+                                <h3 class="font-weight-bold  ">@Model.PrecioBruto.FormatoMoneda()</h3>
+                            }
+                            else
+                            {
+                                <h3 class="font-weight-bold mt-md-2 mt-lg-2 mt-xl-2">@Model.PrecioBruto.FormatoMoneda()</h3>
+                            }
+
+                        }
+                    }
+                    else if (esquedaPrecio.Valor.MostrarEntero() == 2)
+                    {
+                        //Momentaneo ------
+
+                        @*if (Model.Producto.ProductoOfertaID > 0)
+                            {
+                                <h5 class="font-weight-bold"><strike>@Model.Producto.PrecioBrutoSinDescuento.FormatoMoneda()</strike></h5>
+                            }
+                            <h4 class="font-weight-bold">@Model.Producto.PrecioBruto.FormatoMoneda()</h4>*@
+
+                        if (Model.Representada == true)
+                        {
+
+
+                            if (ViewBag.TipoBonificProducto == 1)
+                            {
+                                <h5>Neto: <strike>@Model.PrecioNeto.FormatoMoneda()</strike></h5>
+                                <h4 class="text-danger">@Model.Bonificacion1?.PrecioNeto.FormatoMoneda()</h4>
+
+                                <h5>Final: <strike>@Model.PrecioBruto.FormatoMoneda()</strike></h5>
+                                <h4 class="text-danger">@Model.Bonificacion1?.PrecioBruto.FormatoMoneda()</h4>
+                            }
+                            else if (ViewBag.TipoBonificProducto == 2)
+                            {
+                                <h5>Neto: <strike>@Model.PrecioNeto.FormatoMoneda()</strike></h5>
+                                <h4 class="text-danger">@Model.Bonificacion2?.PrecioNeto.FormatoMoneda()</h4>
+
+                                <h5>Final: <strike>@Model.PrecioBruto.FormatoMoneda()</strike></h5>
+                                <h4 class="text-danger">@Model.Bonificacion2?.PrecioBruto.FormatoMoneda()</h4>
+                            }
+                            else
+                            {
+                                if (Model.ProductoOfertaID > 0)
+                                {
+                                    <h5>Neto: <strike>@Model.PrecioNetoSinDescuento.FormatoMoneda()</strike></h5>
+                                    <h4 class="text-danger">Oferta: @Model.PrecioNeto.FormatoMoneda()</h4>
+                                }
+                                else
+                                {
+                                    <h4>Neto: @Model.PrecioNeto.FormatoMoneda()</h4>
+                                }
+
+                                <h4>Final: @Model.PrecioBruto.FormatoMoneda()</h4>
+                            }
+
+                        }
+                        else
+                        {
+                            if (Model.ProductoOfertaID > 0)
+                            {
+                                <h4 class="font-weight-bold mt-md-2 mt-lg-2 mt-xl-2"><strike>@Model.PrecioBrutoSinDescuento.FormatoMoneda()</strike></h4>
+                                <h3 class="font-weight-bold  ">@Model.PrecioBruto.FormatoMoneda()</h3>
+                            }
+                            else
+                            {
+                                <h3 class="font-weight-bold mt-md-2 mt-lg-2 mt-xl-2">@Model.PrecioBruto.FormatoMoneda()</h3>
+                            }
+                        }
+
+                    }
+                    else if (esquedaPrecio.Valor.MostrarEntero() == 3)
+                    {
+
+
+                        if (esconderPrecio == false)
+                        {
+
+
+                            if (Model.ProductoOfertaID > 0)
+                            {
+                                <h5>Neto: <strike>@Model.PrecioNetoSinDescuento.FormatoMoneda()</strike></h5>
+                                <h4 class="text-danger">Oferta: @Model.PrecioNeto.FormatoMoneda()</h4>
+                            }
+                            else
+                            {
+                                <h4>Neto: @Model.PrecioNeto.FormatoMoneda()</h4>
+                            }
+
+                            <h3>Final: @Model.PrecioBruto.FormatoMoneda()</h3>
+                        }
+
+                        <h3 class="text-secondary"><strong>Sugerido iva incluido: @Model.PrecioSugerido.FormatoMoneda()</strong></h3>
+
+
+                    }
+                }
+                else
+                {
+                    if (esconderPrecio == true)
+                    {
+
+                    }
+                    else
+                    {
+                        if (Model.ProductoOfertaID > 0)
+                        {
+                            <h4 class="font-weight-bold"><strike>@Model.PrecioBrutoSinDescuento.FormatoMoneda()</strike></h4>
+                        }
+                        <h3 class="font-weight-bold">@Model.PrecioBruto.FormatoMoneda()</h3>
+                    }
+                }
+            }
+
+            @if (rol != (Int32)EnumRol.Catalogo)
+            {
+                <partial name="_btnComprarAgregarCarrito"
+                         model='new LibreriaBase.Areas.Carrito.AgregarCarrito
+                        {
+                            ProductoId = codigo,
+                            Cantidad_I=Model.Cantidad.MostrarEntero(),
+                            UrlRetorno=ViewContext.HttpContext.Request.PathAndQuery(),
+                            StockMaximo = Model.Stock.MostrarEntero(),
+                            Representada = Model.Representada
+
+                        }' view-data="ViewData" />
+
+                <br />
+            }
+
+
+            <h4>Presentación: @presentacion</h4>
+
+            <h4>Código: @codigo</h4>
+
+            <h4>Marca: @Model.Marca</h4>
+
+            <h4>Rubro/Familia: @Model.Familia</h4>
+
+
+            @{
+                var verStock = lisaConf?.FirstOrDefault(c => c.Codigo == (Int32)LibreriaBase.Areas.Usuario.
+               ConfViewDatosProductos.EnumConfViewDatosProductos.VerStock);
+
+                if (verStock?.Valor.MostrarEntero() == 1)
+                {
+                    var semaforo = lisaConf?.FirstOrDefault(c => c.Codigo == 9);
+
+                    if (semaforo.Valor.MostrarEntero() == 0)
+                    {
+                        if (lisaConf?.FirstOrDefault(c => c.Codigo ==
+     (Int32)LibreriaBase.Areas.Usuario.ConfViewDatosProductos.EnumConfViewDatosProductos.VerUbicacionStock)?.Valor.MostrarEntero() == 1)
+                        {
+
+                            String stockInfo = "";
+
+                            if (Model.StockUbicacion?.Ubicacion?.Count() == 1)
+                            {
+                                stockInfo = "[Dep " + Model.StockUbicacion?.Ubicacion?.FirstOrDefault().ProductoUbicacionID + "] Stock: " +
+                                    Model.StockUbicacion?.Ubicacion?.FirstOrDefault().StockActual;
+                            }
+                            else if (Model.StockUbicacion?.Ubicacion?.Count() > 1)
+                            {
+                                for (int i = 0; i < Model.StockUbicacion?.Ubicacion.Count(); i++)
+                                {
+                                    var ub = Model.StockUbicacion?.Ubicacion[i];
+
+                                    if (ub.StockActual == 0)
+                                    {
+                                        continue;
+                                    }
+
+                                    if (i == 0)
+                                    {
+                                        stockInfo += "[Dep " + ub.ProductoUbicacionID + "] Stock:" + ub.StockActual;
+                                    }
+                                    else
+                                    {
+                                        stockInfo += " -- [Dep: " + ub.ProductoUbicacionID + "] Stock:" + ub.StockActual + "  ";
+                                    }
+                                }
+                            }
+
+                            <span class="badge badge-pill badge-secondary"> @stockInfo</span>
+
+
+
+                            <h4>Stock: @Model.Stock.MostrarEntero() </h4>
+
+                        }
+                        else
+                        {
+                            <h4>Stock: @Model.Stock.MostrarEntero()</h4>
+
+                        }
+                    }
+                    else
+                    {
+                        if (!String.IsNullOrEmpty(semaforo.Extra))
+                        {
+
+                            String[] data = semaforo.Extra.Split('|');
+
+                            Int32 valorR = Convert.ToInt32(data[0]);
+                            Int32 valorV = Convert.ToInt32(data[1]);
+
+                            if (Model.Stock.MostrarEntero() > valorV)
+                            {
+                                <p class="pl-2 bg-success rounded w-25 font-weight-bold">Stock</p>
+                            }
+                            else if (Model.Stock.MostrarEntero() > valorR)
+                            {
+                                <p class="pl-2 bg-warning rounded w-25 font-weight-bold">Stock</p>
+                            }
+                            else
+                            {
+                                <p class="pl-2 bg-danger rounded w-25 font-weight-bold">Stock</p>
+                            }
+
+                        }
+
+                        @*if (lisaConf?.FirstOrDefault(c => c.Codigo ==
+                                    (Int32)LibreriaBase.Areas.Usuario.ConfViewDatosProductos.EnumConfViewDatosProductos.VerUbicacionStock)?.Valor.MostrarEntero() == 1)
+                                    {
+                                        String stockInfo = "";
+
+                                        if (Model.StockUbicacion?.Ubicacion?.Count() == 1)
+                                        {
+                                            stockInfo = "[Dep " + Model.StockUbicacion?.Ubicacion?.FirstOrDefault().ProductoUbicacionID + "] Stock: " +
+                                                Model.StockUbicacion?.Ubicacion?.FirstOrDefault().StockActual;
+                                        }
+                                        else if (Model.StockUbicacion?.Ubicacion?.Count() > 1)
+                                        {
+                                            for (int i = 0; i < Model.StockUbicacion?.Ubicacion.Count(); i++)
+                                            {
+                                                var ub = Model.StockUbicacion?.Ubicacion[i];
+
+                                                if (ub.StockActual == 0)
+                                                {
+                                                    continue;
+                                                }
+
+                                                if (i == 0)
+                                                {
+
+                                                    stockInfo += "[Dep " + ub.ProductoUbicacionID + "] Stock:" + ub.StockActual;
+                                                }
+                                                else
+                                                {
+                                                    stockInfo += " -- [Dep " + ub.ProductoUbicacionID + "] Stock:" + ub.StockActual + "  ";
+                                                }
+                                            }
+                                        }
+
+                            <h6>@stockInfo</h6>
+                            <h4>Stock: @Model.Stock.MostrarEntero()</h4>
+
+                                    }
+                                    else
+                                    {
+                            <h4>Stock: @Model.Stock.MostrarEntero()</h4>
+
+                                    }*@
+
+                    }
+                }
+            }
+
+
+            @if (rol != (Int32)EnumRol.Catalogo)
+            {
+
+                <button id="verEnlace" onclick="generarEnlace('@actionGenerarUrl', @idProd)" type="button" class="btn btn-warning btn-sm">
+                    <i class="fas fa-link"></i> Copiar link
+                </button>
+            }
+
+
+            <button id="btnConsultar" onclick="wpProducto('@wp',@codigo, '@Model.Nombre')"
+                    type="button" class="ml-2 btn btn-success btn-sm">
+                <i class="fab fa-whatsapp"></i> Consultar
+            </button>
+
+
+
+
+            <br />
+
+            @{
+                if (Model?.SegundaPresentacion?.Presentacion.ToLower() == "unidad")
+                {
+
+                    <h5> Precios - Unidad</h5>
+
+
+                    if (ViewBag.TipoBonificProducto > 0)
+                    {
+                        Decimal bonificacion = 0;
+
+                        if (ViewBag.TipoBonificProducto == 1)
+                        {
+                            bonificacion = (decimal)Model.Bonificacion1.Bonificacion;
+                        }
+                        else
+                        {
+                            bonificacion = (decimal)Model.Bonificacion2.Bonificacion;
+                        }
+
+
+                        Decimal precioNeto = (decimal)Model?.SegundaPresentacion?.PrecioNeto;
+                        Decimal precioNetoBonificado = precioNeto - precioNeto.ImporteBonificacion(bonificacion);
+
+                        Decimal precioFinal = (decimal)Model?.SegundaPresentacion?.PrecioBruto;
+                        Decimal precioFinalBonificado = precioFinal - precioFinal.ImporteBonificacion(bonificacion);
+
+                        <h7>Neto: <strike>@precioNeto.FormatoMoneda()</strike></h7>
+                        <h6 class="text-danger">@precioNetoBonificado.FormatoMoneda()</h6>
+
+                        <h7>Final: <strike>@precioFinal.FormatoMoneda()</strike></h7>
+                        <h6 class="text-danger">@precioFinalBonificado.FormatoMoneda()</h6>
+                    }
+                    else
+                    {
+                        <h6 class="font-weight-bold">Neto: @Model?.SegundaPresentacion?.PrecioNeto.FormatoMoneda()</h6>
+                        <h6 class="font-weight-bold">Final: @Model?.SegundaPresentacion?.PrecioBruto.FormatoMoneda()</h6>
+                    }
+
+
+
+                }
+
+                if (Model.Representada == true)
+                {
+                    <p>Ultima actualización: @Model.FechaActualizacion?.FechaCorta()</p>
+                }
+            }
+
+        </div>
+    </div>
+
+
+    <div class="container mt-3" id="txtObservacion">
+        @Html.Raw(@Model.Rtf)
+    </div>
+
+
+    <div class="container mt-3" id="divProdctosRelacionados">
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<br />
+<br />
+<br />
+
+
+
+
+@section Scripts
+{
+    <script type="text/javascript" src="~/lib/fotorama/fotorama.js"></script>
+    <script type="text/javascript" src="~/lib/OwlCarousel2/owl.carousel.min.js"></script>
+
+    <script asp-append-version="true" type="text/javascript" src="~/script/_drrSystemas.js"></script>
+    <script asp-append-version="true" type="text/javascript" src="~/script/producto/verProducto.js"></script>
+
+    <script type="text/javascript">
+
+
+
+        @*$(document).ready(function () {
+            let jsonData = "@jsonListaProductosRelacionados";
+            let urlCargarProd = "@urlListaProductosRelacionados";
+            cargarProductoRelacionados(jsonData, urlCargarProd);
+        });*@
+
+
+        //Asignos las variables de C# a JS.
+        _jsonData  = "@jsonListaProductosRelacionados";
+        _urlCargarProd = "@urlListaProductosRelacionados";
+        _urlImagenesProd = "@urlCargarGaleriaImg";
+        _urlObservacion = "@urlVerObservacion";
+        _prodBase = "@Model.ProductoBaseId";
+        _prod = "@Model.ProductoId";
+    </script>
+}

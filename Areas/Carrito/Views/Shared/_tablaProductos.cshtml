@@ -1,0 +1,783 @@
+﻿@model IEnumerable<ProductoMinimo>
+
+@{
+    int totalElementos = Model.Count();
+
+    int esquemaPrecios = (Int32)ViewData["EsquemaPrecios"];
+
+    bool esconderPrecios = (bool)ViewData["EsconderPrecio"];
+    bool representada = (bool)ViewData["Representada"];
+
+    String urlActionAjax = Url.Action("Sumar_Restar_Json", "Carrito");
+
+    bool ubicacionStock = (bool)ViewData["UbicacionStock"];
+
+
+    Boolean modoEdicionProductos = (Boolean)ViewData["ModoEdicionProducto"];
+}
+
+
+
+<table id="datos" class="sortable table table-sm table-striped">
+    <thead>
+        <tr>
+            <th class="d-none d-md-table-cell" scope="col">Código</th>
+            <th class="d-none d-md-table-cell" scope="col">Cód. Barra</th>
+
+
+            <th class="d-none d-md-table-cell" scope="col">Descripción</th>
+            <th class="d-none d-md-table-cell" scope="col">Imagen</th>
+
+
+
+            @if (esquemaPrecios == 1)
+            {
+                if (esconderPrecios == false)
+                {
+                    <th class="d-none d-md-table-cell" scope="col">Precio</th>
+                }
+            }
+            else if (esquemaPrecios == 2)
+            {
+                if (esconderPrecios == false)
+                {
+                    <th class="d-none d-md-table-cell" scope="col">Precio N.</th>
+                    if (representada == true)
+                    {
+                        <th class="d-none d-md-table-cell" scope="col">Iva</th>
+                    }
+
+                    <th class="d-none d-md-table-cell" scope="col">Precio F.</th>
+                }
+            }
+            else if (esquemaPrecios == 3)
+            {
+                if (esconderPrecios == false)
+                {
+                    <th class="d-none d-md-table-cell" scope="col">Precio N.</th>
+                    <th class="d-none d-md-table-cell" scope="col">Precio F.</th>
+                }
+
+                <th class="d-none d-md-table-cell" scope="col">Sugerido</th>
+            }
+
+
+            <th class="d-none d-md-table-cell" width="10%" scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @for (int i = 0; i < totalElementos; i++)
+        {
+
+
+            var proditem = Model.ElementAt(i);
+
+            String codigoProducto = "";
+            String rubroCodigo = $" ({proditem.RubroCodigo}) ";
+
+
+            if (proditem.Representada == false)
+            {
+                codigoProducto = proditem.ProductoId.ToString();
+            }
+            else
+            {
+                if (proditem.ProductoId == 1378)
+                {
+                    continue;
+                }
+
+
+                codigoProducto = proditem.CodigoProveedor;
+
+                if (String.IsNullOrEmpty(codigoProducto))
+                {
+                    proditem.Representada = false;
+
+                    codigoProducto = proditem.ProductoId.ToString();
+                }
+            }
+
+            String urlVerProducto = Url.Action("VerProducto",
+                "Producto",
+                new { codigo = codigoProducto, representada = proditem.Representada, urlretorno = ViewContext.HttpContext.Request.PathAndQuery() });
+
+            String urlModificarProducto = Url.Action("ModificarItemCarrito", "Carrito",
+                new { idItemCarrito = proditem.IdItemCarrito, idProducto = proditem.ProductoId });
+
+
+
+            String nombreProducto = "";
+            String nombreProd = "";
+            String presentacionLetra = "";
+            if (proditem.PresentacionId == 0)
+            {
+                presentacionLetra = "(B) ";
+            }
+            else
+            {
+                presentacionLetra = "(U) ";
+            }
+
+
+
+            String totales = "";
+
+            if (proditem.Cantidad > 1)
+            {
+                nombreProd = proditem.NombreCompleto + " {x" + proditem.Cantidad.MostrarEntero() + "}";
+            }
+            else
+            {
+                nombreProd = proditem.NombreCompleto;
+            }
+
+            nombreProducto = presentacionLetra + " " + nombreProd;
+
+
+            String stockInfo = "";
+
+            if (representada == false)
+            {
+                if (ubicacionStock == true)
+                {
+                    if (proditem.StockUbicacion?.Ubicacion?.Count() == 1)
+                    {
+                        stockInfo = "D:" + proditem.StockUbicacion?.Ubicacion?.FirstOrDefault().ProductoUbicacionID + "_S:" +
+                            proditem.StockUbicacion?.Ubicacion?.FirstOrDefault().StockActual;
+                    }
+                    else if (proditem.StockUbicacion?.Ubicacion?.Count() > 1)
+                    {
+                        foreach (var ub in proditem.StockUbicacion?.Ubicacion)
+                        {
+                            stockInfo += "D:" + ub.ProductoUbicacionID + "_S:" + ub.StockActual + "  ";
+                        }
+                    }
+
+                    totales = "Stock: " + proditem.Stock.MostrarEntero() + " Inf: " + stockInfo + " ";
+
+                }
+                else
+                {
+                    totales = "Stock: " + proditem.Stock.MostrarEntero() + " ";
+                }
+
+            }
+
+            int cantidadCarrito = proditem.CantidadCarrito.MostrarEntero();
+
+            <tr>
+
+
+
+
+                @* Esto es Celular. *@
+                <td class="p-1 d-sm-block d-md-none @( i.EsPar() == true ? "fondogridBoostrap" : "fondogridBlanco" ) ">
+
+                    @if (modoEdicionProductos == false)
+                    {
+                        <div class="d-flex">
+
+
+                            <div>
+                                <button id="btnRestar_@i"
+                                        data-id="@proditem.IdItemCarrito"
+                                        onclick="sumarrestar_CantidadCarrito('@codigoProducto',@proditem.IdItemCarrito,2,@i,'@urlActionAjax','@proditem.Representada')"
+                                        class="btn mt-1 btn-danger btn-circle @(proditem.CantidadCarrito > 0 ? "mostrarDiv" : "ocultarDiv" )">
+                                    <i class="fas fa-minus fa-1x pt-1"></i>
+                                </button>
+                            </div>
+
+
+
+                            @*probando imagenes en celular*@
+                            <div class="text-center">
+                                <img id="img-prod-cel-@proditem.ProductoBaseId" class="imagen img-fluid">
+                            </div>
+
+                            <div class="flex-grow-1">
+                                @{
+                                    String esquema = "";
+
+                                    String codProd = "[" + codigoProducto + "] ";
+                                    String stockProd = "";
+
+                                    esquema = codProd + rubroCodigo + "<span class=\"color-naranja\">" +
+                                        presentacionLetra + "</span> " + nombreProd;
+
+                                    if (representada == false)
+                                    {
+                                        if (string.IsNullOrEmpty(stockInfo))
+                                        {
+                                            stockProd = "<br/><span class=\"small\">Stock: " + proditem.Stock.MostrarEntero() + "</span>";
+                                        }
+                                        else
+                                        {
+                                            stockProd = "<br/><span class=\"small\">Stock: " + proditem.Stock.MostrarEntero() + " " + stockInfo + "</span>";
+                                        }
+                                    }
+
+                                    esquema += stockProd;
+
+
+                                    if (proditem.CantidadCarrito > 0)
+                                    {
+                                        esquema = "(<b>" + proditem.CantidadCarrito.MostrarEntero() + "</b>) " + esquema;
+                                    }
+
+
+                                    <a id="urlEsquema_@i"
+                                       class="text-decoration-none @(proditem.CantidadCarrito > 0 ? "itemEstaEnCarrito" : "")"
+                                       href=" @(proditem.CantidadCarrito > 0 ? urlModificarProducto : urlVerProducto)"
+                                       data-url="@(proditem.CantidadCarrito > 0 ? urlVerProducto : urlModificarProducto)">
+
+                                        @if (proditem.ProductoOfertaID > 0)
+                                        {
+                                            <p id="esquema_@i" class="px-2 m-0">
+                                                <i class="fas fa-fire fa-fw red"></i> @Html.Raw(esquema)
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p id="esquema_@i" class="px-2 m-0">
+                                                @Html.Raw(esquema)
+                                            </p>
+                                        }
+                                    </a>
+                                }
+
+                            </div>
+
+
+
+
+                            @if (esquemaPrecios == 1)
+                            {
+
+
+                                if (esconderPrecios == false)
+                                {
+                                    <div class="pl-1 pt-2 pr-1">
+                                        <p id="precio_@i" class="font-weight-bold txtSinSaltos
+                           @(proditem.ProductoOfertaID > 0 ? "red" : "")">
+                                            @proditem.PrecioBruto.FormatoMoneda(true)
+                                        </p>
+                                    </div>
+
+                                }
+
+
+
+                            }
+                            else @if (esquemaPrecios == 2)
+                       {
+                           if (proditem.Representada == false)
+                           {
+                               if (esconderPrecios == false)
+                               {
+                                <div class="p-0">
+                                    <p id="precioNeto_@i" class="mb-1 txtSinSaltos" style="font-size:10px;">
+                                        @proditem.PrecioNeto.FormatoMoneda()
+                                    </p>
+                                    <p id="precio_@i" class="small txtSinSaltos
+                                            @(proditem.ProductoOfertaID > 0 ? "red" : "")">
+                                        @proditem.PrecioBruto.FormatoMoneda()
+                                    </p>
+                                </div>
+                            }
+
+                        }
+                        else
+                        {
+                            if (esconderPrecios == false)
+                            {
+                                if (ViewBag.TipoBonificProducto > 0)
+                                {
+                                    if (ViewBag.TipoBonificProducto == 1)
+                                    {
+                                        <div class="flex-row bd-highlight">
+                                            <p id="precioNeto_@i" class="mb-1 txtSinSaltos" style="font-size:8px;">
+                                                <strike> @proditem.PrecioNeto.FormatoMoneda()</strike>
+                                            </p>
+                                            <p id="precioNeto_@i" class="mb-1 txtSinSaltos" style="font-size:10px;">
+                                                @proditem.Bonificacion1?.PrecioNeto.FormatoMoneda()
+                                            </p>
+                                            <p id="precio_@i" class="small txtSinSaltos
+                                                                @(proditem.ProductoOfertaID > 0 ? "red" : "")">
+                                                @proditem.Bonificacion1?.PrecioBruto.FormatoMoneda()
+                                            </p>
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        <div class="flex-row bd-highlight">
+                                            <p id="precioNeto_@i" class="mb-1 txtSinSaltos" style="font-size:8px;">
+                                                <strike> @proditem.PrecioNeto.FormatoMoneda()</strike>
+                                            </p>
+                                            <p id="precioNeto_@i" class="mb-1 txtSinSaltos" style="font-size:10px;">
+                                                @proditem.Bonificacion2?.PrecioNeto.FormatoMoneda()
+                                            </p>
+                                            <p id="precio_@i" class="small txtSinSaltos
+                                        @(proditem.ProductoOfertaID > 0 ? "red" : "")">
+                                                @proditem.Bonificacion2?.PrecioBruto.FormatoMoneda()
+                                            </p>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="p-0">
+                                        <p id="precioNeto_@i" class="mb-1 txtSinSaltos" style="font-size:10px;">
+                                            @proditem.PrecioNeto.FormatoMoneda()
+                                        </p>
+                                        <p id="precio_@i" class="small txtSinSaltos
+                                        @(proditem.ProductoOfertaID > 0 ? "red" : "")">
+                                            @proditem.PrecioBruto.FormatoMoneda()
+                                        </p>
+                                    </div>
+                                }
+                            }
+                        }
+                    }
+                    else @if (esquemaPrecios == 3)
+                   {
+                    <div class="p-0">
+                        @if (esconderPrecios == false)
+                        {
+
+                            <p id="precioNeto_@i" class="mb-1 txtSinSaltos" style="font-size:10px;">
+                                @proditem.PrecioNeto.FormatoMoneda()
+                            </p>
+                            <p id="precio_@i" class="small txtSinSaltos
+                                            @(proditem.ProductoOfertaID > 0 ? "red" : "")">
+                                @proditem.PrecioBruto.FormatoMoneda()
+                            </p>
+                        }
+                        <p id="precioSugerido_@i" class="mb-1 txtSinSaltos" style="font-size:10px;">
+                            @proditem.PrecioSugerido.FormatoMoneda()
+                        </p>
+
+                    </div>
+                }
+
+
+                    <div>
+                        <button onclick="sumarrestar_CantidadCarrito('@codigoProducto',@proditem.IdItemCarrito,1,@i,'@urlActionAjax','@proditem.Representada')"
+                                class="btn mt-1 btn-success btn-circle">
+                            <i class="fas fa-plus fa-1x pt-1"></i>
+                        </button>
+                    </div>
+
+
+
+
+
+
+                </div>
+            }
+            else
+            {
+                <div class="d-flex flex-column">
+                    <div class="d-flex">
+
+                        @*probando imagenes en celular*@
+                        <div class="text-center">
+                            <img id="img-prod-cel-@proditem.ProductoBaseId" class="imagen img-fluid">
+                        </div>
+
+                        <div class="flex-grow-1">
+                            @{
+                                String esquema = "";
+
+                                String codProd = "[" + codigoProducto + "] ";
+                                String stockProd = "";
+
+                                esquema = codProd + rubroCodigo + "<span class=\"color-naranja\">" +
+                                    presentacionLetra + "</span> " + nombreProd;
+
+                                if (representada == false)
+                                {
+                                    if (string.IsNullOrEmpty(stockInfo))
+                                    {
+                                        stockProd = "<br/><span class=\"small\">Stock: " + proditem.Stock.MostrarEntero() + "</span>";
+                                    }
+                                    else
+                                    {
+                                        stockProd = "<br/><span class=\"small\">Stock: " + proditem.Stock.MostrarEntero() + " " + stockInfo + "</span>";
+                                    }
+                                }
+
+                                esquema += stockProd;
+
+
+                                if (proditem.CantidadCarrito > 0)
+                                {
+                                    esquema = "(<b>" + proditem.CantidadCarrito.MostrarEntero() + "</b>) " + esquema;
+                                }
+
+
+                                <a id="urlEsquema_@i"
+                                   class="text-decoration-none @(proditem.CantidadCarrito > 0 ? "itemEstaEnCarrito" : "")"
+                                   href=" @(proditem.CantidadCarrito > 0 ? urlModificarProducto : urlVerProducto)"
+                                   data-url="@(proditem.CantidadCarrito > 0 ? urlVerProducto : urlModificarProducto)">
+
+                                    @if (proditem.ProductoOfertaID > 0)
+                                    {
+                                        <p id="esquema_@i" class="px-2 m-0">
+                                            <i class="fas fa-fire fa-fw red"></i> @Html.Raw(esquema)
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p id="esquema_@i" class="px-2 m-0">
+                                            @Html.Raw(esquema)
+                                        </p>
+                                    }
+                                </a>
+                            }
+
+                        </div>
+
+
+                        @if (esquemaPrecios == 1)
+                        {
+                            if (esconderPrecios == false)
+                            {
+                                <div class="pl-1 pt-2 pr-1">
+                                    <p id="precio_@i" class="font-weight-bold txtSinSaltos
+                                   @(proditem.ProductoOfertaID > 0 ? "red" : "")">
+                                        @proditem.PrecioBruto.FormatoMoneda(true)
+                                    </p>
+                                </div>
+                            }
+
+                        }
+                        else if (esquemaPrecios == 2)
+                        {
+                            if (proditem.Representada == false)
+                            {
+                                if (esconderPrecios == false)
+                                {
+                                    <div class="p-0">
+                                        <p id="precioNeto_@i" class="mb-1 txtSinSaltos" style="font-size:10px;">
+                                            @proditem.PrecioNeto.FormatoMoneda()
+                                        </p>
+                                        <p id="precio_@i" class="small txtSinSaltos
+                                                    @(proditem.ProductoOfertaID > 0 ? "red" : "")">
+                                            @proditem.PrecioBruto.FormatoMoneda()
+                                        </p>
+                                    </div>
+                                }
+
+                            }
+                            else
+                            {
+                                if (esconderPrecios == false)
+                                {
+                                    if (ViewBag.TipoBonificProducto > 0)
+                                    {
+                                        if (ViewBag.TipoBonificProducto == 1)
+                                        {
+                                            <div class="flex-row bd-highlight">
+                                                <p id="precioNeto_@i" class="mb-1 txtSinSaltos" style="font-size:8px;">
+                                                    <strike> @proditem.PrecioNeto.FormatoMoneda()</strike>
+                                                </p>
+                                                <p id="precioNeto_@i" class="mb-1 txtSinSaltos" style="font-size:10px;">
+                                                    @proditem.Bonificacion1?.PrecioNeto.FormatoMoneda()
+                                                </p>
+                                                <p id="precio_@i" class="small txtSinSaltos
+                                                                        @(proditem.ProductoOfertaID > 0 ? "red" : "")">
+                                                    @proditem.Bonificacion1?.PrecioBruto.FormatoMoneda()
+                                                </p>
+                                            </div>
+
+                                        }
+                                        else
+                                        {
+                                            <div class="flex-row bd-highlight">
+                                                <p id="precioNeto_@i" class="mb-1 txtSinSaltos" style="font-size:8px;">
+                                                    <strike> @proditem.PrecioNeto.FormatoMoneda()</strike>
+                                                </p>
+                                                <p id="precioNeto_@i" class="mb-1 txtSinSaltos" style="font-size:10px;">
+                                                    @proditem.Bonificacion2?.PrecioNeto.FormatoMoneda()
+                                                </p>
+                                                <p id="precio_@i" class="small txtSinSaltos
+                                                @(proditem.ProductoOfertaID > 0 ? "red" : "")">
+                                                    @proditem.Bonificacion2?.PrecioBruto.FormatoMoneda()
+                                                </p>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="p-0">
+                                            <p id="precioNeto_@i" class="mb-1 txtSinSaltos" style="font-size:10px;">
+                                                @proditem.PrecioNeto.FormatoMoneda()
+                                            </p>
+                                            <p id="precio_@i" class="small txtSinSaltos
+                                                @(proditem.ProductoOfertaID > 0 ? "red" : "")">
+                                                @proditem.PrecioBruto.FormatoMoneda()
+                                            </p>
+                                        </div>
+                                    }
+                                }
+                            }
+                        }
+                        else if (esquemaPrecios == 3)
+                        {
+                            <div class="p-0">
+                                @if (esconderPrecios == false)
+                                {
+
+                                    <p id="precioNeto_@i" class="mb-1 txtSinSaltos" style="font-size:10px;">
+                                        @proditem.PrecioNeto.FormatoMoneda()
+                                    </p>
+                                    <p id="precio_@i" class="small txtSinSaltos
+                                                    @(proditem.ProductoOfertaID > 0 ? "red" : "")">
+                                        @proditem.PrecioBruto.FormatoMoneda()
+                                    </p>
+                                }
+                                <p id="precioSugerido_@i" class="mb-1 txtSinSaltos" style="font-size:10px;">
+                                    @proditem.PrecioSugerido.FormatoMoneda()
+                                </p>
+
+                            </div>
+                        }
+
+
+
+
+
+
+
+
+
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button onclick="ver_DetalleProducto('@codigoProducto',@proditem.IdItemCarrito,1,@i,'@urlModificarProducto','@proditem.Representada')"
+                                class="btn mt-1 btn-primary btn-circle">
+                            <i class="fas fa-check fa-1x pt-1"></i>
+                        </button>
+                    </div>
+                </div>
+            }
+
+                </td>
+
+
+
+                <td class="d-none d-md-table-cell">
+                    <p class="p-0 m-0" id="tbp_codigoProducto_@i">
+                        @codigoProducto
+                    </p>
+                    <p class="p-0 m-0" id="tbp_rubrocodigo_@i">
+                        @rubroCodigo
+                    </p>
+                </td>
+
+                <td class="d-none d-md-table-cell">
+                    <p id="tbp_codigoBarras_@i">
+                        @proditem.CodigoBarras
+                    </p>
+                </td>
+
+                <td class="d-none d-md-table-cell">
+
+
+                    <a id="tbp_enlaceVerProducto_@i" class="text-decoration-none  @(proditem.CantidadCarrito > 0 ? "itemEstaEnCarrito" : "")"
+                       href=" @(proditem.CantidadCarrito > 0 ? urlModificarProducto : urlVerProducto)"
+                       data-url="@(proditem.CantidadCarrito > 0 ? urlVerProducto : urlModificarProducto)">
+
+
+                        @if (proditem.ProductoOfertaID > 0)
+                        {
+                            <p id="tbp_nombreProducto_@i">
+                                <i class="fas fa-fire fa-fw red"></i>
+                                @nombreProducto
+
+                                @if (representada == false)
+                                {
+                                    <span class="float-right badge badge-pill border border-warning"> @totales</span>
+                                }
+                            </p>
+                        }
+                        else
+                        {
+                            <p id="tbp_nombreProducto_@i">
+                                @nombreProducto
+
+                                @if (representada == false)
+                                {
+                                    <span class="float-right badge badge-pill border border-warning"> @totales</span>
+                                }
+                            </p>
+                        }
+                    </a>
+
+
+                </td>
+
+                <td class="d-none d-md-table-cell">
+
+                    <div class="text-center">
+
+                        @if (!String.IsNullOrEmpty(proditem.RutaImagen))
+                        {
+                            <img id="img-prod-@proditem.ProductoBaseId" class="imagen img-fluid">
+                        }
+                        else
+                        {
+                            <img id="img-prod-@proditem.ProductoBaseId" class="imagen img-fluid" src="~/img/sinImagen.png">
+                        }
+
+                    </div>
+
+
+                </td>
+
+
+                @{
+
+
+                    if (esquemaPrecios == 1)
+                    {
+                        if (esconderPrecios == false)
+                        {
+                            <td class="d-none d-md-table-cell txtSinSaltos achicartexto">
+                                <p id="tbp_precioBruto"> @proditem.PrecioBruto.FormatoMoneda()</p>
+                            </td>
+                        }
+                    }
+                    else if (esquemaPrecios == 2)
+                    {
+                        if (esconderPrecios == false)
+                        {
+                            //--18-12-2020
+                            if (proditem.Representada == false)
+                            {
+                                <td class="d-none d-md-table-cell txtSinSaltos achicartexto">
+                                    <p id="tbp_precioNeto"> <small>@proditem.PrecioNeto.FormatoMoneda()</small> </p>
+                                </td>
+
+
+                                <td class="d-none d-md-table-cell txtSinSaltos achicartexto">
+                                    <p id="tbp_precioBruto"> @proditem.PrecioBruto.FormatoMoneda()</p>
+                                </td>
+                            }
+                            else
+                            {
+                                if (ViewBag.TipoBonificProducto > 0)
+                                {
+                                    if (ViewBag.TipoBonificProducto == 1)
+                                    {
+                                        <td class="d-none d-md-table-cell txtSinSaltos achicartexto">
+                                            <p id="tbp_precioNeto" class="small"><strike>@proditem.PrecioNeto.FormatoMoneda()</strike></p>
+                                            <p>@proditem.Bonificacion1?.PrecioNeto.FormatoMoneda()</p>
+                                        </td>
+
+                                        <td class="d-none d-md-table-cell txtSinSaltos achicartexto">
+                                            <p id="tbp_Iva"> @("% " + Math.Round((decimal)proditem.PorcImpuesto, 1))</p>
+                                        </td>
+
+
+                                        <td class="d-none d-md-table-cell txtSinSaltos achicartexto">
+                                            <p id="tbp_precioBruto" class="small"><strike> @proditem.PrecioBruto.FormatoMoneda()</strike></p>
+                                            <p>@proditem.Bonificacion1?.PrecioBruto.FormatoMoneda()</p>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td class="d-none d-md-table-cell txtSinSaltos achicartexto">
+                                            <p id="tbp_precioNeto" class="small"><strike>@proditem.PrecioNeto.FormatoMoneda()</strike></p>
+                                            <p>@proditem.Bonificacion2?.PrecioNeto.FormatoMoneda()</p>
+                                        </td>
+
+
+                                        <td class="d-none d-md-table-cell txtSinSaltos achicartexto">
+                                            <p id="tbp_Iva"><small> @("% " + Math.Round((decimal)proditem.PorcImpuesto, 1)) </small></p>
+                                        </td>
+
+
+                                        <td class="d-none d-md-table-cell txtSinSaltos achicartexto">
+                                            <p id="tbp_precioBruto" class="small"><strike> @proditem.PrecioBruto.FormatoMoneda()</strike></p>
+                                            <p>@proditem.Bonificacion2?.PrecioBruto.FormatoMoneda()</p>
+                                        </td>
+                                    }
+                                }
+                                else
+                                {
+                                    <td class="d-none d-md-table-cell txtSinSaltos achicartexto">
+                                        <p id="tbp_precioNeto"><small> @proditem.PrecioNeto.FormatoMoneda()</small></p>
+                                    </td>
+
+                                    <td class="d-none d-md-table-cell txtSinSaltos achicartexto">
+                                        <p id="tbp_Iva"><small> @("% " + Math.Round((decimal)proditem.PorcImpuesto, 1))</small></p>
+                                    </td>
+
+
+                                    <td class="d-none d-md-table-cell txtSinSaltos achicartexto">
+                                        <p id="tbp_precioBruto"> @proditem.PrecioBruto.FormatoMoneda()</p>
+                                    </td>
+                                }
+                            }
+
+                        }
+
+
+                    }
+                    else if (esquemaPrecios == 3)
+                    {
+                        if (esconderPrecios == false)
+                        {
+                            <td class="d-none d-md-table-cell txtSinSaltos achicartexto">
+                                <p id="tbp_precioNeto"> <small>@proditem.PrecioNeto.FormatoMoneda()</small> </p>
+                            </td>
+
+                            <td class="d-none d-md-table-cell txtSinSaltos achicartexto">
+                                <p id="tbp_precioBruto"> @proditem.PrecioBruto.FormatoMoneda()</p>
+                            </td>
+
+                        }
+
+                        <td class="d-none d-md-table-cell txtSinSaltos achicartexto">
+                            <p id="tbp_precioSugerido"> @proditem.PrecioSugerido.FormatoMoneda()</p>
+                        </td>
+
+                    }
+
+
+
+                }
+
+                <td class="d-none d-md-table-cell">
+
+                    <div class="input-group">
+                        <input type="number" id="cantidad_@i" min="0"
+                               value="@cantidadCarrito" class="form-control p-1 escoder900" aria-describedby="basic-addon2">
+                        <div class="input-group-append">
+                            <button data-id="@proditem.IdItemCarrito" id="btnModificarAg_@i"
+                                    onclick="sumarrestar_CantidadCarrito_dos('@codigoProducto',@i,'@urlActionAjax','@proditem.Representada')"
+                                    name="btnModificarAg" class="btn btn-sm btn-primary" type="button">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+
+                </td>
+
+
+            </tr>
+
+        }
+
+
+
+        <tr class='noSearch hide'>
+            <td colspan="2"></td>
+        </tr>
+    </tbody>
+</table>

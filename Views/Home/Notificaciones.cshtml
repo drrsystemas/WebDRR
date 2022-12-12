@@ -1,0 +1,58 @@
+﻿@model NotificacionesViewModel
+
+@{
+    ViewData["Title"] = "Notificaciones";
+
+    if(Model.LayoutRoot ==true)
+    {
+        Layout = "~/Views/Shared/_LayoutRoot.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+
+}
+
+
+<div class="container p-4">
+
+
+
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+
+            <h3 class="text-center">Notificaciones</h3>
+
+            <div class="card text-center">
+                <div class="card-header">
+                    <h5>Codigo: @Model.Id</h5>
+
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-4">
+                            @*class="fa fa-home"*@
+                            @*<i class="@Model.Icono"></i>*@
+                            <i class="fas fa-bullhorn fa-4x"></i>
+                        </div>
+                        <div class="col-8">
+                            <h5 class="text-left">@Model.Mensaje </h5>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                @if (!String.IsNullOrEmpty(Model.UrlRetorno))
+                {
+                    
+                    <drr-link text="@Model.UrlTexto" css="btn btn-primary btn-block" url="@Model.UrlRetorno" />
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<br />
+<br />

@@ -1,0 +1,8 @@
+﻿@model IdLocate
+
+    <div class="row">
+        <label id="lbEtiqueta" class="col-4 col-sm-2 col-md-2 ">@Model.Etiqueta</label>
+        <input id="txtCodigo" class="col-6 col-sm-2 col-md-2" asp-for="Codigo" />
+        <button class="btn btn-success col-2 col-sm-1 col-md-1"  id="btnBuscar"><i class="fas fa-search fa-1x"></i></button>
+        <input id="txtDato" class="mt-1 col-12 col-sm-7 col-md-7" asp-for="Dato" readonly />
+    </div>

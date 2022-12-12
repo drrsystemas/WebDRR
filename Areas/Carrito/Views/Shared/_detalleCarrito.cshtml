@@ -1,0 +1,828 @@
+﻿@* Modificado:17/09/2021 *@
+
+@model CarritoIndexViewModel
+
+@{
+    //var lista = Model.Carrito.Lista.Reverse();
+    var lista = Model.Carrito.Lista;
+
+    //asp - action = "Observacion" asp - controller = "Carrito" asp - area = "Carrito"
+    String urlObservacion = Url.Action("ObservacionJson", "Carrito");
+
+    SessionAcceso session = (SessionAcceso)ViewData["SessionAcceso"];
+    int rol = (int)ViewData["rol"];
+
+    //LoNuevo:Pero se tiene que ir
+
+    if (rol == 0)
+    {
+        rol = (Int32)EnumRol.Cliente;
+    }
+
+
+    String wp = (String)ViewData["wp"];
+
+
+
+    String urlComprar = (String)ViewData["urlComprar"];
+    Boolean datos_envioRetiro = (Boolean)ViewData["datos_envioRetiro"];
+    Boolean datos_pago = (Boolean)ViewData["datos_pago"];
+
+
+    String urlFormularioWp = Url.Action("AbrirFormularioWp", "Carrito");
+
+    //int rol = session?.Usuario?.Rol ?? 0;
+    Boolean colvisibible = false;
+
+    //Boolean preciosBrutos = true;
+    Int32 esquemaPrecios = 1;
+    var confPrecios = session.Configuracion?.ConfiguracionesViewDatosProductos?.FirstOrDefault(c => c.Codigo ==
+    (Int32)LibreriaBase.Areas.Usuario.ConfViewDatosProductos.EnumConfViewDatosProductos.Esquema_Visualizacion_de_Precios);
+
+    esquemaPrecios = (Int32)confPrecios?.Valor;
+
+    if(esquemaPrecios==0)
+    {
+        esquemaPrecios = 1;
+    }
+}
+
+
+
+
+<table id="tablaProductos" class="table table-striped">
+
+    <thead>
+        <tr>
+            @{
+
+                <th class="d-none d-sm-table-cell"> </th>
+
+                <th class="d-none d-sm-table-cell"> Código</th>
+
+                <th class="d-none d-sm-table-cell mx-auto"> Cant. </th>
+
+                <th class="d-none d-sm-table-cell"> Producto </th>
+
+                if (rol == (Int32)EnumRol.Vendedor || rol == (Int32)EnumRol.ClienteFidelizado)
+                {
+                    if (esquemaPrecios == 1)
+                    {
+                        <th class="d-none d-sm-table-cell"> Precio </th>
+
+                        if (rol == (Int32)EnumRol.Vendedor)
+                        {
+                            <th class="d-none d-sm-table-cell"> Bonf. </th>
+                        }
+
+                        <th class="d-none d-sm-table-cell"> Subtotal </th>
+                    }
+                    else if (esquemaPrecios == 2 || esquemaPrecios == 3)
+                    {
+                        <th class="d-none d-sm-table-cell"> Neto </th>
+                        <th class="d-none d-sm-table-cell"> Iva </th>
+                        <th class="d-none d-sm-table-cell"> Final </th>
+
+                        if (rol == (Int32)EnumRol.Vendedor)
+                        {
+                            <th class="d-none d-sm-table-cell"> Bonf. </th>
+                        }
+                        <th class="d-none d-sm-table-cell"> Subtotal </th>
+                    }
+                    else
+                    {
+                        <th class="d-none d-sm-table-cell"> Precio </th>
+
+                        if (rol == (Int32)EnumRol.Vendedor)
+                        {
+                            <th class="d-none d-sm-table-cell"> Bonf. </th>
+                        }
+                        <th class="d-none d-sm-table-cell"> Subtotal </th>
+                    }
+
+
+                }
+                else
+                {
+                    <th class="d-none d-sm-table-cell"> Precio </th>
+                    <th class="d-none d-sm-table-cell"> Subtotal </th>
+                }
+
+
+
+                <th class="d-none d-sm-table-cell"> </th>
+
+            }
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in lista)
+        {
+        <tr>
+            @{
+
+                String nombreCantidad = "txtCantidad" + item.IdItemCarrito;
+
+                String codigo = "";
+
+                if (Model.TipoEmpresa != (int)EnumTiposEmpresas.Representada)
+                {
+                    codigo = item.Producto.ProductoId.ToString();
+                }
+                else
+                {
+                    codigo = item.Producto.CodigoProveedor;
+                }
+
+                String precioSinBonificacion = "";
+                String precioNeto = "";
+                String Iva = "";
+                String precio = "";
+                string subTotal = "";
+                String precioF = "";
+                string subTotalF = "";
+
+                String esquemaDetalle = "";
+
+                Boolean bonificacion = item.Producto.Bonificacion > 0 ? true : false;
+
+                String nombre = codigo + " - ";
+
+                if (item.PresentacionId == 0)
+                {
+                    nombre += "(B) ";
+                }
+                else
+                {
+                    nombre += "(U) ";
+                }
+
+                nombre += item.Producto.Marca + " " + item.Producto.NombreCompleto;
+                if (item.PresentacionId == 0)
+                {
+                    nombre += " {x" + item.Producto.Cantidad.MostrarEntero() + "}";
+                }
+
+
+                if (rol == (Int32)EnumRol.Vendedor || rol == (Int32)EnumRol.ClienteFidelizado)
+                {
+                    if (esquemaPrecios == 1)
+                    {
+                        precioSinBonificacion = item.Producto.Bruto.FormatoMoneda();
+                        precio = item.Producto.PrecioBruto.FormatoMoneda();
+                        subTotal = item.SubTotal.FormatoMoneda();
+
+                    }
+                    else if (esquemaPrecios == 2 || esquemaPrecios == 3)
+                    {
+
+                        precioSinBonificacion = item.Producto.Neto.FormatoMoneda();
+                        precio = item.Producto.PrecioNeto.FormatoMoneda();
+                        subTotal = (item.Producto.PrecioNeto * item.Cantidad).FormatoMoneda();
+
+                        Iva = "% " + Math.Round((decimal)item.Producto.PorcImpuesto, 1);
+                        precioF = item.Producto.PrecioBruto.FormatoMoneda();
+                        subTotalF = item.SubTotal.FormatoMoneda();
+
+                    }
+
+                    esquemaDetalle = $"{item.Producto.PrecioNeto.FormatoMoneda()} | {item.Cantidad} | {Iva} | {Math.Round(item.Producto.Bonificacion,1)} | {item.Producto.PrecioBruto.FormatoMoneda()}";
+
+                }
+                else
+                {
+                    precioSinBonificacion = item.Producto.Bruto.FormatoMoneda();
+                    precio = item.Producto.PrecioBruto.FormatoMoneda();
+                    subTotal = item.SubTotal.FormatoMoneda();
+                }
+
+                //vista para los telefonos.
+                <td class="d-block d-sm-none">
+                    <div class="d-flex flex-column ">
+                                <div class="d-flex ">
+                                    <div class="flex-fill ">
+                                        @esquemaDetalle
+                                    </div>
+                                    <div class=" flex-fill ">
+                                        <p class="text-right txtSinSaltos"><strong>@subTotalF</strong></p>
+
+                                    </div>
+                                </div>
+                                <div class="pt-1 ">
+                                    <img class="float-left mr-2 imagen img-fluid" src="@item.Producto.Imagen.RutaImagenJpg()">
+
+                                    <a class="d-flex" asp-area="Carrito" asp-controller="Carrito" asp-action="ModificarItemCarrito"
+                                       asp-route-idItemCarrito="@item.IdItemCarrito" id="btneditar">
+
+
+                                        @{
+                                            if (item.Producto.ProductoOfertaID > 0)
+                                            {
+                                                <p>
+                                                    <i class="fas fa-fire fa-1x" style="color:red;"></i>
+                                                    @nombre
+                                                </p>
+
+                                            }
+                                            else
+                                            {
+                                                <p>
+                                                    @nombre
+                                                </p>
+                                            }
+                                        }
+                                    </a>
+
+                                </div>
+
+                                @{
+                                    if (!String.IsNullOrEmpty(item.Producto.DetallaCliente))
+                                    {
+                                        <div class="p-0 fondoDescripcion">
+                                            <p class="p-0 m-1">
+                                                @item.Producto.DetallaCliente
+                                            </p>
+                                        </div>
+                                    }
+
+
+                                }
+
+                            </div>
+                </td>
+
+
+
+                <td class="d-none d-sm-table-cell">
+                    <a asp-area="Carrito" asp-controller="Carrito" asp-action="ModificarItemCarrito"
+                       asp-route-idItemCarrito="@item.IdItemCarrito" id="btneditar" class="btn btn-success">
+                        <i class="far fa-edit"></i>
+                    </a>
+                </td>
+
+
+
+                <td class="d-none d-sm-table-cell">
+                    <p>@codigo</p>
+                </td>
+
+                <td class="d-none d-sm-table-cell mx-auto">
+
+                    <input class="@(item.PresentacionId==0?"fondoBulto":"fondoUnidad")"
+                           style="height: 25px; width: 50px;"
+                           id="txt-input-cantidad"
+                           type="text"
+                           name="cantidad"
+                           data-id="@item.Producto.ProductoId"
+                           data-idItem="@item.IdItemCarrito"
+                           value="@(rol == (Int32)EnumRol.Vendedor ? item.Cantidad : item.Cantidad.MostrarEntero())" />
+
+                </td>
+                                                String nombreProducto = "";
+
+                                                if (item.PresentacionId == 0)
+                                                {
+                                                    nombreProducto += "(B) ";
+                                                }
+                                                else
+                                                {
+                                                    nombreProducto += "(U) ";
+                                                }
+
+
+                                                nombreProducto += item.Producto.Marca + " " + item.Producto.NombreCompleto;
+                                                //Bulto.
+                                                if (item.PresentacionId == 0)
+                                                {
+                                                    nombreProducto += " {x" + item.Producto.Cantidad.MostrarEntero() + "}";
+
+                                                }
+
+                                                if (!String.IsNullOrEmpty(item.Producto.DetallaCliente))
+                                                {
+                                                    nombreProducto += " (" + item.Producto.DetallaCliente + ")";
+                                                }
+
+                                                if (item.Producto.ProductoOfertaID > 0)
+                                                {
+                                                    //if (rol == (Int32)EnumRol.Cliente)
+                                                    //{
+                        <td class="d-none d-sm-table-cell">
+
+                            @if (item.Producto.Imagen != null)
+                            {
+                                <div class="row">
+                                    <div class="col-2">
+
+                                        <img class="imagen img-fluid" src="@item.Producto.Imagen.RutaImagenJpg()">
+
+                                    </div>
+                                    <div class="col-10">
+                                        <p><i class="fas fa-fire fa-1x" style="color:red;"></i> @nombreProducto</p>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <p><i class="fas fa-fire fa-1x" style="color:red;"></i> @nombreProducto </p>
+                            }
+
+                        </td>
+                    @*}
+                    else
+                    {
+                        <td class="d-none d-sm-table-cell">
+                            <p>  <i class="fas fa-fire fa-1x" style="color:red;"></i> @nombreProducto</p>
+                        </td>
+                    }*@
+
+
+                                                }
+                                                else
+                                                {
+                                                    //if (rol == (Int32)EnumRol.Cliente)
+                                                    //{
+
+                        <td class="d-none d-sm-table-cell">
+
+                            @if (item.Producto.Imagen != null)
+                            {
+                                <div class="row">
+                                    <div class="col-2">
+
+                                        <img class="imagen img-fluid" src="@item.Producto.Imagen.RutaImagenJpg()">
+
+                                    </div>
+                                    <div class="col-10">
+                                        <p> @nombreProducto</p>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <p>@nombreProducto </p>
+                            }
+
+
+                        </td>
+                    @*}
+                    else
+                    {
+                        <td class="d-none d-sm-table-cell">
+                            <p>@nombreProducto </p>
+                        </td>
+                    }*@
+
+                }
+
+
+
+                if (rol == (int)EnumRol.Vendedor || rol == (int)EnumRol.ClienteFidelizado)
+                {
+
+                    if (esquemaPrecios == 1)
+                    {
+
+                        <td class="d-none d-sm-table-cell">
+                            @{
+                                if (bonificacion == true)
+                                {
+                                    <p class="m-0 txtSinSaltos" style="font-size:11px;">
+                                        <strike>   @precioSinBonificacion </strike>
+                                    </p>
+                                }
+                            }
+                            <p class="m-0 font-weight-bold txtSinSaltos">
+                                @precio
+                            </p>
+                        </td>
+
+                        if (rol == (Int32)EnumRol.Vendedor)
+                        {
+                            <td class="d-none d-sm-table-cell">
+                                <input style="height: 25px; width: 50px;" min="0" max="100" type="text" name="bonificacion"
+                                       data-id="@item.Producto.ProductoId"
+                                       data-idItem="@item.IdItemCarrito"
+                                       value="@item.Producto.Bonificacion.MostrarEntero()" />
+                            </td>
+                        }
+
+
+
+
+
+
+                        <td class="d-none d-sm-table-cell">
+                            <p class="txtSinSaltos">
+                                @subTotal
+                            </p>
+                        </td>
+
+                    }
+                    else if (esquemaPrecios == 2 || esquemaPrecios == 3)
+                    {
+
+
+                        <td class="d-none d-sm-table-cell">
+                            @{
+                                if (bonificacion == true)
+                                {
+                                    <p class="m-0 txtSinSaltos" style="font-size:11px;">
+                                        <strike>   @precioSinBonificacion </strike>
+                                    </p>
+                                }
+                            }
+                            <p class="m-0 font-weight-bold txtSinSaltos">
+                                @precio
+                            </p>
+                        </td>
+
+                        <td class="d-none d-sm-table-cell">
+
+                            <p class="m-0 font-weight-bold txtSinSaltos">
+                                @Iva
+                            </p>
+                        </td>
+
+                        <td class="d-none d-sm-table-cell">
+
+                            <p class="m-0 font-weight-bold txtSinSaltos">
+                                @precioF
+                            </p>
+                        </td>
+
+                        if (rol == (Int32)EnumRol.Vendedor)
+                        {
+                            <td class="d-none d-sm-table-cell">
+                                <input style="height: 25px; width: 50px;" min="0" max="100" type="text" name="bonificacion"
+                                       data-id="@item.Producto.ProductoId"
+                                       data-idItem="@item.IdItemCarrito"
+                                       value="@item.Producto.Bonificacion.MostrarEntero()" />
+                            </td>
+                        }
+
+
+
+
+
+
+                        <td class="d-none d-sm-table-cell">
+                            <p class="txtSinSaltos">
+                                @subTotalF
+                            </p>
+                        </td>
+
+
+
+
+                    }
+                    else
+                    {
+
+                        <td class="d-none d-sm-table-cell">
+                            @{
+                                if (bonificacion == true)
+                                {
+                                    <p class="m-0 txtSinSaltos" style="font-size:11px;">
+                                        <strike>   @precioSinBonificacion </strike>
+                                    </p>
+                                }
+                            }
+                            <p class="m-0 font-weight-bold txtSinSaltos">
+                                @precio
+                            </p>
+                        </td>
+
+
+                        if (rol == (Int32)EnumRol.Vendedor)
+                        {
+                            <td class="d-none d-sm-table-cell">
+                                <input style="height: 25px; width: 50px;" min="0" max="100" type="text" name="bonificacion"
+                                       data-id="@item.Producto.ProductoId"
+                                       data-idItem="@item.IdItemCarrito"
+                                       value="@item.Producto.Bonificacion.MostrarEntero()" />
+                            </td>
+
+                        }
+
+
+
+
+
+                        <td class="d-none d-sm-table-cell">
+                            <p class="txtSinSaltos">
+                                @subTotal
+                            </p>
+                        </td>
+
+                    }
+                }
+                else
+                {
+
+
+                    <td class="d-none d-sm-table-cell">
+                        @{
+                            if (bonificacion == true)
+                            {
+                                <p class="m-0 txtSinSaltos" style="font-size:11px;">
+                                    <strike>   @precioSinBonificacion </strike>
+                                </p>
+                            }
+                        }
+                        <p class="m-0 txtSinSaltos">
+                            @precio
+                        </p>
+                    </td>
+
+
+                    <td class="d-none d-sm-table-cell">
+                        <p class="txtSinSaltos">
+                            @subTotal
+                        </p>
+                    </td>
+
+
+                }
+
+
+
+                <td class="d-none d-sm-table-cell">
+
+
+                    <form asp-action="EliminarItemCarrito" method="post">
+                        <input type="hidden" name="productoId"
+                               value="@item.Producto.ProductoId" />
+                        <input type="hidden" name="idItemCarrito"
+                               value="@item.IdItemCarrito" />
+                        <input type="hidden" name="urlRetorno"
+                               value="@ViewContext.HttpContext.Request.PathAndQuery()" />
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </td>
+
+
+            }
+        </tr>
+        }
+
+    </tbody>
+</table>
+
+
+
+
+@* Esto hay que separar en otra vista parcial porque es bastantante grande. *@
+
+<div class="row">
+    <div class="col-12 col-sm-6 col-md-9 order-2 order-sm-1">
+        @{
+
+            var leyenda = session.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo == 16);
+            if (leyenda?.Valor == 1)
+            {
+                <h6 class="text-left">
+                    @leyenda.Extra
+                </h6>
+            }
+        }
+
+
+        @{
+
+            if (rol != (int)EnumRol.Vendedor)
+            {
+
+                @*<form id="frmObservacion" asp-action="Observacion" asp-controller="Carrito" asp-area="Carrito" method="get">*@
+                <div class="row">
+
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="@Model.Carrito.Observacion"> Observaciones</label>
+
+                            <textarea class="form-control" asp-for="@Model.Carrito.Observacion"
+                                      id="observacion" placeholder=""
+                                      name="observacion" rows="2"
+                                      data-urlaction="@urlObservacion"> </textarea>
+                        </div>
+                    </div>
+
+
+                    @*<input type="hidden" name="UrlRetorno" value="@Model.UrlRetorno" />*@
+                </div>
+                @*</form>*@
+                <br />
+
+
+
+                <a id="btnComprar" class="btn btn-primary text-white"
+                   onclick="comprar('@urlComprar','@datos_envioRetiro','@datos_pago')"><i class="fas fa-shopping-bag"></i> Comprar</a>
+
+
+                @*@if (rol == (Int32)EnumRol.ClienteFidelizado)
+                {
+                    if (Model.Carrito?.Lista?.Count() > 0)
+                    {
+                        String urlGuardar = Url.Action("GuardarCarritoLocalStorage", "Carrito");
+                        String urlGuardarTemporal = Url.Action("GuardarPedidoTemporal", "Carrito");
+
+                        <a onclick="guardarCarritoLocalStorage('@urlGuardar','@urlGuardarTemporal')" id="btnGuardadCarrito" class="btn btn-outline-secondary">
+                            <i class="fas fa-file-download"></i>
+                            <b class="caret d-none d-sm-inline">Guardar Carrito</b>
+                        </a>
+                    }
+                    else
+                    {
+                        String urlRecuperar = Url.Action("RecuperarCarritoLocalStorage", "Carrito");
+
+                        <a onclick="recuperarCarritoLocalStorage('@urlRecuperar')" id="btnRecuperarCarrito" class="btn btn-outline-secondary">
+                            <i class="fas fa-file-upload"></i>
+                            <b class="caret d-none d-sm-inline">Recuperar Carrito</b>
+                        </a>
+                    }
+                }*@
+
+
+
+
+                if (Model?.TipoEmpresa != (int)EnumTiposEmpresas.Representada)
+                {
+
+                    var confWp = session.Configuracion.ConfiguracionesPortal.FirstOrDefault(c => c.Codigo == (Int32)ConfPortal.EnumConfPortal.ModoCarritoWhatsApp);
+
+                    if (confWp?.Valor.MostrarEntero() == 1)
+                    {
+
+                        var confFormulario = session.Configuracion.ConfiguracionesPortal.FirstOrDefault(c => c.Codigo == (Int32)ConfPortal.EnumConfPortal.Formulario_WhatsApp);
+
+                        if (confFormulario?.Valor.MostrarEntero() == 1)
+                        {
+                            <button id="btnConsultar" onclick="frmConsulta()"
+                                    type="button" class="ml-2 btn btn-success ">
+                                <i class="fab fa-whatsapp"></i> Enviar Pedido
+                            </button>
+                        }
+                        else
+                        {
+                            <button id="btnConsultar" onclick="pedidoWeb('@wp', '@Model.Carrito.Pedido_Wp()')"
+                                    type="button" class="ml-2 btn btn-success ">
+                                <i class="fab fa-whatsapp"></i> Enviar Pedido
+                            </button>
+                        }
+
+                    }
+
+
+
+                    @*<button id="btnConsultar" onclick="abrirFormularioWp()"
+                            type="button" class="ml-2 btn btn-success ">
+                        <i class="fab fa-whatsapp"></i> Consultar
+                    </button>*@
+                }
+
+
+
+            }
+            else
+            {
+
+                var obsVisible = session.Configuracion.ConfiguracionesPortal.FirstOrDefault(c => c.Codigo ==
+                (int)LibreriaBase.Areas.Usuario.ConfPortal.EnumConfPortal.Ver_observacion_pedido_Vendedor);
+
+                if (obsVisible?.Valor.MostrarEntero() == 1)
+                {
+                    @*<form id="frmObservacion" asp-action="Observacion" asp-controller="Carrito" asp-area="Carrito" method="get">*@
+                    <div class="row">
+
+                        <div class="col-12">
+                            <div class="form-group">
+                                <textarea class="form-control" asp-for="@Model.Carrito.Observacion"
+                                          id="observacion" placeholder="Observaciones" data-urlaction="@urlObservacion"
+                                          name="observacion" rows="3"> </textarea>
+                            </div>
+                        </div>
+
+                        @*<input type="hidden" name="UrlRetorno"
+                        value="@Model.UrlRetorno" />*@
+                    </div>
+                    @*</form>*@
+                }
+
+
+                var transporte = session.Configuracion.ConfiguracionesPortal.FirstOrDefault(c => c.Codigo ==
+                (int)LibreriaBase.Areas.Usuario.ConfPortal.EnumConfPortal.Mostrar_SeleccionarTransporte);
+
+                if (transporte?.Valor.MostrarEntero() == 1)
+                {
+
+                    List<Generica> listaTransporte = (List<Generica>)ViewData["ListaTransporte"];
+                    String urlTransporte = Url.Action("GuardarIdTransporte", "Carrito");
+                    <div class="p-0 col-12">
+                        <select onchange="seleccionarTransporte('@urlTransporte')" class="custom-select" id="cbTransporte" name="transporteId" asp-for="Carrito.TransporteId"
+                                asp-items="@(new SelectList(listaTransporte,"Id","Nombre"))">
+                            <option value="" disabled selected>Transporte</option>
+                        </select>
+                    </div>
+                }
+
+
+
+                if (Model.Carrito?.Envio?.IdEnvio > 0)
+                {
+                    //Retiro.
+                    if (Model.Carrito?.Envio?.IdTipoEnvio == 1)
+                    {
+                        <p>@Model.Carrito?.Envio.NombreIdTipoEnvio</p>
+                        <p>Se retira en la sucursal: @Model.Carrito?.Envio.NombreIdSucursal</p>
+
+                    }
+                    else
+                    {
+                        <p>@Model.Carrito?.Envio.NombreIdTipoEnvio</p>
+                        <p>@Model.Carrito?.Envio.NombreIdEnvio - con un costo de: @Model.Carrito?.Envio.Costo</p>
+                        <p>El envio se realiza de la sucursal: @Model.Carrito?.Envio.NombreIdSucursal</p>
+
+                    }
+                }
+
+
+            }
+
+        }
+
+
+
+
+
+    </div>
+
+
+    <div class="col-12 col-sm-6 col-md-3 order-1 order-sm-2 ">
+        @{
+            LibreriaBase.Areas.Carrito.Subtotales subtotales = Model?.Carrito?.Get_Totales();
+            String subtotalNeto = "S.N: " + subtotales?.SubTotalNeto.FormatoMoneda();
+            String descuento = "Desc: %" + Model.Carrito.Descuento.MostrarEntero().ToString();
+            String neto = "Neto: " + subtotales?.Neto.FormatoMoneda();
+            String iva = "Iva: " + subtotales?.Iva.FormatoMoneda();
+            String iibb = "IIBB: " + subtotales?.IIBB.FormatoMoneda();
+            String total = "Total: " + subtotales?.Total.FormatoMoneda();
+
+            if (rol == (int)EnumRol.Vendedor)
+            {
+                if (esquemaPrecios == 1)
+                {
+                    <h4 class="text-right">
+                        @total
+                    </h4>
+                }
+                else
+                {
+                    <h5 class="m-0 text-right achicarLetra ">
+                        @subtotalNeto
+                    </h5>
+                    <h5 class="m-0 text-right achicarLetra">
+                        ------------------
+                    </h5>
+                    <h5 class="m-0 text-right achicarLetra">
+                        @descuento
+                    </h5>
+                    <h5 class="m-0 text-right achicarLetra">
+                        @neto
+                    </h5>
+                    <h5 class="m-0 text-right achicarLetra">
+                        @iva
+                    </h5>
+                    <h5 class="m-0 text-right achicarLetra">
+                        @iibb
+                    </h5>
+                    <h4 class="m-0 text-right achicarLetraTotal">
+                        @total
+                    </h4>
+                }
+            }
+            else
+            {
+                <h4 class="text-right">
+                    @total
+                </h4>
+            }
+
+
+        }
+
+    </div>
+</div>
+
+
+
+
+
+
+<div id="frm-formulario-wp">
+
+</div>
+

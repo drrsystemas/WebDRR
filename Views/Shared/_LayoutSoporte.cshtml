@@ -1,0 +1,440 @@
+﻿@{
+    SessionAcceso _session = Context.Session.GetJson<SessionAcceso>("SessionAcceso");
+
+    String titulo = ViewData["Title"] + " - AlmaNET";
+}
+
+
+<!DOCTYPE html>
+
+<html lang="es-ar">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@titulo</title>
+
+
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
+    <link rel="stylesheet" href="~/css/drrSystemasProductos.css" />
+
+
+
+
+
+    <script type="text/javascript" src="~/lib/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="~/lib/popper.js/umd/popper.min.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+
+
+    <script type="text/javascript">
+        $('.dropdown-menu a.dropdown-toggle').on('click', function (e) {
+            if (!$(this).next().hasClass('show')) {
+                $(this).parents('.dropdown-menu').first().find('.show').removeClass("show");
+            }
+            var $subMenu = $(this).next(".dropdown-menu");
+            $subMenu.toggleClass('show');
+
+
+            $(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function (e) {
+                $('.dropdown-submenu .show').removeClass("show");
+            });
+
+
+            return false;
+        });
+    </script>
+
+
+
+
+
+    @RenderSection("Estilos", required: false)
+
+
+
+    <!-- CSS media query within a style sheet -->
+    <style type="text/css" media="screen and (max-width:540px)">
+        #headerv4_a_logo {
+            display: none;
+        }
+
+        #barraPrincipal {
+            padding: 0px;
+        }
+
+
+        .dropdown-submenu {
+            position: relative;
+        }
+
+            .dropdown-submenu a::after {
+                transform: rotate(-90deg);
+                position: absolute;
+                right: 6px;
+                top: .8em;
+            }
+
+            .dropdown-submenu .dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-left: .1rem;
+                margin-right: .1rem;
+            }
+
+
+
+    </style>
+
+
+
+</head>
+
+<body>
+
+
+    <header>
+
+
+        @{
+        //Cambio: esto se tiene que mejorar al 100 % asi da asco - 05/10/2021 - Mejorar la barra principal.
+        }
+        <nav id="barraPrincipal" class="navbar navbar-expand navbar-light bg-light navbar-light bg-white border-bottom box-shadow mb-1">
+            <div class="container-fluid">
+                <button class="navbar-toggler"
+                        type="button"
+                        data-toggle="collapse"
+                        data-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="navbar-collapse collapse d-sm-inline-flex ">
+                    
+                        @*@RenderSection("Atras", required: false)*@
+
+                        @if (_session?.Usuario?.IdAlmaWeb > 0)
+                        {
+
+                            if (_session?.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo ==
+                            (int)ConfPortal.EnumConfPortal.MenuPrincipal_Desactivar)?.Valor.MostrarEntero() == 1)
+                            {
+                                <div class="nav-item flex-grow-1">
+                                    <a class="nav-link text-dark" asp-area=""
+                                       asp-controller="Home" asp-action="Principal">
+                                        <i class="fa fa-home fa-2x iconoscolor"></i>
+                                        <b class="pl-1 d-none d-sm-inline iconoscolorletra">Principal</b>
+                                    </a>
+                                </div>
+
+                            }
+                            else
+                            {
+                                <ul class="navbar-nav dropdown flex-grow-1">
+
+                                    <a class="nav-link text-dark dropdown-toggle" data-toggle="dropdown">
+                                        <i class="fa fa-home fa-2x"></i>
+                                        <b class="d-none d-sm-inline">
+                                            @{
+                                                if (_session?.Sistema?.Nombre != "")
+                                                {
+                                                    if (_session?.Sistema.SectorId == null || _session?.Sistema.SectorId == 0)
+                                                    {
+                                                        @_session?.Sistema?.Nombre
+                                                    }
+                                                    else
+                                                    {
+                                                        if (_session.Usuario?.Rol == (int)EnumRol.Vendedor)
+                                                        {
+                                                            String nombre = "[" + _session?.Sistema?.SectorId + "] " + _session?.Sistema?.NombreRepresentada;
+                                                            @nombre
+                                                        }
+                                                        else
+                                                        {
+                                                            @_session?.Sistema?.NombreRepresentada
+                                                        }
+
+                                                    }
+                                                }
+                                            }
+                                        </b>
+                                    </a>
+
+                                    <ul class="dropdown-menu">
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark iconoscolorletra" asp-area=""
+                                               asp-controller="Home" asp-action="Principal">
+                                                <i class="fab fa-font-awesome-flag iconoscolor"></i> Principal
+                                            </a>
+                                        </li>
+
+
+                                        @{
+                                            if (_session?.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo == 1)?.Valor == 0)
+                                            {
+                                                if (_session?.Usuario?.IdAlmaWeb > 0)
+                                                {
+                                                    <li class="nav-item">
+                                                        <a class="nav-link text-dark"
+                                                           asp-area="Carrito"
+                                                           asp-controller="Producto"
+                                                           asp-action="Productos">
+                                                            <i class="fas fa-weight-hanging"></i> Productos
+                                                        </a>
+                                                    </li>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <li class="nav-item">
+                                                    <a class="nav-link text-dark"
+                                                       asp-area="Carrito"
+                                                       asp-controller="Producto"
+                                                       asp-action="Productos">
+                                                        <i class="fas fa-weight-hanging"></i> Productos
+                                                    </a>
+                                                </li>
+                                            }
+
+                                            if (_session?.Configuracion?.ConfiguracionesViewDatosProductos?.FirstOrDefault(c => c.Codigo == 12)?.Valor.MostrarEntero() == 1)
+                                            {
+
+                                                if (_session.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo == 11)?.Valor == 0)
+                                                {
+                                                    if (_session?.Usuario?.IdAlmaWeb > 0)
+                                                    {
+                                                        <li class="nav-item">
+                                                            <a asp-area="Carrito" asp-controller="Marca" asp-action="Listado" class="nav-link text-dark">
+                                                                <i class="fas fa-bookmark"></i> Marcas @*<b class="pl-1 d-none d-sm-inline">Marcas</b>*@
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <li class="nav-item">
+                                                        <a asp-area="Carrito" asp-controller="Marca" asp-action="Listado" class="nav-link text-dark">
+                                                            <i class="fas fa-bookmark"></i> Marcas
+                                                        </a>
+                                                    </li>
+                                                }
+                                            }
+
+
+
+
+                                            if (_session?.Usuario?.Rol == 4)
+                                            {
+                                                <li class="nav-item">
+                                                    <a class="nav-link text-dark"
+                                                       asp-area="Usuario"
+                                                       asp-controller="Cliente"
+                                                       asp-action="ListarClientes"><i class="fas fa-users"></i> Clientes</a>
+                                                </li>
+
+
+                                                <li class="nav-item">
+                                                    <a class="nav-link text-dark"
+                                                       asp-area="Carrito"
+                                                       asp-controller="Pedido"
+                                                       asp-action="ListarPedidos"><i class="fas fa-dolly"></i> Pedidos</a>
+                                                </li>
+
+
+                                                <li class="nav-item">
+                                                    <a class="nav-link text-dark"
+                                                       asp-area="Cobro"
+                                                       asp-controller="Cobro"
+                                                       asp-action="Index"><i class="fas fa-cash-register"></i> Cobros</a>
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li class="nav-item">
+                                                    <a class="nav-link text-dark"
+                                                       asp-area="Carrito"
+                                                       asp-controller="Pedido"
+                                                       asp-action="ListarPedidos"><i class="fas fa-dolly"></i> Compras</a>
+                                                </li>
+                                            }
+
+
+                                            if (_session?.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo == (Int32)ConfPortal.EnumConfPortal.ModuloSoporte)?.Valor.MostrarEntero() == 1)
+                                            {
+                                                if (_session?.Usuario?.EntidadSucId > 0)
+                                                {
+                                                    <li class="nav-item">
+                                                        <a asp-area="Soporte" asp-controller="Soporte" asp-action="Principal" class="nav-link text-dark">
+                                                            <i class="fas fa-headset"></i> Soporte
+                                                        </a>
+                                                    </li>
+                                                }
+
+                                            }
+
+                                            <li class="dropdown-divider"></li>
+
+                                            if (_session?.Usuario?.IdAlmaWeb > 0)
+                                            {
+
+                                                @*<li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area=""
+                                           asp-controller="Home" asp-action="Index">
+                                            <i class="fas fa-building"></i> Empresa
+                                        </a>
+                                    </li>*@
+
+
+                                                if (_session?.Sistema?.TipoEmpresa == (Int32)EnumTiposEmpresas.EmpresaMultisector)
+                                                {
+                                                    <li class="nav-item">
+                                                        <a class="nav-link text-dark" asp-controller="Home"
+                                                           asp-action="Representada"><i class="fas fa-briefcase"></i> Sector</a>
+                                                    </li>
+                                                }
+                                                else if (_session?.Sistema?.TipoEmpresa == (Int32)EnumTiposEmpresas.Representada)
+                                                {
+                                                    <li class="nav-item">
+                                                        <a class="nav-link text-dark" asp-controller="Home"
+                                                           asp-action="Representada"><i class="fas fa-briefcase"></i> Representada</a>
+                                                    </li>
+                                                }
+                                            }
+
+                                            if (!String.IsNullOrEmpty(_session?.Sistema?.WhatsappSector))
+                                            {
+                                                <li class="nav-item">
+                                                    <a class="nav-link text-dark" href="@_session?.Sistema?.WhatsappSector" target="_blank">
+                                                        <i class="fab fa-whatsapp"></i> WhatsApp
+                                                    </a>
+                                                </li>
+                                            }
+
+
+
+
+
+                                        }
+
+
+
+
+                                    </ul>
+                                </ul>
+                            }
+
+
+                        }
+                        else
+                        {
+                            <div class="nav-item flex-grow-1">
+                                @{
+                                    if (String.IsNullOrEmpty(_session?.UrlRetornoPaginaEmpresa))
+                                    {
+                                        if (_session?.Sistema.TipoEmpresa == (Int32)EnumTiposEmpresas.Empresas)
+                                        {
+                                            <a class="nav-link text-dark" asp-area=""
+                                               asp-controller="Home" asp-action="Index">
+                                                <i class="fa fa-home fa-2x iconoscolor"></i>
+                                                <b class="pl-1 d-none d-sm-inline iconoscolorletra">Principal</b>
+                                            </a>
+                                        }
+                                        else
+                                        {
+
+
+                                            if (_session?.Sistema.TipoEmpresa == (Int32)EnumTiposEmpresas.EmpresaMultisector)
+                                            {
+                                                <a class="nav-link text-dark" asp-area=""
+                                                   asp-controller="Home" asp-action="Principal">
+                                                    <i class="fa fa-home fa-2x iconoscolor"></i>
+                                                    <b class="pl-1 d-none d-sm-inline iconoscolorletra">Principal</b>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a class="nav-link text-dark" asp-area=""
+                                                   asp-controller="Home" asp-action="Representada">
+                                                    <i class="fa fa-home fa-2x iconoscolor"></i>
+                                                    <b class="pl-1 d-none d-sm-inline iconoscolorletra">Principal</b>
+                                                </a>
+                                            }
+
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <a class="nav-link text-dark" href="@_session.UrlRetornoPaginaEmpresa">
+                                            <i class="fa fa-home fa-2x iconoscolor"></i>
+                                            <b class="pl-1 d-none d-sm-inline iconoscolorletra">Principal</b>
+                                        </a>
+                                    }
+
+                                }
+
+                            </div>
+                        }
+
+
+
+
+                        <div class="nav-item">
+                            <a class="nav-link text-dark" asp-area="Soporte"
+                               asp-controller="Soporte" asp-action="Principal">
+                                <i class="fas fa-dna fa-2x iconoscolor"></i>
+                                <b class="pl-1 d-none d-sm-inline iconoscolorletra">Soporte</b>
+                            </a>
+                        </div>
+   
+
+
+                    <partial name="_LoginPartial" model="_session" />
+
+
+                </div>
+
+                            </div>
+
+        </nav>
+
+
+        @RenderSection("Menu", required: false)
+    </header>
+
+
+    <div class="container-fluid">
+        <main role="main" class="pb-2">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted d-none d-sm-block">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-6">
+                    <img class="mt-2 float-left" height="40" src="~/img/almanet_web_mini.png">
+                </div>
+
+                <div class="col-6">
+
+                    <p class="text-right"> &copy;  <a href="https://www.drrsystemas.com" target="_blank"><img height="18" src="~/img/drr_mini.png"></a> - @DateTime.Now.ToString("dd/MM/yyyy")</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+
+</html>

@@ -1,0 +1,106 @@
+﻿@model IEnumerable<LibreriaBase.Areas.Carrito.Clases.MarcaMinimo>
+
+@{
+    ViewData["Title"] = "Listado";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Estilos
+{
+
+    <style type="text/css">
+
+        .img_marca {
+            width: auto;
+            max-height: 150px;
+            max-width: 200px;
+            object-fit: scale-down;
+            display: block;
+            margin-top: 10px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .p_Nombre {
+            font-size: 14px;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            color: darkblue;
+        }
+
+        .targeta_tamaño {
+            min-height: 180px;
+            max-height: 180px;
+        }
+    </style>
+
+
+}
+
+
+
+<h3>Marcas</h3>
+<hr />
+@{
+    if (Model?.Count() > 0)
+    {
+
+        int totalElementos = Model.Count();
+
+        @for (int i = 0; i < totalElementos; i += 4)
+        {
+            <div class="row">
+
+                @for (int j = 0; j < 4; j++)
+                {
+
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-3">
+                        @{
+                            int posicion = i + j;
+
+                            if (posicion < totalElementos)
+                            {
+                                var item = Model.ElementAt(posicion);
+
+
+                                <div class="card mr-2 mt-2 ">
+                                    <a asp-area="Carrito" asp-controller="Producto" asp-action="Productos"
+                                       asp-route-MarcaId="@item.MarcaId" 
+                                       asp-route-NombreMarca="@item.Nombre"
+                                       asp-route-FiltroMarca="@true">
+                                        <div class="card-body targeta_tamaño">
+                                            @if (!String.IsNullOrEmpty(@item.RutaImagen))
+                                            {
+                                                <img class="card-img-top img_marca" src="@item.RutaImagen" alt="Card image">
+                                            }
+                                            else
+                                            {
+                                                <img class="card-img-top img_marca" src="~/img/sinImagen.png" alt="Card image">
+                                            }
+                                        </div>
+
+
+                                        <div class="card-footer">
+
+                                            <p class="card-title p_Nombre">@item.Nombre</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <h5>No hay ninguna marca</h5>
+    }
+
+
+}
+<br />
+<br />
+<br />
+
+

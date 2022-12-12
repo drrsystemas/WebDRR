@@ -1,0 +1,130 @@
+﻿@model FormularioWp
+
+@{ 
+    
+}
+
+<div class="modal fade" id="ventanaFormularioWp" tabindex="-1"
+     role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="vConfirmacionTitulo">@Model.Titulo</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="container">
+
+                    @{
+                        if (Model.Id == 1)//Pedido
+                        {
+                            <form id="frmEnviarWp" class="form-horizontal " method="post">
+                                <fieldset>
+
+
+                                    <div class="form-group row">
+                                        <label asp-for="Cliente" class="col-sm-2 col-form-label"><i class="far fa-user fa-2x"></i></label>
+                                        <div class="col-sm-10">
+                                            <input placeholder="Nombre y Apellido" id="pw_name" asp-for="Cliente" type="text" class="form-control">
+                                            <span asp-validation-for="Cliente" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label asp-for="Documento" class="col-sm-2 col-form-label"><i class="fas fa-star-of-life fa-2x"></i></label>
+                                        <div class="col-sm-10">
+                                            <input id="pw_documento" asp-for="Documento" type="number" placeholder="DNI o CUIT" class="form-control">
+                                            <span asp-validation-for="Documento" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label asp-for="Telefono" class="col-sm-2 col-form-label"><i class="fas fa-mobile-alt fa-2x"></i></label>
+                                        <div class="col">
+
+                                            <input id="pw_telefono" asp-for="Telefono" type="text" data-pegar="0"
+                                                   placeholder="N° de tel, formato 054-3751-12345" class="form-control">
+                                            <span asp-validation-for="Telefono" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label asp-for="Domicilio"class="col-sm-2 col-form-label"><i class="fas fa-map-signs fa-2x"></i></label>
+                                        <div class="col-sm-10">
+                                            <input id="pw_domicilio" asp-for="Domicilio" type="text"
+                                                   placeholder="Provincia, localidad, dirección" class="form-control">
+                                            <span asp-validation-for="Domicilio" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label asp-for="Mensaje" class="col-sm-2 col-form-label"><i class="far fa-sticky-note fa-2x"></i></label>
+                                        <div class="col">
+                                            <textarea class="form-control" id="pw_mensaje" asp-for="Mensaje"
+                                                      placeholder="" rows="6"></textarea>
+                                            <span asp-validation-for="Mensaje" class="text-danger"></span>
+
+                                        </div>
+                                    </div>
+
+                                </fieldset>
+                            </form>
+                        }
+                        else if (Model.Id == 2)
+                        {
+                            <form class="form-horizontal" method="post">
+                                <fieldset>
+
+                                    <div class="form-group row">
+                                        <label for="pw_name" class="col-sm-2 col-form-label"><i class="far fa-user fa-2x"></i></label>
+                                        <div class="col-sm-10">
+                                            <input id="pw_name" asp-for="Cliente" readonly type="text" class="form-control">
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group row">
+                                        <label for="pw_mensaje" class="col-sm-2 col-form-label"><i class="far fa-sticky-note fa-2x"></i></label>
+                                        <div class="col">
+                                            <textarea class="form-control" id="pw_mensaje" asp-for="Mensaje" placeholder="Ingrese la consulta/reclamo" rows="6"></textarea>
+                                        </div>
+                                    </div>
+
+                                </fieldset>
+                            </form>
+                        }
+                    }
+
+                   
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                @if (Model.Id == 1)//Pedido
+                {
+                    <a id="btnAceptar" onclick="pedidoWebFormualrio_Enviar()" 
+                       data-id="@Model.Id" class="btn btn-success">Aceptar</a>
+
+                }
+                else
+                {
+                    <a id="btnAceptar" onclick="enviarWhatsApp('@Model.Url', '')" 
+                       data-id="@Model.Id" class="btn btn-success">Aceptar</a>
+
+                }
+
+                <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal">Cancelar</button>
+
+            </div>
+        </div>
+    </div>
+</div>

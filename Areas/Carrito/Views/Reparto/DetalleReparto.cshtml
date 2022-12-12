@@ -1,0 +1,436 @@
+﻿@model ViewReparto
+
+@{
+    ViewData["Title"] = "DetalleReparto";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string urlFrmEntregado = Url.Action("abrirFrmEntregarReparto", "Reparto");
+
+
+    string urlDetalleVenta = Url.Action("abrirFrmDetalleFactura", "Reparto");
+
+    String estado = "Estado: ";
+    if (Model?.Listado?.FirstOrDefault()?.Mov?.EstadoId == 0)
+    {
+        estado += "cerrado";
+    }
+    else if (Model?.Listado?.FirstOrDefault()?.Mov?.EstadoId == 1)
+    {
+        estado += "en proceso";
+    }
+
+
+
+}
+
+@section Estilos
+{
+    <style type="text/css">
+        .omitir-busqueda {
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .red {
+            color: Red;
+        }
+
+
+        @@media screen and (max-width:480px) {
+            .titulo-princial {
+                font-display: block;
+                font-size: 16px;
+            }
+        }
+
+        @@media screen and (min-width:481px) {
+
+            .titulo-princial {
+                font-display: block;
+                font-size: 24px;
+            }
+        }
+    </style>
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @section Menu
+{
+        <div class="d-flex  bd-highlight">
+
+            @* Btn de Los filtros para ver o esconder... *@
+            @*<button class="btn btn-sm btn-light ml-md-3 my-md-2" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                    <i class="fas fa-bars fa-2x"></i>
+                </button>*@
+
+
+            <p id="txt-titulo-web" class="float-left flex-grow-1 ml-2 mt-2 titulo-princial">
+               <span class="d-none d-sm-inline-block">Gestión de Reparto</span> N° @Model?.Listado?.FirstOrDefault()?.MovId <span class="d-none d-sm-inline-block">- @estado</span> - <span class="d-none d-sm-inline-block">Total</span> Vtas: @Model?.Listado?.Count()
+            </p>
+
+
+
+
+            <div class="p-2 bd-highlight">
+
+
+
+                <!-- Default dropleft button -->
+                <div class="btn-group dropleft">
+                    <button type="button" class="btn  btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-bars fa-1x"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item  cursor-pointer"
+                           asp-action="SalirReparto" asp-controller="Reparto" asp-area="Carrito">
+
+                            <i class="fas fa-walking"></i>
+                            Salir del reparto
+
+                        </a>
+
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+
+
+
+        @* Div que se muestra o esconde --- Filtros *@
+        <!--<div class="collapse" id="collapseExample">
+            <div>
+                <div>-->
+        @* Aca Formulario *@
+        <!--<form class="mx-3" method="post" asp-action="Index" asp-controller="Cobro">
+
+            <div class="row px-2 mb-2">
+                <div class="col-sm-4">
+                    <div class="form-group pmd-textfield pmd-textfield-floating-label">
+                        <label class="control-label">Desde: </label>
+                        <input asp-for="Filtro.FechaDesde" type="date" class="form-control">
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group pmd-textfield pmd-textfield-floating-label">
+                        <label class="control-label">Hasta: </label>
+                        <input asp-for="Filtro.FechaHasta" type="date" class="form-control">
+                    </div>
+                </div>
+
+
+                <div class="col-sm-3">
+                    <div class="form-check">
+
+                        <input type="checkbox" asp-for="Filtro.Todos" class="form-check-input">
+                        <label class="form-check-label  font-weight-bold">Todos</label>
+                    </div>
+                </div>
+            </div>-->
+        @*<input type="hidden" value="@jsonF" name="json" />*@
+        <!--<input type="hidden" value="3" name="operacion" />
+
+
+                        <div class="d-flex justify-content-end align-items-center">
+                            <button class="btn btn-success mb-1" type="submit"><i class="fas fa-filter"></i> Filtrar</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>-->
+    }
+
+
+
+    @if (Model?.Listado?.Count() > 0)
+{
+
+
+
+
+    <partial name="_aviso" />
+
+    @*if (!String.IsNullOrEmpty(Model.Avisos))
+    {
+        List<String> dato = new List<string>();
+        dato.Add(Model.Avisos);
+        dato.Add(Model.Color);
+        <partial name="_avisoReparto" model="dato" />
+    }*@
+
+
+
+
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <div class="input-group-text"><i class="fas fa-filter"></i></div>
+        </div>
+        <input type="text" class="form-control" id="txtFiltrar" onkeyup="filtrarTabla()" placeholder="Filtrar detalle de reparto">
+    </div>
+
+    <table class="sortable table table-sm table-striped mt-1" id="detalleReparto">
+        <thead>
+            <tr>
+                <th class="d-none d-md-table-cell">
+                    Cliente
+                </th>
+                <th class="d-none d-md-table-cell">
+                    PedID
+                </th>
+                <th class="d-none d-md-table-cell">
+                    VtaID
+                </th>
+                <th class="d-none d-md-table-cell">
+                    Comprobante
+                </th>
+                <th class="d-none d-md-table-cell">
+                    Detalle
+                </th>
+                <th>
+
+                </th>
+            </tr>
+
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Listado)
+            {
+                String nombreCliente = "";
+                Int32 idCliente = 0;
+                try
+                {
+                    nombreCliente = item.OperacionVenta?.Cliente?.EntidadSuc?.Entidad?.RazonSocial;
+                    idCliente = item.OperacionVenta?.ClienteId ?? 0;
+
+                }
+                catch
+                {
+                }
+
+
+
+
+                string comprobante = "";
+                if (item.OperacionVenta != null)
+                {
+                    //comprobante = item.OperacionVenta.FechaComprobante.FechaCorta()
+                    //    + " " + item.OperacionVenta.TalonarioId.ToString("00000")
+                    //    + "-" + item.OperacionVenta.NroComprobante.ToString("000000000")
+                    //    + " " + item.OperacionVenta.TotalVenta.FormatoMoneda();
+
+                    string datahtml = "<span class=\"font-weight-bold ml-4\">" + item.OperacionVenta.TotalVenta.FormatoMoneda() + "</span>";
+
+                    comprobante = $"{item.OperacionVenta.TalonarioId.ToString("00000")}-{item.OperacionVenta.NroComprobante.ToString("000000000")} {datahtml}";
+                }
+
+
+                <tr>
+
+
+
+                    @* Solo se ve desde los celulares *@
+                    <td class="d-block d-sm-block d-md-none omitir-busqueda">
+
+                        <div class="row p-0">
+                            <div class="col-9">
+                                <p class="d-flex flex-row mb-1 font-weight-bold">
+                                    @nombreCliente
+
+                                    <a class="btn btn-link py-0"
+                                       asp-area="Usuario"
+                                       asp-controller="Cliente"
+                                       asp-action="MapaCliente"
+                                       asp-route-clienteId="@idCliente"> <i class="fas fa-map-marked-alt"></i></a>
+                                </p>
+                            </div>
+
+                            <div class="col-3">
+                                <p class="d-flex flex-row m-0 font-italic mx-auto justify-content-end">
+
+                                   
+
+
+                                    <a class="btn btn-success btn-sm @(item?.Mov?.EstadoId==0?"disabled":"") mr-2"
+                                       onclick="frmAbrirEntregarReparto(this,'@urlFrmEntregado')"
+                                       data-id="@item.RepartoPedidoId"
+                                       data-detalle="@item.Detalle">Entr.</a>
+
+
+                                    <a class="ml-1 btn btn-primary btn-sm @(item?.Mov?.EstadoId==0?"disabled":"")"
+                                       asp-area="Carrito"
+                                       asp-controller="Cobro"
+                                       asp-action="Agregar"
+                                       asp-route-esquema="2"
+                                       asp-route-RepartoID="@Model?.Listado.First()?.MovId"
+                                       asp-route-VentaID="@item.VentaId"
+                                       asp-route-ClienteID="@item.OperacionVenta?.Cliente?.ClienteId"
+                                       asp-route-EntidadSucId="@item.OperacionVenta?.Cliente?.EntidadSucId"
+                                       asp-route-Cliente="@nombreCliente">Cobrar</a>
+                                </p>
+                            </div>
+                        </div>
+
+
+
+
+
+                        <p class="d-flex flex-row m-0 mt-1 font-italic mb-2 @(item.TieneCobroWeb==true?"bg-warning":"")">
+
+                            <a class="btn btn-link py-0"
+                               onclick="abrirModalDetalleVenta('@item.VentaId','@urlDetalleVenta')">
+
+                                @Html.DisplayFor(modelItem => item.VentaId)
+                            </a> @Html.Raw(comprobante)
+
+                        </p>
+
+                        @if(!String.IsNullOrEmpty( item.Detalle))
+                        {
+                             <span class="bg-success">@item.Detalle</span>
+                        }
+
+
+
+                    </td>
+
+
+
+                    <td class="d-none d-md-table-cell">
+                        @nombreCliente                             <a class="btn btn-link py-0"
+                                                                      asp-area="Usuario"
+                                                                      asp-controller="Cliente"
+                                                                      asp-action="MapaCliente"
+                                                                      asp-route-clienteId="@idCliente"> <i class="fas fa-map-marked-alt"></i></a>
+                    </td>
+
+                    <td class="d-none d-md-table-cell omitir-busqueda">
+                        @Html.DisplayFor(modelItem => item.PedidoVentaId)
+                    </td>
+
+                    <td class="d-none d-md-table-cell">
+                        <a class="btn btn-link pt-0"
+                           onclick="abrirModalDetalleVenta('@item.VentaId','@urlDetalleVenta')">
+                            @Html.DisplayFor(modelItem => item.VentaId)
+                        </a>
+                    </td>
+
+                    <td class="d-none d-md-table-cell omitir-busqueda">
+                        @Html.Raw(comprobante)
+                    </td>
+
+                    <td class="d-none d-md-table-cell omitir-busqueda">
+                        @Html.DisplayFor(modelItem => item.Detalle)
+                    </td>
+                    <td class="d-none d-md-table-cell omitir-busqueda">
+                                                <a class="btn btn-success btn-sm @(item?.Mov?.EstadoId==0?"disabled":"")"
+                           onclick="frmAbrirEntregarReparto(this,'@urlFrmEntregado')"
+                           data-id="@item.RepartoPedidoId"
+                           data-detalle="@item.Detalle">Entr.</a>
+
+
+                        <a class="ml-1 btn btn-primary btn-sm @(item?.Mov?.EstadoId==0?"disabled":"")"
+                           asp-area="Carrito"
+                           asp-controller="Cobro"
+                           asp-action="Agregar"
+                           asp-route-esquema="2"
+                           asp-route-RepartoID="@Model?.Listado.First()?.MovId"
+                           asp-route-VentaID="@item.VentaId"
+                           asp-route-ClienteID="@item.OperacionVenta?.Cliente?.ClienteId"
+                           asp-route-EntidadSucId="@item.OperacionVenta?.Cliente?.EntidadSucId"
+                           asp-route-Cliente="@nombreCliente">Cobrar</a>
+                    </td>
+
+                </tr>
+
+            }
+
+
+        </tbody>
+    </table>
+}
+else
+{
+    <h3>Seleccione un N° de Reparto</h3>
+}
+
+
+
+<div id="frm-entregar"></div>
+
+
+
+<br />
+<br />
+<br />
+
+
+<div class="modal fade" id="frmDetalleVenta" tabindex="-1"
+     role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="vConfirmacionTitulo">Datelle de Venta</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div id="frmDetalleVentaCuerpo" class="container">
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+
+
+    <script asp-append-version="true" type="text/javascript" src="~/script/reparto/reparto.js"></script>
+    <script src="~/lib/sorttable/sorttable.js"></script>
+
+    <script>
+
+    </script>
+}
+

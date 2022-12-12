@@ -1,0 +1,443 @@
+﻿@model CarritoIndexViewModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string rep = Model.TipoEmpresa == 256 ? "true" : "false";
+    ViewData["rep"] = rep;
+
+
+    SessionAcceso SessionAcceso = Context.Session.GetJson<SessionAcceso>("SessionAcceso");
+    ViewData["SessionAcceso"] = SessionAcceso;
+
+
+    int rol = SessionAcceso?.Usuario?.Rol ?? 0;
+    ViewData["rol"] = rol;
+
+
+    String wp = ViewBag.wp;
+    ViewData["wp"] = wp;
+
+
+    Boolean enviarAutomatico = false;
+    if (rol == 4)
+    {
+        var confEnvios = SessionAcceso?.Configuracion?.ConfiguracionesPortal?.
+    FirstOrDefault(c => c.Codigo == (int)LibreriaBase.Areas.Usuario.ConfPortal.EnumConfPortal.Activar_Seleccion_Envio_Retiro_pedido_Vendedor);
+
+        if (confEnvios != null)
+        {
+            enviarAutomatico = confEnvios?.Valor == 1 ? true : false;
+        }
+    }
+
+    string urlRetorno = Model.UrlRetorno;
+    string urlmodificarCantidadJson = Url.Action("ModificarCantidadJson", "Carrito");
+    string urlmodificarBonificacionJson = Url.Action("ModificarBonificacionJson", "Carrito");
+
+
+    string urlBonificacionGral = Url.Action("BonificacionGeneral", "Carrito");
+    string urlDescuento = Url.Action("Descuento", "Carrito");
+
+
+    Boolean datos_envioRetiro = SessionAcceso.getEstaActivoEnvioyRetiro_Carrito();
+    Boolean datos_pago = SessionAcceso.getEstaActivoPago_Carrito();
+
+    string urlComprar = "";
+
+    if (datos_envioRetiro == false && datos_pago == false)
+    {
+        urlComprar = Url.Action("RegistrarPedido", "Pedido");
+    }
+    else if (datos_envioRetiro == true && datos_pago == false)
+    {
+        urlComprar = Url.Action("DatosDeEnvio", "Carrito");
+    }
+    else if (datos_envioRetiro == false && datos_pago == true)
+    {
+        urlComprar = Url.Action("MetodoDePago", "Carrito");
+    }
+    else if (datos_envioRetiro == true && datos_pago == true)
+    {
+        urlComprar = Url.Action("DatosDeEnvio", "Carrito");
+    }
+
+
+    ViewData["urlComprar"] = urlComprar;
+    ViewData["datos_envioRetiro"] = datos_envioRetiro;
+    ViewData["datos_pago"] = datos_pago;
+
+
+    string urlFinalizarPedido = Url.Action("FinalizarPedido", "Pedido");
+
+    string urlModificarPedido = Url.Action("ModificarPedido", "Pedido");
+
+    string urlCancelarPedido = Url.Action("EliminarCarrito", "Carrito");
+
+    String[] url = Model.UrlRetorno.Split('/');
+
+
+    int idCliente = Model.Carrito.Cliente?.ClienteID ?? 0;
+
+    ViewData["PedidoId"] = Model.Carrito.PedidoId ?? 0;
+}
+
+@section Estilos
+{
+
+    <link rel="stylesheet" href="~/css/carrito.css" />
+}
+
+
+@if (rol == (int)EnumRol.Vendedor)
+{
+    @section Menu
+    {
+
+        <div class="d-flex bd-highlight">
+
+            <div class="p-2 flex-grow-1 bd-highlight">
+                    <div class="text-left">
+
+                        @*<span class="float-left ml-2">@Model.Carrito.FechaPedido.FechaCorta()</span>*@
+
+
+                        @if (enviarAutomatico == false)
+                        {
+                            if (Model.Carrito.PedidoId == null || Model.Carrito.PedidoId == 0)
+                            {
+                                <a onclick="registrarPedido('@urlFinalizarPedido')" id="btnRegistrarPedido" class="btn btn-success mr-2">
+                                    <i class="fas fa-check text-white"></i>
+                                    <b class="caret d-none d-md-inline text-white">Registrar</b>
+                                </a>
+                            }
+                            else
+                            {
+                                <a onclick="modificarPedido('@urlModificarPedido')" id="btnModificarPedido" class="btn btn-warning mr-2">
+                                    <i class="fas fa-check text-white"></i>
+                                    <b class="caret d-none d-md-inline text-white">Modificar</b>
+                                </a>
+                            }
+                        }
+                        else
+                        {
+                            if (Model.Carrito.Envio == null || Model.Carrito.Envio?.IdEnvio == 0)
+                            {
+                                <a id="btnEnviarPrimero" asp-area="Carrito"
+                                   asp-action="DatosDeEnvio"
+                                   asp-controller="Carrito"
+                                   asp-route-urlRetorno="@ViewContext.HttpContext.Request.PathAndQuery()"
+                                   class="btn btn-warning mr-2">
+                                    <i class="fas fa-check text-white"></i>
+                                    <b class="caret d-none d-md-inline text-white">Aceptar</b>
+                                </a>
+                            }
+                            else
+                            {
+                                if (Model.Carrito.PedidoId == null || Model.Carrito.PedidoId == 0)
+                                {
+                                    <a onclick="registrarPedido('@urlFinalizarPedido')" id="btnRegistrarPedido" class="btn btn-success mr-2">
+                                        <i class="fas fa-check text-white"></i>
+                                        <b class="caret d-none d-md-inline text-white">Registrar</b>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a onclick="modificarPedido('@urlModificarPedido')" id="btnModificarPedido" class="btn btn-warning mr-2">
+                                        <i class="fas fa-check text-white"></i>
+                                        <b class="caret d-none d-md-inline text-white">Modificar</b>
+                                    </a>
+                                }
+                            }
+
+                        }
+
+
+                        <a onclick="cancelarPedido('@urlCancelarPedido')" id="btnCancelarPedido" class="btn btn-danger">
+                            <i class="fas fa-times text-white"></i>
+                            <b class="caret d-none d-md-inline text-white">Cancelar</b>
+                        </a>
+
+
+
+                    </div>
+            </div>
+
+            <div class="p-2 bd-highlight">
+                <partial name="_menuCarrito" view-data="ViewData" />
+            </div>
+        </div>
+
+
+    }
+
+}
+
+<partial name="_aviso" />
+
+
+@{
+    //Las opciones de busqueda interna y clientes solo van a estar disponibles para las representadas o personas que
+    //posteriormente lo marquen en las opciones de admin.
+    if (rol != (int)EnumRol.Vendedor)
+    {
+        <h3>Detalle del carrito</h3>
+        <hr class="d-none d-sm-block" />
+    }
+    else
+    {
+        //Se  tiene que ir esto
+        <p class="hide" id="parrafoQuePasa"></p>
+
+        <div class="p-0">
+            @if (Model.Carrito?.Cliente != null)
+            {
+                <partial name="_datosEsquemaPrecio_Cliente" for="Carrito.Cliente" />
+            }
+        </div>
+    }
+
+
+    ViewDataDictionary vd_url = new ViewDataDictionary(ViewData) { { "UrlRetorno", Model.UrlRetorno } };
+    <partial name="_agregarItemCarrito_Codigo" view-data="vd_url" />
+
+
+
+
+    <partial name="_detalleCarrito" model="Model" view-data="ViewData" />
+
+}
+
+
+<br />
+<br />
+<br />
+
+
+<div class="modal fade" id="ventanaConfirmacion" tabindex="-1"
+     role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="vConfirmacionTitulo"></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <h6 id="vConfirmacionContenido"></h6>
+            </div>
+
+            <div class="modal-footer">
+                <a id="vConfirmacionEnlace" class="btn btn-success">Aceptar</a>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="ventanaBonificacion" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="ventanaBonificacionTitulo">Bonificación General a todos los items</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-dark">
+                    Aplica una bonificación a todos los productos/servicios del carrito,
+                    estando la posibilidad de luego modificar de manera individual.
+                </p>
+                <br />
+                <div class="form-group">
+                    <label class="control-label">% de bonificación</label>
+                    <input id="ventanaBonificacionInput" type="number" max="100" min="0" class="form-control" />
+                </div>
+
+
+
+            </div>
+            <div class="modal-footer">
+                <button id="ventanaBonificacionEnlace" onclick="aplicarBonificacion('@urlBonificacionGral')"
+                        class="btn btn-success">
+                    Aceptar
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="ventanaDescuento" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="ventanaBonificacionTitulo">Decuento</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-dark">
+                    Aplica un descuento al total del comprobante.
+                </p>
+                <br />
+                <div class="form-group">
+                    <label class="control-label">% de descuento</label>
+                    <input id="ventanaDescuentoInput" type="number" max="100" min="0" class="form-control" />
+                </div>
+
+
+
+            </div>
+            <div class="modal-footer">
+                <button id="ventanDescuentoEnlace" onclick="aplicarDescuento('@urlDescuento')"
+                        class="btn btn-success">
+                    Aceptar
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="ventanaFormularioWp" tabindex="-1"
+     role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+    @{
+        FormularioWp modelFormularioWp = new FormularioWp();
+        modelFormularioWp.Titulo = "Pedido WhatsApp";
+        modelFormularioWp.Id = 1;
+        modelFormularioWp.Url = SessionAcceso?.Sistema?.WhatsappSector;
+        modelFormularioWp.Pedido = Model.Carrito.Pedido_Wp();
+
+    }
+
+
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="vConfirmacionTitulo">@modelFormularioWp.Titulo</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="container">
+
+                    @{
+                        <form id="frmEnviarWp" class="form-horizontal " method="post">
+
+                            <span id="frmEnviarWpValidation" class="text-danger"></span>
+
+                            <fieldset>
+
+
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label"><i class="far fa-user fa-2x"></i></label>
+                                    <div class="col-sm-10">
+                                        <input placeholder="Nombre y Apellido" id="pw_name" asp-for="@modelFormularioWp.Cliente" type="text" class="form-control">
+                                        <span asp-validation-for="@modelFormularioWp.Cliente" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label"><i class="fas fa-star-of-life fa-2x"></i></label>
+                                    <div class="col-sm-10">
+                                        <input id="pw_documento" asp-for="@modelFormularioWp.Documento" type="number" placeholder="DNI o CUIT" class="form-control">
+                                        <span asp-validation-for="@modelFormularioWp.Documento" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label"><i class="fas fa-mobile-alt fa-2x"></i></label>
+                                    <div class="col">
+
+                                        <input id="pw_telefono" asp-for="@modelFormularioWp.Telefono" type="text" data-pegar="0"
+                                               placeholder="N° de tel, formato 549-3751-12345" class="form-control">
+                                        <span asp-validation-for="@modelFormularioWp.Telefono" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label"><i class="fas fa-map-signs fa-2x"></i></label>
+                                    <div class="col-sm-10">
+                                        <input id="pw_domicilio" asp-for="@modelFormularioWp.Domicilio" type="text"
+                                               placeholder="Provincia, localidad, dirección" class="form-control">
+                                        <span asp-validation-for="@modelFormularioWp.Domicilio" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label"><i class="far fa-sticky-note fa-2x"></i></label>
+                                    <div class="col">
+                                        <textarea class="form-control" id="pw_mensaje" asp-for="@modelFormularioWp.Mensaje"
+                                                  placeholder="" rows="6"></textarea>
+                                        <span asp-validation-for="@modelFormularioWp.Mensaje" class="text-danger"></span>
+
+                                    </div>
+                                </div>
+
+                                <input id="pw_url" asp-for="@modelFormularioWp.Url" type="hidden"
+                                       class="form-control">
+                                <input id="pw_pedido" asp-for="@modelFormularioWp.Pedido" type="hidden"
+                                       class="form-control">
+                            </fieldset>
+                        </form>
+                    }
+
+
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+
+                <a id="btnAceptar" onclick="pedidoWebFormualrio_Enviar()" class="btn btn-success">Aceptar</a>
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Scripts{
+
+    <script asp-append-version="true" type="text/javascript" src="~/script/_drrSystemas.js"></script>
+
+    <script asp-append-version="true" type="text/javascript" src="~/script/carrito/carritoIndex.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            urlRetornoJS = '@urlRetorno';
+            urlCantidadJsonJS = '@urlmodificarCantidadJson';
+            urlBonificacionJsonJS = '@urlmodificarBonificacionJson';
+
+            var itemCarrito = parseInt('@Model.Carrito.TotalItems()');
+
+            activarDesactivarBtnComprar(itemCarrito);
+
+        });
+
+    </script>
+}
+

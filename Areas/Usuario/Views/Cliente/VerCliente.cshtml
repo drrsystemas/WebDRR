@@ -1,0 +1,238 @@
+﻿@model LibreriaBase.Areas.Usuario.ViewCliente
+
+@{
+    ViewData["Title"] = "VerCliente";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    //Si se puede o no modificar los datos.
+    Boolean permisosEditar = (Boolean)ViewBag.permisosEditar;
+
+
+    String urlEditar = Url.Action("GuardarDatos_EdicionCliente", "Cliente");
+
+    ViewData["UrlAtras"] = Context.Request.UrlAtras();
+    ViewData["View"] = "VerCliente";
+
+
+    String zona = "";
+    if (!String.IsNullOrEmpty(Model.DatosZonaId))
+    {
+        zona = "[" + Model.ZonaId + "] " + Model.DatosZonaId;
+    }
+}
+
+
+@section Menu
+    {
+
+    <div class="d-flex bd-highlight">
+
+        <div class="p-2 flex-grow-1 bd-highlight">
+            <h4>@Model.RazonSocial  </h4>
+        </div>
+
+        <div class="p-2 bd-highlight">
+            <div class="dropdown dropleft">
+                <button class="btn  btn-danger dropdown-toggle" type="button"
+                        id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bars fa-1x"></i>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
+
+                    <a class="dropdown-item" asp-area="Usuario"
+                       asp-action="EstadoCta"
+                       asp-controller="Cliente"
+                       asp-route-id="@Model.EntidadSucId"
+                       asp-route-rz="@Model.RazonSocial"><i class="fas fa-search-dollar"></i> Estado Cuenta</a>
+
+                    <a class="dropdown-item" asp-area="Usuario"
+                       asp-action="MapaCliente"
+                       asp-controller="Cliente"
+                       asp-route-clienteId="@Model.ClienteID"><i class="fas fa-map-marker-alt"></i> Google Maps</a>
+
+                    <a class="dropdown-item" asp-area="Usuario"
+                       asp-action="ComoLLegar"
+                       asp-controller="Cliente"
+                       asp-route-clienteId="@Model.ClienteID"><i class="fas fa-map-signs"></i> Como LLegar</a>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+}
+
+
+<hr />
+
+<div class="p-3 border border-secondary rounded"  style="background-color:beige;">
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label>ClienteId:</label>
+            <input type="text" readonly class="form-control" asp-for="ClienteID" />
+        </div>
+        <div class="form-group col-md-4">
+            <label for="usr">CUIT/DNI:</label>
+            <input type="text" readonly class="form-control" asp-for="NroIdentificacion" />
+        </div>
+        <div class="form-group col-md-4">
+            <label>Código Cliente:</label>
+            <input type="text" readonly class="form-control" asp-for="NroClienteAsignado" />
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label>Razón Social:</label>
+            <input type="text" readonly class="form-control" asp-for="RazonSocial" />
+        </div>
+
+
+        <div class="form-group col-md-3">
+            <label>Nombre de Fantasia:</label>
+            <input type="text" readonly class="form-control" asp-for="NombreFantasia" />
+        </div>
+        <div class="form-group col-md-3">
+            <label>Denominacion Adicional:</label>
+            <input type="text" readonly class="form-control" asp-for="DenominacionAdicional" />
+        </div>
+    </div>
+
+
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label>Limite Credito:</label>
+            <input type="text" readonly class="form-control" value="@Model.LimiteCredito.FormatoMoneda()" />
+        </div>
+        @*<div class="form-group col-md-4">
+                <label for="usr">CUIT/DNI:</label>
+                <input type="text" readonly class="form-control" asp-for="NroIdentificacion" />
+            </div>
+            <div class="form-group col-md-4">
+                <label>Código Cliente:</label>
+                <input type="text" readonly class="form-control" asp-for="NroClienteAsignado" />
+            </div>*@
+    </div>
+
+
+
+
+    @{
+        if (Model.View_Ciudad != null)
+        {
+            String cadena = Model.View_Ciudad.Pais + " - " +
+            Model.View_Ciudad.Provincia + " - " + Model.View_Ciudad.Ciudad + " (" + Model.View_Ciudad.CodPostal + ")";
+            <div class="form-group">
+                <label>País - Prov - Ciudad (Cod.Postal):</label>
+                <input type="text" readonly class="form-control" value="@cadena" />
+            </div>
+        }
+    }
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label>Zona: </label>
+            <input type="text" readonly class="form-control" value="@zona" />
+        </div>
+
+        <div class="form-group col-md-8">
+            <label>Domicilio:</label>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" asp-for="Domicilio" name="direccion" readonly id="txtDomicilio">
+                <div class="input-group-append">
+                    <a class="btn btn-outline-success" asp-area="Usuario"
+                       asp-action="MapaCliente"
+                       asp-controller="Cliente"
+                       asp-route-clienteId="@Model.ClienteID">G Maps</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label for="usr">Teléfono:</label>
+            <input type="text" class="form-control" asp-for="Telefono" readonly name="telefono" id="txtTelefono" />
+        </div>
+
+        <div class="form-group col-md-8">
+            <label for="usr">Correo Electrónico:</label>
+            <input type="text" class="form-control" asp-for="CorreoElectronico" readonly name="correo" id="txtCorreo" />
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+        <label for="usr">Datos de Entrega</label>
+        <textarea class="form-control border border-info" rows="2" type="text" asp-for="DatosDeEntrega" readonly name="datosRetiro" id="txtDatosEntrega"></textarea>
+    </div>
+
+
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="usr">Lista Precio:</label>
+            <input type="text" readonly class="form-control" asp-for="ListaPrecID" />
+        </div>
+
+
+        <div class="form-group col-md-6">
+            <label for="usr">Tipo:</label>
+            <input type="text" readonly class="form-control" asp-for="CategoriaImpuestoID_Nombre" />
+        </div>
+    </div>
+
+
+    <div class="form-group mb-2">
+        <label for="usr">Observaciones</label>
+        <textarea rows="2" readonly type="text" class="form-control" asp-for="Observacion"></textarea>
+    </div>
+
+
+    <div class="form-group row ml-2">
+        <button class="btn btn-primary ocultarDiv mr-2"
+                onclick="postAction('@urlEditar')"
+                type="submit" value="Guardar" id="btnGuardar">
+            <i class="fas fa-save"></i>
+
+            <span class="d-none d-sm-inline">
+                Guardar
+            </span>
+        </button>
+
+        <partial name="_agregarClienteCarrito" model="Model" view-data="ViewData" />
+    </div>
+</div>
+
+
+
+
+
+        <br />
+        <br />
+        <br />
+
+
+        @section Scripts
+{
+            <script type="text/javascript" src="~/script/cliente/verCliente.js"></script>
+            <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            EditarPermisos = "@permisosEditar";
+
+            activarControles(EditarPermisos);
+
+        });
+
+            </script>
+        }

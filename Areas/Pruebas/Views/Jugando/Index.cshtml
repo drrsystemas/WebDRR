@@ -1,0 +1,43 @@
+﻿@model  ViewJugando
+
+@{
+    Layout = null;
+
+    
+}
+
+<!DOCTYPE html>
+
+<html lang="es-ar">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index</title>
+
+</head>
+<body>
+    <h4>Probando codigo</h4>
+    <hr />
+    <p>@Model.Titulo</p>
+    <hr />
+
+    <div id="app">
+        <h6 class="display-4">{{message}}</h6>
+    </div>
+
+
+    <hr />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+    <script>
+        let app = new Vue({
+            el: '#app',
+            data: {
+                message: "Integracion de vue.js -- vamos a ver que sale."
+            }
+        })
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+﻿@*
+    Fecha de creacion: 22-01-2021
+    Esta vista parcial  se vincula con el _paisProvinciaCiudad.js
+*@
+
+@model ViewModelPaisProvinciaCiudad;
+
+@{
+
+    String urlGetProvincia = Url.Action("GetProvincias", "Cliente");
+    String urlGetCiudad = Url.Action("GetCiudades", "Cliente");
+    if (Model?.ListaPaises?.Count() > 0)
+    {
+        <select onchange="change_cbPais('@urlGetProvincia')" id="cbPais" asp-for="PaisId"
+                asp-items="@(new SelectList(Model.ListaPaises,"PaisId","Descripcion"))">
+            <option>Selecciona el País</option>
+        </select>
+
+        <select @(Model?.PaisId > 0 ? "" : "hidden") onchange="change_cbProvincia('@urlGetCiudad')"
+                id="cbProvincia" asp-for="ProvinciaId">
+            <option>Selecciona la Provincia</option>
+        </select>
+
+        <select @(Model?.ProvinciaId > 0 ? "" : "hidden")  id="cbCiudad" asp-for="CiudadId">
+            <option>Selecciona la Ciudad</option>
+        </select>
+    }
+
+}
+
+

@@ -1,0 +1,150 @@
+﻿@model DRR.Core.DBEmpresaEjemplo.Models.Contacto
+
+@{
+
+
+
+
+
+    Layout = "~/Views/Shared/_LayoutSoporte.cshtml";
+
+    string urlRetorno = (String)ViewBag.UrlRetorno;
+
+    string nombreCliente = (String)ViewBag.Cliente;
+
+    nombreCliente = "[" + Model.EntidadSucId + "] " + nombreCliente;
+
+    List<DRR.Core.DBEmpresaEjemplo.Models.ContactoTipo> listaContactoTipo
+= (List<DRR.Core.DBEmpresaEjemplo.Models.ContactoTipo>)ViewBag.ListarContactoTipo;
+
+    int tipoOperacion = 1;
+
+    if (ViewBag.TipoOperacion != null)
+    {
+        tipoOperacion = (int)ViewBag.TipoOperacion;
+    }
+
+
+    if(tipoOperacion == 1)
+    {
+        ViewData["Title"] = "Agregar Contacto";
+    }
+    else
+    {
+        ViewData["Title"] = "Modificar Contacto";
+    }
+}
+
+@section Estilos
+{
+
+    <style type="text/css">
+        .error {
+            color: red;
+        }
+    </style>
+
+}
+
+
+
+<partial name="_aviso" />
+<a id="urlVolver" href="@urlRetorno" hidden></a>
+
+
+<h4>@ViewData["Title"]</h4>
+
+
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <form id="formcontacto" asp-area="Soporte" asp-controller="Contacto" asp-action="CrubContacto" method="post">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" name="tipoOperacion" value="@tipoOperacion" class="form-control" />
+
+            <input type="hidden" asp-for="FechaAlta" class="form-control" />
+            <input type="hidden" asp-for="ContactoId" class="form-control" />
+
+            <input type="hidden" asp-for="EntidadSucId" class="form-control" />
+
+            <div class="form-group row  mx-1 border border-success">
+                <label class="control-label col-sm-2 mt-1"><span class="font-weight-bold">Cliente</span> </label>
+                <input readonly asp-for="@nombreCliente" class="form-control col-sm-10 " />
+                <span asp-validation-for="EntidadSucId" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <label class="control-label">Apellido y Nombre</label>
+                <input id="ApellidoNombre" asp-for="ApellidoNombre" class="form-control" />
+                <span asp-validation-for="ApellidoNombre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Clasificación</label>
+                <select id="ContactoTipoId" class="custom-select" asp-for="ContactoTipoId"
+                        asp-items="@(new SelectList(listaContactoTipo,"ContactoTipoId","Descripcion"))">
+                </select>
+                <span asp-validation-for="ContactoTipoId" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="Telefono" class="control-label"></label>
+                <div class="input-group-append">
+
+                    <input id="Telefono" asp-for="Telefono" data-pegar="0"
+                           placeholder="formato 549-3751-12345"
+                           class="form-control" />
+
+                    <button data-toggle="popover"
+                            title="Pegar desde whatsapp"
+                            data-content="Para dar formato a un numero copiado desde whatsapp web, lo pega en la caja de texto y presiona la tecla Enter. (funciona 1 vez)"
+                            class="btn btn-outline-secondary"
+                            type="button" id="button-addon2">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+                <span asp-validation-for="Telefono" id="valTel" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="Observaciones" class="control-label"></label>
+                <textarea id="Observaciones" asp-for="Observaciones" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Observaciones" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Guardar" class="btn btn-primary" />
+
+                <a asp-area="Soporte"
+                   asp-controller="Contacto"
+                   asp-action="ListarContactos"
+                   class="ml-2 btn btn-danger">
+                    Cancelar
+                </a>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<br />
+<br />
+
+
+@section Scripts {
+
+
+
+    <script src="~/script/soporte/contactos.js" asp-append-version="true" type="text/javascript"></script>
+    <script type="text/javascript" src="~/lib/popper.js/umd/popper.min.js"></script>
+    @*<script type="text/javascript">
+            $(function () {
+                $('[data-toggle="popover"]').popover()
+            })
+        </script>*@
+}

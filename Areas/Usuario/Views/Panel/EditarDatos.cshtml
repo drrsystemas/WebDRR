@@ -1,0 +1,154 @@
+﻿@model LibreriaBase.Areas.Usuario.UsuarioWeb_Configuracion
+
+@{
+    ViewData["Title"] = "Editar Datos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<partial name="_aviso" />
+
+<h4>Datos Usuario</h4>
+<hr />
+<a class="btn btn-secondary mb-2" asp-area="Usuario" asp-controller="Panel" asp-action="BuscarDatos">Obtener Datos Afip</a>
+
+<a class="btn btn-warning mb-2" asp-area="Acceso" asp-controller="Acceso" asp-action="ModificarClave">Modificar Clave</a>
+
+
+<div class="row">
+    <div class="col-md-10">
+
+        <form asp-area="Usuario" asp-controller="Panel" asp-action="EditarDatos" method="post">
+
+            <fieldset class="form-group">
+
+                <div class="form-group row">
+                    <label asp-for="ApellidoyNombre" class="col-sm-2 col-form-label">Apellido y Nombre</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" asp-for="ApellidoyNombre">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label asp-for="TipoDocumento" class="col-sm-2 col-form-label">Tipo Documento</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" asp-for="TipoDocumento">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label asp-for="Documento" class="col-sm-2 col-form-label">N° de Documento</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" asp-for="Documento">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label asp-for="Cuit" class="col-sm-2 col-form-label">Cuit</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" asp-for="Cuit">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label asp-for="FechaNacimiento" class="col-sm-2 col-form-label">Fecha de Nacimiento</label>
+                    <div class="col-sm-10">
+                        <input type="date" class="form-control" asp-for="FechaNacimiento">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label asp-for="Actividad" class="col-sm-2 col-form-label">Actividad</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" asp-for="Actividad">
+                    </div>
+                </div>
+
+                <fieldset class="form-group">
+                    <div class="row">
+                        <legend class="col-form-label col-sm-2 pt-0">Género</legend>
+                        <div class="col-sm-10">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" asp-for="Sexo" value="1">
+                                <label class="form-check-label" asp-for="Sexo">
+                                    Femenino
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" asp-for="Sexo" value="2">
+                                <label class="form-check-label" asp-for="Sexo">
+                                    Masculino
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+                </fieldset>
+
+
+            </fieldset>
+
+            <fieldset class="form-group">
+                <div class="form-group row">
+                    <label asp-for="Provincia" class="col-sm-2 col-form-label">Provincia</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" asp-for="Provincia">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label asp-for="Localidad" class="col-sm-2 col-form-label">Localidad</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" asp-for="Localidad">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label asp-for="CodigoPostal" class="col-sm-2 col-form-label">Código Postal</label>
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" asp-for="CodigoPostal">
+                        <span asp-validation-for="CodigoPostal" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label asp-for="Celular" class="col-sm-2 col-form-label">Teléfono</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" required asp-for="Celular">
+                        <span asp-validation-for="Celular" class="text-danger"></span>
+                    </div>
+
+                </div>
+                <div class="form-group row">
+                    <label asp-for="Direccion" class="col-sm-2 col-form-label">Dirección</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" required asp-for="Direccion">
+                        <span asp-validation-for="Direccion" class="text-danger"></span>
+                    </div>
+
+                </div>
+                <div class="form-group row">
+                    <label asp-for="Referencias" class="col-sm-2 col-form-label">Referencias</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" asp-for="Referencias">
+                    </div>
+                </div>
+
+
+                <input type="hidden" class="form-control" asp-for="AlmaUserID">
+                <input type="hidden" class="form-control" name="tipoOperacion" value="3">
+            </fieldset>
+
+            <br />
+            <div class="form-group row">
+                <div class="col-sm-10">
+                    <button type="submit" class="btn btn-primary"><i class="far fa-save"></i> Guardar</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+<br />
+
+@section Scripts
+{
+    
+}

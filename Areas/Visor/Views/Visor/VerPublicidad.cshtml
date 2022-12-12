@@ -1,0 +1,106 @@
+﻿@using LibreriaBase.Areas.Visor
+@model List<ViewVisorContenido>
+
+@{
+    ViewData["Title"] = "Visor Publicidad";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+    List<String> listaTitulos = new List<string>();
+}
+
+
+<!DOCTYPE html>
+<html lang="es-ar">
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+
+
+    <link rel="stylesheet" href="~/lib/fotorama/fotorama.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
+
+</head>
+<body>
+
+    <div class="container-fluid">
+
+        @{
+            var listaPublicidad = Model?.Where(x => x.Imagen != null).ToList();
+
+            listaTitulos = listaPublicidad?.Select(x => x.Titulo).ToList();
+
+            <div class="col-12 mx-auto justify-content-center">
+
+                @*<div class="fotorama"
+                         data-width="100%"
+                         data-height="50%"
+                         data-nav="thumbs">
+                        @{
+                            for (int i = 0; i < listaPublicidad?.Count(); i++)
+                            {
+                                <a href="@listaPublicidad[i].Imagen.RutaImagenJpg()">
+                                    <img src="@listaPublicidad[i].Imagen.RutaImagenJpg()"
+                                         width="144"
+                                         height="96">
+                                </a>
+                            }
+                        }
+
+                    </div>*@
+
+
+
+                @*<div class="fotorama"
+
+                    data-allowfullscreen="native"
+                    data-loop="true"
+                    data-autoplay="3000" >*@
+                <div class="fotorama" data-loop="true">
+
+                    @{
+                        for (int i = 0; i < listaPublicidad?.Count(); i++)
+                        {
+                            var pub = @listaPublicidad[i];
+                            //if (pub.PublicidadTipoId == 5)
+                            //{
+                            <img src="@pub.Imagen.RutaImagenJpg()">
+                            //}
+                            <!--else if (pub.PublicidadTipoId == 4)
+                            {-->
+                            @*<a href="https://dailymotion.com/embed/video/xxgmlg?autoplay=1"
+                                   data-video="true">
+                                    <img src="pub.Imagen.RutaImagenJpg()">
+                                </a>*@
+
+                            <!--}-->
+
+                        }
+                    }
+
+                </div>
+
+
+                <br />
+            </div>
+        }
+
+    </div>
+
+
+    <script type="text/javascript" src="~/lib/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="~/lib/popper.js/umd/popper.min.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
+
+    <script type="text/javascript" src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script type="text/javascript" src="~/lib/fotorama/fotorama.js"></script>
+
+    <script type="text/javascript" src="~/script/visor/visor.js"></script>
+
+
+</body>
+</html>

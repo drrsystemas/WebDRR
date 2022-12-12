@@ -1,0 +1,130 @@
+﻿@{
+    //SessionAcceso _session = Context.Session.GetJson<SessionAcceso>("SessionAcceso");
+
+
+    SessionAcceso _session = SessionAcceso.RecuperarSession(Context);
+    //ViewData["SessionAcceso"] = _session;
+
+    String titulo = ViewData["Title"] + " - AlmaNET";
+}
+
+
+<!DOCTYPE html>
+
+<html lang="es-ar">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@titulo</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
+    <link rel="stylesheet" href="~/css/drrSystemasProductos.css" />
+
+    <script type="text/javascript" src="~/lib/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script type="text/javascript" src="~/script/_layout.js"></script>
+
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <!--<script async src="https://www.googletagmanager.com/gtag/js?id=G-3KEV394LZX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-3KEV394LZX');
+    </script>-->
+
+
+    @RenderSection("Estilos", required: false)
+
+    <!-- CSS media query within a style sheet -->
+    <style type="text/css" media="screen and (max-width:540px)">
+        #headerv4_a_logo {
+            display: none;
+        }
+
+        #barraPrincipal {
+            padding: 0px;
+        }
+
+
+        .dropdown-submenu {
+            position: relative;
+        }
+
+            .dropdown-submenu a::after {
+                transform: rotate(-90deg);
+                position: absolute;
+                right: 6px;
+                top: .8em;
+            }
+
+            .dropdown-submenu .dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-left: .1rem;
+                margin-right: .1rem;
+            }
+    </style>
+
+</head>
+
+<body>
+
+    <header>
+
+        @{
+            if (_session?.Usuario?.Rol != (Int32)EnumRol.Catalogo)
+            {
+                //if (_session?.Usuario?.NumeroReparto == null)
+                //{
+                <partial name="_iconoPrincipal" model="_session" />
+                @*}
+                    else
+                    {
+                        <partial name="_iconoPrincipalReparto" model="_session" />
+                    }*@
+
+            }
+
+        }
+
+
+        @RenderSection("Menu", required: false)
+    </header>
+
+
+    <div class="container-fluid">
+        <main role="main" class="pb-2">
+
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted d-none d-sm-block">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-6">
+                    <img class="mt-2 float-left" height="40" src="~/img/almanet_web_mini.png">
+                </div>
+
+                <div class="col-6">
+
+                    <p class="text-right"> &copy;  <a href="https://www.drrsystemas.com" target="_blank"><img height="18" src="~/img/drr_mini.png"></a> - @DateTime.Now.ToString("dd/MM/yyyy")</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+
+</html>

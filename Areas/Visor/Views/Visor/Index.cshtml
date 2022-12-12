@@ -1,0 +1,51 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Principal</h3>
+
+<hr />
+<div class="row">
+
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="card-title">Ver Publicidades</h4>
+                <p class="card-text">
+                    Se muestran la publicidades en una pagina aparte - Se puede disparar mediante el enlace.
+                </p>
+                <a class="btn btn-primary" asp-area="Visor" asp-controller="Visor" asp-action="VerPublicidad">
+                    <i class="far fa-clipboard fa-2x"></i>
+                </a>
+            </div>
+        </div>
+        <br />
+    </div>
+
+    <br />
+    <br />
+
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="card-title">Ver Ofertas</h4>
+                <p class="card-text">
+                    Se muestran las ofertas en una pagina aparte - Se puede disparar mediante el enlace.
+                </p>
+                <a class="btn btn-primary" asp-area="Visor" asp-controller="Visor" asp-action="VerOfertas">
+                    <i class="far fa-clipboard fa-2x"></i>
+                </a>
+            </div>
+        </div>
+        <br />
+    </div>
+
+    <br />
+    <br />
+
+</div>
+
+
+

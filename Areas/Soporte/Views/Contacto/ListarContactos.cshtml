@@ -1,0 +1,230 @@
+﻿@model IEnumerable<Contacto>
+
+@{
+    ViewData["Title"] = "Contactos";
+    Layout = "~/Views/Shared/_LayoutSoporte.cshtml";
+
+    Int32 entidadSucId = 0;
+    if (ViewBag.EntidadSucId != null)
+    {
+        entidadSucId = (Int32)ViewBag.EntidadSucId;
+    }
+
+    String urlRetorno = (String)ViewBag.UrlRetorno;
+
+    Boolean ocultarBtn_Seleccionar = false;
+
+    if (ViewData.ContainsKey("ocultarSeleccionar"))
+    {
+        ocultarBtn_Seleccionar = (Boolean)ViewData["ocultarSeleccionar"];
+    }
+
+
+    Int32 indice = 1;
+
+    String urlseleccionarContacto = Url.Action("SeleccionarContacto", "Soporte");
+}
+
+
+
+@section Menu
+{
+    <div class="d-flex  bd-highlight">
+
+        @* Btn de Los filtros para ver o esconder... *@
+        <button class="btn btn-sm btn-light" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <i class="fas fa-bars fa-2x"></i>
+        </button>
+
+        <h3 class="float-left flex-grow-1 ml-2 mt-2">Contactos</h3>
+
+
+        <div class="p-2 bd-highlight">
+
+
+
+            <!-- Default dropleft button -->
+            <div class="btn-group dropleft">
+                <button type="button" class="btn  btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bars fa-1x"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item cursor-pointer"
+                       asp-area="Soporte"
+                       asp-controller="Contacto"
+                       asp-action="CrubContacto" asp-route-entidadSucId="@entidadSucId"><i class="fas fa-user-plus"></i> Nuevo Contacto</a>
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+}
+
+
+
+    <partial name="_aviso" />
+    <a id="urlVolver" href="@urlRetorno" hidden></a>
+
+
+    <hr />
+    <div>
+        <div class="form-group my-1">
+            <div class="input-group-prepend">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
+                </div>
+                <input style="border-color: #ff6a00;" type="text"
+                       onkeyup="filtarContactos()"
+                       class="form-control"
+                       id="inputBuscarContacto"
+                       placeholder="Ingrese el dato para filtrar">
+            </div>
+        </div>
+
+    </div>
+
+    @{
+        Boolean mostrarTabla = false;
+
+        if (entidadSucId > 0)
+        {
+            if (Model?.Count() > 0)
+            {
+                mostrarTabla = true;
+            }
+            else
+            {
+                <h5 class="text-dark">El Cliente no tiene contactos.</h5>
+            }
+        }
+        else
+        {
+            if (Model?.Count() > 0)
+            {
+                mostrarTabla = true;
+            }
+            else
+            {
+                <h5 class="text-dark">No hay ningun contaco en la base de datos</h5>
+            }
+        }
+
+
+        if (mostrarTabla == true)
+        {
+            <table id="tablaContactos" class="table table-sm table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            
+                        </th>
+                        <th>
+                            Cliente
+                        </th>
+
+                        <th>
+                            Contacto
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.FechaAlta)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Telefono)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Observaciones)
+                        </th>
+
+                        @if (ocultarBtn_Seleccionar == false)
+                        {
+                            <th></th>
+                        }
+
+
+                    </tr>
+                </thead>
+                <tbody id="tablaContactosCuerpo">
+                    @foreach (var item in Model)
+                    {
+                        String urlAction = urlseleccionarContacto + "?contactoId=" + item.ContactoId;
+                        String cliente = "[" + item.EntidadSucId + "] " + item.EntidadSuc.Entidad.RazonSocial;
+                        String contacto = "[" + item.ContactoId + "] " + item.ApellidoNombre;
+
+                    <tr id="fila_@indice">
+                        <td>
+                           <a class="btn btn-sm btn-outline-success"
+                              asp-area="Soporte"
+                              asp-controller="Contacto"
+                              asp-action="EditarContacto"
+                              asp-route-contactoId="@item.ContactoId"
+                              >Editar</a>
+                        </td>
+                        <td>
+                            @cliente
+                        </td>
+                        <td>
+                            @contacto
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FechaAlta)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Telefono)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Observaciones)
+                        </td>
+
+                        @if (ocultarBtn_Seleccionar == false)
+                        {
+                            <td>
+                                <a id="btn_@indice" href="@urlAction" class="btn btn-sm btn-primary">
+
+                                    <b class="d-none d-sm-inline">
+                                        Selec.
+                                    </b> <i class="fas fa-check"></i>
+                                </a>
+                            </td>
+                        }
+
+                    </tr>
+                        indice += 1;
+                    }
+                </tbody>
+            </table>
+        }
+
+    }
+
+
+    <br />
+    <br />
+    <br />
+
+
+    @section Scripts {
+
+        <script type="text/javascript" src="~/script/soporte/contactos.js"></script>
+
+        @*<script type="text/javascript">
+
+
+                $(document).keyup(function (event) {
+                    var code = event.key;
+                    if (code === "Enter") {
+                        if ($('#tablaContactos >tbody >tr').length == 1) {
+                            var enlace = $("#btn_1").attr('href');
+                            window.location = enlace;
+                        }
+                    }
+                });
+
+            </script>*@
+
+    }

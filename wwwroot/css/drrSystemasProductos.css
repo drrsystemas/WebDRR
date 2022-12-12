@@ -1,0 +1,209 @@
+﻿.imagenMobile {
+    height: 50px;
+    width: auto;
+}
+
+
+.imagenTarjeta_DetalleProducto {
+    width:auto;
+    height:160px;
+    object-fit:scale-down;
+    display:block; margin:auto;
+}
+
+
+.imagenTarjeta_DetalleProducto_dos {
+    width: auto;
+    height: 135px;
+    object-fit: scale-down;
+    display: block;
+    margin: auto;
+}
+
+.imagenTarjeta_DetalleProducto_web {
+    width: auto;
+    height: auto;
+    object-fit: scale-down;
+    display: block;
+    margin: auto;
+}
+
+
+.imagen-producto-relacionado {
+    width: auto;
+    height: 125px;
+    object-fit: scale-down;
+    display: block;
+    margin: auto;
+}
+
+
+.altoFijo{
+    height:260px;
+}
+
+.pVerde {
+    color:greenyellow;
+    font-weight:bold;
+}
+
+
+.imgProducto {
+    width: auto;
+    max-height: 400px;
+    object-fit: scale-down;
+    display: block;
+    margin: auto;
+   
+}
+
+.iconito {
+    width: auto;
+    max-height: 50px;
+    object-fit: scale-down;
+    display: block;
+    margin: auto;
+}
+
+.siguiente {
+    background-image: none;
+    color: black;
+    font-size: 25px;
+}
+
+.atras {
+    background-image: none;
+    color: black;
+    font-size: 25px;
+}
+
+
+.ocultarDiv {
+    display: none;
+}
+
+.mostrarDiv {
+    display: block;
+}
+
+
+.letraChica {
+    font-size: 8px;
+    color: coral;
+    font-weight: bold;
+}
+
+
+.btn-whatsapp {
+    display: block;
+    width: 70px;
+    height: 70px;
+    color: #fff;
+    position: fixed;
+    right: 20px;
+    bottom: 2px;
+    border-radius: 50%;
+    line-height: 80px;
+    text-align: center;
+    z-index: 999;
+}
+
+
+
+
+.img_producto_vs2 {
+    width: auto;
+    max-height: 160px;
+    max-width: 200px;
+    object-fit: scale-down;
+    display: block;
+    margin-top: 5px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.imagen_representada {
+    height: 50px;
+    width: auto;
+    object-fit: scale-down;
+}
+
+.p_Nombre_vs2 {
+    font-size: 14px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: darkblue;
+}
+
+.targeta_tamaño_vs2 {
+    min-height: 400px;
+    max-height: 400px;
+}
+
+.txtSinSaltos{
+    white-space:nowrap;
+}
+
+
+.fondoGrisPar {
+    background-color: cornsilk;
+}
+
+.fondoGrisImpar {
+    background-color: beige;
+}
+
+    .itemEstaEnCarrito{
+        color:orangered;
+        font-weight: bold;
+    }
+
+
+    .colorRojo{
+        color:red;
+    }
+
+.color-naranja {
+    color: #ff7f26;
+}
+
+.cursorAyuda {
+    cursor: help;
+}
+
+
+.titulo {
+    min-height: 85px;
+    max-height: 85px;
+}
+
+
+
+
+
+.fondoBulto {
+    background-color: lightgoldenrodyellow;
+}
+
+.fondoUnidad {
+    background-color: cadetblue;
+}
+
+.bordeNaranja {
+    border-color: #ff6a00;
+    border-width: 1px;
+    border-style: solid;
+}
+
+
+.imagen {
+    height: 50px;
+    width: auto;
+    object-fit: scale-down;
+}
+
+
+/*Se utililiza en modificar item carrito*/
+.abs-derecha {
+    display: flex;
+    align-items: flex-end;
+}

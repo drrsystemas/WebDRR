@@ -1,0 +1,652 @@
+﻿@model LibreriaBase.Areas.Carrito.PedidoViewModel
+
+@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int rol = (int)EnumRol.Cliente;
+
+
+
+
+    if (ViewData.ContainsKey("Rol"))
+    {
+        rol = (Int32)ViewData["Rol"];
+    }
+
+
+    if (rol != (int)EnumRol.Vendedor)
+    {
+        ViewData["Title"] = "Compras";
+    }
+    else
+    {
+        ViewData["Title"] = "Pedidos";
+    }
+
+
+
+    Boolean representada = false;
+
+
+    if (ViewData.ContainsKey("Representada"))
+    {
+        representada = (Boolean)ViewData["Representada"];
+    }
+
+
+    String jsonF = "";
+
+    if (Model?.Filtro != null)
+    {
+        jsonF = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Filtro);
+    }
+}
+
+
+@section Menu
+{
+    <div class="d-flex mb-1 bd-highlight">
+
+        @* Btn de Los filtros para ver o esconder... *@
+        <button class="btn btn-sm btn-light" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <i class="fas fa-bars fa-2x"></i>
+        </button>
+
+        @if (rol == (int)EnumRol.Vendedor)
+        {
+            String titulo = "Pedidos";
+
+            if (Model.Filtro.Todos == true)
+            {
+                titulo += " (todos los registros)";
+            }
+            else
+            {
+                if (Model.Filtro.FechaDesde.FechaCorta() == Model.Filtro.FechaHasta.FechaCorta())
+                {
+                    titulo += $" ({Model.Filtro.FechaDesde.FechaCorta()})";
+                }
+                else
+                {
+                    titulo += $" ({Model.Filtro.FechaDesde.FechaCorta()} - {Model.Filtro.FechaHasta.FechaCorta()})";
+                }
+            }
+
+            <h4 class="float-left flex-grow-1 ml-2 mt-2">@titulo</h4>
+        }
+        else
+        {
+            <h4 class="float-left flex-grow-1 ml-2 mt-2">@ViewData["Title"]</h4>
+        }
+
+
+
+
+
+        <div class="p-2 bd-highlight">
+
+
+
+            <!-- Default dropleft button -->
+            <div class="btn-group dropleft">
+                <button type="button" class="btn  btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bars fa-1x"></i>
+                </button>
+                <div class="dropdown-menu">
+                    @*<a class="dropdown-item  cursor-pointer"  target="_blank"
+                         asp-area="Carrito" asp-controller="Pedido" asp-action="GenerarPdfListaPedidos"
+                         asp-route-SectorId="@Model.Filtro.SectorId"
+                         asp-route-ClienteId="@Model.Filtro.ClienteId"
+                         asp-route-AlmaUserId="@Model.Filtro.AlmaUserId"
+                         asp-route-SinPaginacion="@true"
+                         asp-route-FechaDesde="@Model.Filtro.FechaDesde"
+                         asp-route-FechaHasta="@Model.Filtro.FechaHasta"
+                         asp-route-Todos="@Model.Filtro.Todos"
+                    >Generar Rte</a>*@
+
+
+                    @Html.ActionLink(
+                                    "Generar Rte", "GenerarPdfListaPedidos", "Pedido",
+                                    new
+                                    {
+                                        SectorId = Model.Filtro.SectorId,
+                                        ClienteId = Model.Filtro.ClienteId,
+                                        AlmaUserId = Model.Filtro.AlmaUserId,
+                                        SinPaginacion = true,
+                                        FechaDesde = Model.Filtro.FechaDesde,
+                                        FechaHasta = Model.Filtro.FechaHasta,
+                                        Todos = Model.Filtro.Todos
+                                    },
+                                    new
+                                    {
+                                        target = "_blank",
+                                        @class = "dropdown-item  cursor-pointer"
+                                    }
+                                    )
+
+
+
+                    <a class="dropdown-item cursor-pointer disabled" asp-area=""
+                       asp-controller=""
+                       asp-action="">Ver Totales</a>
+
+                </div>
+            </div>
+
+
+
+        </div>
+
+
+
+
+
+    </div>
+
+
+
+    @* Div que se muestra o esconde --- Filtros *@
+    <div class="collapse" id="collapseExample">
+        <div>
+
+            @{
+                String fRepresentada = "Todas las Representadas";
+                if (Model?.Filtro?.SectorId > 0)
+                {
+                    fRepresentada = Model.Filtro.Sector;
+                }
+
+                String fCliente = "Todos los Clientes";
+
+                if (Model?.Filtro?.ClienteId > 0)
+                {
+                    fCliente = Model.Filtro.Cliente;
+                }
+
+                <br />
+
+                if (rol == (int)EnumRol.Vendedor)
+                {
+                    if (representada == true)
+                    {
+                        <div class="input-group px-4">
+                            <label class="form-control"
+                                   aria-describedby="button-addon2">
+                                @fRepresentada
+                            </label>
+
+
+                            <div class="input-group-append @(Model?.Filtro?.SectorId > 0? " ":"ocultarDiv")">
+                                <form method="post" asp-action="CapturarFiltros" asp-controller="Pedido">
+                                    <input type="hidden" value="@jsonF" name="json" />
+                                    <input type="hidden" value="1" name="operacion" />
+                                    <button class="btn btn-outline-danger"
+                                            type="submit"
+                                            id="buttonQuitarRepresentada">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </form>
+                            </div>
+
+
+
+                        </div>
+                    }
+
+
+
+                    <div class="input-group  px-4">
+                        <label class="form-control"
+                               aria-describedby="button-addon2">@fCliente</label>
+
+                            <div class="input-group-append @(Model?.Filtro?.ClienteId > 0? " ":"ocultarDiv")">
+                                <form method="post" asp-action="CapturarFiltros" asp-controller="Pedido">
+                                    <input type="hidden" value="@jsonF" name="json" />
+                                    <input type="hidden" value="2" name="operacion" />
+
+                                    <button class="btn btn-outline-danger"
+                                            type="submit"
+                                            id="buttonQuitarCliente">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+
+                                </form>
+                            </div>
+
+                        </div>
+                }
+
+
+
+
+            }
+
+
+            @* Aca Formulario *@
+            <form class="mx-3" method="post" asp-action="CapturarFiltros" asp-controller="Pedido">
+
+                <div class="row px-2 mb-2">
+                    <div class="col-sm-4">
+                        <div class="form-group pmd-textfield pmd-textfield-floating-label">
+                            <label class="control-label" >Desde: </label>
+                            <input  asp-for="Filtro.FechaDesde" type="date" class="form-control" >
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <div class="form-group pmd-textfield pmd-textfield-floating-label">
+                            <label class="control-label">Hasta: </label>
+                            <input   asp-for="Filtro.FechaHasta" type="date" class="form-control" >
+                        </div>
+                    </div>
+
+
+                    <div class="col-sm-3  d-flex align-items-end">
+                        <div class="form-check mb-3">
+                            <input  asp-for="Filtro.Todos" type="checkbox" class="form-check-input" >
+                            <label class="form-check-label font-weight-bold">Todos</label>
+                        </div>
+                    </div>
+                </div>
+
+
+                <input type="hidden" value="@jsonF" name="json" />
+                <input type="hidden" value="3" name="operacion" />
+
+
+                <div class="d-flex justify-content-end align-items-center">
+                    <button class="btn btn-success mb-1" type="submit"><i class="fas fa-filter"></i> Filtrar</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+}
+
+
+
+
+
+@{
+    if (Model != null)
+    {
+        <table class="table table-sm table-striped">
+            <thead>
+                <tr>
+                    <th class="d-none d-md-table-cell">Código</th>
+                    <th class="d-none d-md-table-cell">Estado</th>
+                    @if (representada == true)
+                    {
+                        <th class="d-none d-md-table-cell">
+                            Representada\Cliente
+                        </th>
+                    }
+                    else
+                    {
+                        if (rol == (int)EnumRol.Vendedor)
+                        {
+                            <th class="d-none d-md-table-cell">Cliente</th>
+                        }
+
+                    }
+
+                    <th class="d-none d-md-table-cell">Fecha</th>
+
+
+
+                    @if (rol == (int)EnumRol.Vendedor)
+                    {
+                        <th class="d-none d-md-table-cell">Desc.</th>
+                        <th class="d-none d-md-table-cell">Total</th>
+                        <th class="d-none d-md-table-cell">
+
+                        </th>
+                    }
+                    else
+                    {
+                        <th class="d-none d-md-table-cell">Total</th>
+                        <th class="d-none d-md-table-cell">Reporte</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+
+                @{
+
+                    foreach (var item in Model.Lista)
+                    {
+                        String cliente = "[" + item.ClienteId + "] " + item.NombreCliente;
+
+                                <tr>
+                                    @* Se ve en celular unicamente. *@
+                                    <td class="p-1 d-sm-block d-md-none">
+
+                                        <div class="d-flex flex-column bd-highlight mb-1">
+                                            <div class="p-0 bd-highlight">
+                                                <p class="d-inline-block">[@item.PedidoId] </p>
+                                                @{
+                                                    if (representada == true)
+                                                    {
+                                                        <p class="d-inline-block">@item.NombreSector</p>
+                                                    }
+                                                    if (rol == (int)EnumRol.Vendedor)
+                                                    {
+                                                        <p class="d-inline-block">
+
+                                                            <a asp-controller="Cliente" asp-action="MapaCliente" asp-route-clienteId="@item.ClienteId">
+                                                                @cliente
+                                                            </a>
+
+                                                        </p>
+                                                    }
+                                                }
+                                            </div>
+                                            <div class="p-0 bd-highlight">
+                                                <p class="d-block">
+                                                    <strong class="font-weight-bold">@item.Fecha.FechaCortaHsMin()</strong>
+
+                                                    <strong class="ml-1 font-weight-bold">Total: </strong> @item.Total.FormatoMoneda(true)
+                                                </p>
+
+                                                @{
+
+                                                    if (rol == (int)EnumRol.Vendedor)
+                                                    {
+                                                        @*<p class="d-inline-block">@item.TotalNeto.FormatoMoneda() || @item.Total.FormatoMoneda()</p>*@
+
+
+                                                        String sectorEncrip = "[" + item.SectorId + "] " + item.NombreSector;
+
+                                                        <a class="mr-1 btn btn-sm btn-success" asp-area="Carrito" target="_blank"
+                                                           asp-controller="Pedido"
+                                                           asp-action="GenerarPdf"
+                                                           asp-route-codigo="@item.PedidoId.ToString().Encriptar()"
+                                                           asp-route-sector="@sectorEncrip"
+                                                           asp-route-cliente="">Reporte</a>
+
+
+                                                        if (item.Estado == 0)
+                                                        {
+                                                            <a asp-area="Carrito"
+                                                               asp-controller="Pedido"
+                                                               asp-action="ObtenerPedido"
+                                                               asp-route-codigo="@item.PedidoId.ToString().Encriptar()"
+                                                               asp-route-tipoOperacion="@((int)EnumTipoOperacion.Modificar)"
+                                                               class="btn btn-sm  btn-info float-righ">Editar</a>
+
+                                                            if (Model.EliminarPedidos == true)
+                                                            {
+                                                                <a asp-area="Carrito"
+                                                                   asp-controller="Pedido"
+                                                                   asp-action="ObtenerPedido"
+                                                                   asp-route-codigo="@item.PedidoId.ToString().Encriptar()"
+                                                                   asp-route-tipoOperacion="@((int)EnumTipoOperacion.Eliminar)"
+                                                                   class="ml-2 btn btn-sm btn-danger">Eliminar</a>
+                                                            }
+
+
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <a asp-area="Carrito"
+                                                               asp-controller="Pedido"
+                                                               asp-action="ObtenerPedido"
+                                                               asp-route-codigo="@item.PedidoId.ToString().Encriptar()"
+                                                               asp-route-tipoOperacion="@((int)EnumTipoOperacion.Agregar)"
+                                                               class="btn btn-sm btn-primary float-righ">Copiar</a>
+
+                                                        }
+                                                    }
+                                                }
+
+
+
+
+                                            </div>
+
+                                        </div>
+
+
+                                    </td>
+
+                                    @* Se visualizan en tablet o pc *@
+                                    <td class="d-none d-md-table-cell">@item.PedidoId</td>
+                                    <td class="d-none d-md-table-cell">@item.Estado</td>
+
+
+                                    @if (representada == true)
+                                    {
+                                        <td class="d-none d-md-table-cell">
+                                            <p>@item.NombreSector</p>
+                                            <p>
+                                                <a asp-controller="Cliente" asp-action="MapaCliente" asp-route-clienteId="@item.ClienteId">
+                                                    @cliente
+                                                </a>
+                                            </p>
+
+
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        if (rol == (int)EnumRol.Vendedor)
+                                        {
+                                            <td class="d-none d-md-table-cell">
+                                                <a asp-controller="Cliente" asp-action="MapaCliente" asp-route-clienteId="@item.ClienteId">
+                                                    @cliente
+                                                </a>
+                                            </td>
+                                        }
+
+                                    }
+
+
+                                    <td class="d-none d-md-table-cell">@item.Fecha</td>
+
+                                    @{
+
+                                        String sector = "[" + item.SectorId + "] " + item.NombreSector;
+
+                                        if (rol == (int)EnumRol.Vendedor)
+                                        {
+                                            <td class="d-none d-md-table-cell">% @item.Descuento.MostrarEntero()</td>
+
+                                            <td class="d-none d-md-table-cell">@item.Total.FormatoMoneda()</td>
+
+                                            if (item.Estado == 0)
+                                            {
+                                                <td class="d-none d-md-table-cell">
+
+                                                    <a class="btn btn-sm btn-success" asp-area="Carrito" target="_blank"
+                                                       asp-controller="Pedido"
+                                                       asp-action="GenerarPdf"
+                                                       asp-route-codigo="@item.PedidoId.ToString().Encriptar()"
+                                                       asp-route-sector="@sector"
+                                                       asp-route-cliente="">Reporte</a>
+
+
+                                                    <a asp-area="Carrito"
+                                                       asp-controller="Pedido"
+                                                       asp-action="ObtenerPedido"
+                                                       asp-route-codigo="@item.PedidoId.ToString().Encriptar()"
+                                                       asp-route-tipoOperacion="@((int)EnumTipoOperacion.Modificar)"
+                                                       class="ml-2 btn btn-sm btn-info">Editar</a>
+
+                                                    @{ if (Model.EliminarPedidos == true)
+                                                        {
+                                                            <a asp-area="Carrito"
+                                                               asp-controller="Pedido"
+                                                               asp-action="ObtenerPedido"
+                                                               asp-route-codigo="@item.PedidoId.ToString().Encriptar()"
+                                                               asp-route-tipoOperacion="@((int)EnumTipoOperacion.Eliminar)"
+                                                               class="ml-2 btn btn-sm btn-danger">Eliminar</a>
+                                                        }
+
+                                                    }
+
+
+                                                </td>
+
+                                                // La posibilidad de eliminar el pedido.
+                                            }
+                                            else
+                                            {
+                                                <td class="d-none d-md-table-cell">
+
+                                                    <a class="btn btn-sm btn-success" asp-area="Carrito" target="_blank"
+                                                       asp-controller="Pedido"
+                                                       asp-action="GenerarPdf"
+                                                       asp-route-codigo="@item.PedidoId.ToString().Encriptar()"
+                                                       asp-route-sector="@sector"
+                                                       asp-route-cliente="">Reporte</a>
+
+                                                    <a asp-area="Carrito"
+                                                       asp-controller="Pedido"
+                                                       asp-action="ObtenerPedido"
+                                                       asp-route-codigo="@item.PedidoId.ToString().Encriptar()"
+                                                       asp-route-tipoOperacion="@((int)EnumTipoOperacion.Agregar)"
+                                                       class="ml-2 btn btn-sm btn-primary">Copiar</a>
+
+                                                </td>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <td class="d-none d-md-table-cell">@item.Total.FormatoMoneda()</td>
+
+
+                                            <td class="d-none d-md-table-cell">
+
+                                                <a class="btn btn-sm btn-success" asp-area="Carrito" target="_blank"
+                                                   asp-controller="Pedido"
+                                                   asp-action="GenerarPdf"
+                                                   asp-route-codigo="@item.PedidoId.ToString().Encriptar()"
+                                                   asp-route-sector="@sector"
+                                                   asp-route-cliente="">Reporte</a>
+
+                                                @if (rol == (int)EnumRol.ClienteFidelizado)
+                                                {
+                                                    @*if (item.Estado == 0)
+                        {
+                            <a asp-area="Carrito"
+                               asp-controller="Pedido"
+                               asp-action="ObtenerPedido"
+                               asp-route-codigo="@item.PedidoId.ToString().Encriptar()"
+                               asp-route-tipoOperacion="@((int)EnumTipoOperacion.Modificar)"
+                               class="ml-2 btn btn-sm btn-info">Editar</a>
+                        }
+                        else
+                        {*@
+                                                    <a asp-area="Carrito"
+                                                       asp-controller="Pedido"
+                                                       asp-action="ObtenerPedido"
+                                                       asp-route-codigo="@item.PedidoId.ToString().Encriptar()"
+                                                       asp-route-tipoOperacion="@((int)EnumTipoOperacion.Agregar)"
+                                                       class="ml-2 btn btn-sm btn-primary">Copiar</a>
+                                                    //}
+                                                }
+
+                                            </td>
+                                        }
+
+
+
+                                    }
+
+                                </tr>
+                    }
+
+                }
+
+            </tbody>
+        </table>
+
+
+        <br />
+
+        <div page-model="@Model.Paginacion"
+             page-action="ListarPedidos"
+             page-classes-enabled="true"
+             page-url-SectorId="@Model.Filtro.SectorId"
+             page-url-ClienteId="@Model.Filtro.ClienteId"
+             page-url-AlmaUserId="@Model.Filtro.AlmaUserId"
+             page-url-PaginaActual="@Model.Paginacion.PaginaActual"
+             page-url-FechaDesde="@Model.Filtro.FechaDesde"
+             page-url-FechaHasta="@Model.Filtro.FechaHasta"
+              page-url-Todos="@Model.Filtro.Todos"
+             page-class="btn"
+             page-class-normal="btn-light"
+             page-class-selected="btn-primary"
+             class="btn-group">
+        </div>
+        <br />
+        <br />
+
+
+        @*@if (rol != 4)
+            {
+                <p>La cantidad de compras es de @Model.Count() por un Total N. de @Model.Sum(c => c.TotalNeto).FormatoMoneda() y Total F. de @Model.Sum(c => c.Total).FormatoMoneda()</p>
+
+            }
+            else
+            {
+                <p>La cantidad de pedidos es de @Model.Count() por un Total N. de @Model.Sum(c => c.TotalNeto).FormatoMoneda() y Total F. de @Model.Sum(c => c.Total).FormatoMoneda()</p>
+
+            }*@
+
+
+    }
+    else
+    {
+        @if (rol != 4)
+        {
+            <p>El usuario no tiene ninguna compra.</p>
+        }
+        else
+        {
+            <p>No hay ningun pedido.</p>
+        }
+    }
+}
+
+<br />
+<br />
+<br />
+
+<div id="frmItemsPedido" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Items del Pedido</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="divResultadoItemPedido" class="modal-body">
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div id="requestInyect">
+
+</div>
+
+
+
+
+@section Scripts{
+
+    <script type="text/javascript" asp-append-version="true" src="~/script/pedido/listarPedidos.js"></script>
+
+
+}

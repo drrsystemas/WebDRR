@@ -1,0 +1,152 @@
+﻿@model ViewModelDatosTarjeta
+
+@{
+    ViewData["Title"] = "Decidir";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    //Url de la action donde se obtienen los datos de la tarjeta segun el numero.
+    String urlBines = Url.Action("BinTarjeta", "Decidir");
+
+}
+
+<div class="container">
+    <h4>Datos de la Tarjeta</h4>
+    <hr />
+    <div class="row">
+
+        <div id="divPrimeraParte" class="col-md-12">
+
+
+            <form asp-action="GuardarDatosTarjeta" asp-controller="Decidir" method="post" id="formularioDatosTarjeta">
+
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                @* Fila 1 Tarjeta - Tipo - Nombre *@
+                <div class="form-row">
+
+                    <div class="col-md-5 mb-3">
+                        <label asp-for="DatosTarjeta.FormaPagoId">Tarjeta</label>
+                        <select id="cbTarjeta" class="custom-select" asp-for="DatosTarjeta.FormaPagoId"
+                                asp-items="@(new SelectList(Model.ListaFormasPago,"FormaPagoId","Descripcion"))">
+                            <option selected disabled value="Seleccione su Tarjeta"></option>
+                        </select>
+                        <span asp-validation-for="DatosTarjeta.FormaPagoId" class="text-danger"></span>
+
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+                        <label for="cbTipoTarjeta">Tipo</label>
+                        <select class="custom-select" id="cbTipoTarjeta" asp-for="DatosTarjeta.TarjetaTipo">
+                            <option selected disabled value="Seleccione si es C/D"></option>
+                            <option value="1">Crédito</option>
+                            <option value="2">Debito</option>
+                        </select>
+                        <span asp-validation-for="DatosTarjeta.TarjetaTipo" class="text-danger"></span>
+
+                    </div>
+
+                    <div class="col-md-5 mb-3">
+                        <label for="txtNombreTarjeta">Nombre</label>
+                        <input asp-for="DatosTarjeta.TarjetaNombre"
+                               type="text" class="form-control" id="txtNombreTarjeta">
+                        <span asp-validation-for="DatosTarjeta.TarjetaNombre" class="text-danger"></span>
+
+                    </div>
+                </div>
+
+                @* Fila 2 Numero Tarjeta - Cod Seg. *@
+                <div class="form-row">
+                    <div class="col-md-9 mb-3">
+                        <label asp-for="DatosTarjeta.NumeroTarjeta">Número Tarjeta</label>
+                        <input data-urlaction="@urlBines"
+                               type="number" class="form-control"
+                               asp-for="DatosTarjeta.NumeroTarjeta"
+                               id="txtNumeroTarjeta">
+                        <small id="helpNumeroTarjeta" class="form-text text-muted"></small>
+                        <span asp-validation-for="DatosTarjeta.NumeroTarjeta" class="text-danger"></span>
+
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="DatosTarjeta.CodigoSeguridad">Codigo de seg.</label>
+                        <input type="number" class="form-control" id="txtCodSegTarjeta" asp-for="DatosTarjeta.CodigoSeguridad">
+                        <span asp-validation-for="DatosTarjeta.CodigoSeguridad" class="text-danger"></span>
+
+
+                    </div>
+                </div>
+
+                @* Fila de mes y año *@
+                <div class="form-row">
+                    <div class="col-md-auto">
+                        <div class="input-group mb-2">
+                            <label>Vencimiento </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">Mes</div>
+                            </div>
+                            <input asp-for="DatosTarjeta.MesVto" type="number" class="form-control" id="txtVencimientoMesTarjeta">
+                        </div>
+                        <span asp-validation-for="DatosTarjeta.MesVto" class="text-danger"></span>
+
+                    </div>
+                    <div class="col-md-2">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">Año</div>
+                            </div>
+                            <input asp-for="DatosTarjeta.AñoVto" type="number" class="form-control" id="txtVencimientoAnioTarjeta">
+                        </div>
+                        <span asp-validation-for="DatosTarjeta.AñoVto" class="text-danger"></span>
+
+                    </div>
+                </div>
+
+                @* Fila de Titular *@
+                <div class="form-row">
+                    <div class="col-md-7 mb-3">
+                        <label for="txtNombreTitular">Nombre Titular</label>
+                        <input type="text" class="form-control" id="txtNombreTitular" asp-for="DatosTarjeta.Titular">
+                        <span asp-validation-for="DatosTarjeta.Titular" class="text-danger"></span>
+
+                    </div>
+                    <div class="col-md-5 mb-3">
+                        <label for="txtDniTitular">DNI Titular</label>
+                        <input type="number" class="form-control" id="txtDniTitular" asp-for="DatosTarjeta.NumeroDocumento">
+                        <span asp-validation-for="DatosTarjeta.NumeroDocumento" class="text-danger"></span>
+
+                    </div>
+                </div>
+
+                <div class=" mt-2 form-group">
+                    <input type="button" onclick="enviarFormularioDatosTarjeta()" value="Aceptar" class="btn btn-success" />
+                    <small id="passwordHelpInline" class="mt-2 d-block text-muted">
+                        Al aceptar vas a ir a un formulario dondes vas a verficiar, los datos y luego vas a poder selecionar como pagar en 1 o varias cuotas.
+                    </small>
+                </div>
+
+
+            </form>
+        </div>
+
+
+
+    </div>
+
+
+</div>
+
+
+
+
+<br />
+<br />
+<br />
+
+@section Scripts {
+    <script src="~/script/decidir/formularioDatos.js"></script>
+}

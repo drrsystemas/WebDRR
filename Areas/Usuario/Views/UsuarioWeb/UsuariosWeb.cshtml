@@ -1,0 +1,203 @@
+﻿@model List<DRR.Core.DBAlmaNET.Models.UsuarioWeb>
+
+@{
+    ViewData["Title"] = "UsuariosWeb";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+
+    //Byte rol = 0;
+
+    //if (ViewData.ContainsKey("Rol"))
+    //{
+    //    if(ViewData["Rol"] !=null)
+    //    {
+    //        rol = Convert.ToByte(ViewData["Rol"]);
+
+    //        if (rol == 3)
+    //        {
+    //            Layout = "~/Views/Shared/_LayoutRoot.cshtml";
+    //        }
+    //        else
+    //        {
+    //            Layout = "~/Views/Shared/_Layout.cshtml";
+    //        }
+    //    }
+    //    else
+    //    {
+    //        Layout = "~/Views/Shared/_Layout.cshtml";
+    //    }
+    //}
+    //else
+    //{
+    //    Layout = "~/Views/Shared/_Layout.cshtml";
+    //}
+
+}
+
+
+@section Estilos
+{
+    <style type="text/css">
+        .fila_inactiva {
+            border-color: red;
+            border-style: solid;
+            border-width: medium;
+        }
+
+        .color-usuario-par {
+            background-color: #dee2e6;
+        }
+
+        .color-usuario-impar {
+            background-color: #fff;
+        }
+    </style>
+}
+
+@*@{
+    if (rol != 3)
+    {*@
+
+
+
+@section Menu
+{
+    <div class="d-flex  bd-highlight">
+
+        @* Btn de Los filtros para ver o esconder... *@
+        <button class="btn btn-sm btn-light" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <i class="fas fa-bars fa-2x"></i>
+        </button>
+
+        <h3 class="float-left flex-grow-1 ml-2 mt-2">Configuración de Usuarios</h3>
+
+
+        <div class="p-2 bd-highlight">
+
+
+
+            <!-- Default dropleft button -->
+            <div class="btn-group dropleft">
+                <button type="button" class="btn  btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bars fa-1x"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item cursor-pointer"
+                       asp-area="Usuario"
+                       asp-controller="UsuarioWeb"
+                       asp-action="Crud"
+                       asp-route-tipoOperacion="@((int)EnumTipoOperacion.Agregar)">
+                        <i class="fas fa-user-plus"></i> Agregar
+                    </a>
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+    @*}
+        }
+        else
+        {
+            <h3>Configuración de Usuario - Modo Root</h3>
+            <a class="btn btn-primary mt-1"
+               asp-area="Usuario"
+               asp-controller="UsuarioWeb"
+               asp-action="Crud"
+               asp-route-tipoOperacion="@((int)EnumTipoOperacion.Agregar)">
+                <i class="fas fa-user-plus"></i> Agregar
+            </a>
+
+        }*@
+}
+
+
+<hr />
+<table class="table table-sm ">
+    <thead class="thead-light ">
+        <tr>
+            <th>
+                Id (Web-AlmaUser-ESucursal)
+            </th>
+            <th>
+                Fecha Reg.
+            </th>
+            <th>
+                Usuario
+            </th>
+            <th>
+                Rol
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Count(); i++)
+        {
+            UsuarioWeb item = Model.ElementAt(i);
+ 
+
+            UsuarioWeb_Configuracion configuracion = item?.Configuracion.GetObjectOfXml<UsuarioWeb_Configuracion>();
+            String id = item.WebUserId + " - " + item.AlmaUserId + " - " + item.EntidadSucId;
+            String cliente = configuracion.ApellidoyNombre;
+            string datos=$"Doc: {configuracion.Documento} - Correo: {item.Email} - Cel: {configuracion.Celular}";
+            String tipo = "";
+
+            if (configuracion.TipoUsuario == null || configuracion.TipoUsuario == (int)EnumRol.Cliente || configuracion.TipoUsuario == 1)
+            {
+                tipo = "Cliente";
+            }
+            else if (configuracion.TipoUsuario == (int)EnumRol.Vendedor)
+            {
+                tipo = "Vendedor";
+
+            }
+            else if (configuracion.TipoUsuario == (int)EnumRol.ClienteFidelizado)
+            {
+                tipo = "Fidelizado";
+
+            }
+
+            Boolean esPar = i.EsPar();
+
+            <tr class="@(esPar == true ? "color-usuario-par":"color-usuario-impar")">
+                <td>
+                    @id
+                </td>
+                <td>
+                    @configuracion.FechaRegistro
+                </td>
+                <td>
+                    <p class="@(item.Inhabilitado==true?"text-danger":" ")">@cliente</p>
+                </td>
+                <td>
+                    @tipo
+                </td>
+                <td>
+                    @Html.ActionLink("Editar", "Crud",
+                   new { webUserId = item.WebUserId, tipoOperacion = (int)EnumTipoOperacion.Modificar }) |
+                    @Html.ActionLink("Detalle", "Crud",
+                   new { webUserId = item.WebUserId, tipoOperacion = (int)EnumTipoOperacion.Detalle })
+                </td>
+            </tr>
+            <tr  class="@(esPar == true ? "color-usuario-par":"color-usuario-impar")">
+                <td colspan="5"><span class="font-weight-bold ">@datos </span></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<br />
+<br />
+<br />
+
+
+@section Scripts {
+
+
+
+}

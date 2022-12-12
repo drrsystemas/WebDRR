@@ -1,0 +1,28 @@
+﻿ @*Esta pantalla se usa para el menu de busqueda del colector.
+--Mod: 30/08/2021*@ 
+
+@{ 
+    //FiltroColector filtro = (FiltroColector)ViewData["FiltroColector"];
+
+    //List<Generica> listaDepositos = (List<Generica>)ViewData["ListaDepositos"];
+    String urlBuscarProducto = Url.Action("BuscarProducto", "Colector");
+}
+
+<form data-url-buscar="@urlBuscarProducto" id="frmBusquedaColector" class="mx-1">
+
+    <div class="form-row">
+
+        <div class="col-10 col-md-9 mt-sm-1">
+            <input id="txtBuscarProducto"
+                   name="datoProducto"
+                   type="text"
+                   class="form-control"
+                   placeholder="Ingrese el cod/nombre del producto">
+        </div>
+
+        <div class="col-1 col-md-1 mt-sm-1">
+            <button type="button" id="btnBuscar" class="btn btn-primary "><i class="fas fa-search fa-1x"></i></button>
+        </div>
+
+    </div>
+</form>

@@ -1,0 +1,322 @@
+﻿@model DRR.Core.DBEmpresaEjemplo.Models.SoporteCasoTarea
+
+@{
+    ViewData["Title"] = "EditarTarea";
+
+    Layout = "~/Views/Shared/_LayoutSoporte.cshtml";
+
+    Int32 operacion = (Int32)ViewBag.Operacion;
+
+    List<LibreriaBase.Areas.Soporte.TecnicoView> listaTecnicos = (List<LibreriaBase.Areas.Soporte.TecnicoView>)ViewBag.ListaTecnicos;
+
+    List<SoporteTecnicoServicios> listaServicios = (List<SoporteTecnicoServicios>)ViewBag.ListaServicios;
+
+    List<SoporteTareasEtapas> listaEtapas = (List<SoporteTareasEtapas>)ViewBag.ListaEtapas;
+
+    String urlRetorno = (String)ViewBag.Url;
+
+    Int32 minutos = Model.CantidadFacturado.MostrarEntero();
+
+    String errorEditar = "";
+
+    if (ViewBag.Error != null)
+    {
+        errorEditar = ViewBag.Error;
+    }
+}
+
+@section Estilos
+{
+    <style>
+
+        .error {
+            color: red;
+        }
+
+        .errorLetra {
+            font-size: x-large;
+        }
+
+
+        .requerido {
+            color: black;
+            content: ' *';
+            display: inline;
+            font-weight: bold;
+        }
+
+        .no-requerido {
+            color: black;
+            display: inline;
+        }
+    </style>
+
+}
+
+@*@section Atras
+    {
+        <a class="btn bd-white mr-1"
+           href="@urlRetorno">
+            <i class="fas fa-angle-left"></i> <p class="d-none d-sm-inline">Atrás</p>
+        </a>
+    }*@
+
+<partial name="_aviso" />
+<a id="urlVolver" href="@urlRetorno" hidden></a>
+
+
+
+@if (operacion == 2)
+{
+    <h4>Editar Tarea</h4>
+}
+else
+{
+    <h4>Nueva Tarea</h4>
+}
+
+<p id="error" class="error errorLetra">@errorEditar</p>
+    
+<hr />
+
+<div class="container-md">
+
+
+    <form asp-action="EditarTarea" enctype="multipart/form-data" id="frmAgregarEditarTarea">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="p-2 jumbotron jumbotron-fluid border border-primary mb-2">
+            <div class="row">
+                <div class="col">
+                    <label class="requerido control-label">CasoID</label>
+                    <input readonly class="form-control" asp-for="CasoId" />
+                </div>
+                <div class="col">
+                    <label class="requerido control-label">TareaID</label>
+                    <input readonly class="form-control" asp-for="TareaId" />
+                </div>
+
+
+            </div>
+
+
+            <div class="row">
+                <div class="col-sm-12 col-md-6">
+                    <label class="requerido control-label">Cliente</label>
+                    <input readonly class="form-control" asp-for="Caso.Cliente.EntidadSuc.Entidad.RazonSocial" />
+                </div>
+                <div class="col-sm-12 col-md-6">
+                    <label class="requerido control-label">Contacto</label>
+                    <input readonly class="form-control" asp-for="Caso.ContactoNombre" />
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="form-group ">
+            <label class="requerido control-label">Descripción</label>
+            <input name="DescripcionTarea" asp-for="DescripcionTarea" class="form-control" />
+
+        </div>
+
+
+
+
+        <input type="hidden" asp-for="TareaId" class="form-control" />
+        <input type="hidden" asp-for="CasoId" class="form-control" />
+        <input type="hidden" asp-for="AlmaUserId" class="form-control" />
+        <input type="hidden" asp-for="TipoOperacionId" class="form-control" />
+
+        <input type="hidden" value="@operacion" name="tipoOperacion" />
+
+
+        @{
+            if (Model?.OperacionArchivo?.FirstOrDefault()?.Archivo != null)
+            {
+                String rutaImg = Model?.OperacionArchivo?.FirstOrDefault()?.Archivo.RutaImagenJpg();
+                <div class="row">
+                    <div class="col-6">
+                        <img src="@rutaImg" class="img-fluid" />
+
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="control-label">Cambiar Imagen</label>
+                            <input type="file" class="btn btn-sm  form-control" name="fotoProblema" />
+                            <span class="text-danger"></span>
+                        </div>
+                    </div>
+                    <br />
+                </div>
+
+            }
+            else
+            {
+                <div class="form-group">
+                    <label class="control-label">Subir imagen del error</label>
+                    <input type="file" class="form-control btn btn-sm btn-outline-light" name="fotoProblema" />
+                    <span class="text-danger"></span>
+                </div>
+            }
+
+        }
+
+
+        <div class="row">
+
+            <div class="form-group col-12 col-md-4">
+                <label class="requerido control-label">Etapa</label>
+                <select class="custom-select" name="EtapaId" asp-for="EtapaId"
+                        asp-items="@(new SelectList(listaEtapas,"EtapaId","Descripcion"))">
+                </select>
+                <span asp-validation-for="EtapaId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group col-12 col-md-4">
+                <label class="control-label no-requerido">Prioridad</label>
+                @*<input type="number" asp-for="PrioridadId" placeholder="Rango 1-10" min="1" max="10" class="form-control" />
+                <span asp-validation-for="PrioridadId" class="text-danger"></span>*@
+
+                <select class="custom-select" asp-for="PrioridadId">
+                    <option value="1">Baja</option>
+                    <option value="5">Media</option>
+                    <option value="10">Alta</option>
+                </select>
+                <span asp-validation-for="PrioridadId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group col-12 col-md-4">
+                <label class="requerido control-label">RRHH</label>
+                <select class="custom-select" id="tecnico" name="TecnicoSoporteId" asp-for="TecnicoSoporteId"
+                        onchange="serviciosTecnico()"
+                        asp-items="@(new SelectList(listaTecnicos,"IdTecnico","Nombre"))">
+
+                    @if (operacion == 1)
+                    {
+                        <option value="0" disabled="disabled" selected="selected">Selecciona 1 rrhh</option>
+                    }
+                </select>
+                <span asp-validation-for="TecnicoSoporteId" class="text-danger"></span>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="form-group col-12 col-md-6">
+                <label class="requerido control-label">Servicio</label>
+                @if (listaServicios != null)
+                {
+                    <select onchange="calcular(1)" class="custom-select" name="CodigoId" asp-for="CodigoId" id="codigoId"
+                            asp-items="@(new SelectList(listaServicios,"CodigoId","DescripcionAdicional"))">
+                    </select>
+                }
+                else
+                {
+                    <select onchange="calcular(1)" class="custom-select" name="CodigoId" asp-for="CodigoId" id="codigoId">
+                    </select>
+                }
+                <span asp-validation-for="CodigoId" class="text-danger"></span>
+            </div>
+
+
+
+            <div class="form-group col-12 col-md-4 ">
+
+                <label asp-for="FechaHoraAsigando" class="no-requerido control-label">Fecha Agendada</label>
+                <input asp-for="FechaHoraAsigando" id="fechaAsignado" class="form-control" />
+                <span asp-validation-for="FechaHoraAsigando" class="text-danger"></span>
+            </div>
+
+            <div class="form-group col-12 col-md-2 d-flex align-items-end">
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" asp-for="SeFactura">
+                    <label class="form-check-label" for="flexCheckChecked">
+                        Se Factura
+                    </label>
+                </div>
+                </div>
+
+            </div>
+
+
+
+
+
+
+            <div class="jumbotron jumbotron-fluid border border-secondary mb-2 p-1">
+                <div class="row mx-md-1">
+                    <div class="col-12 col-md-6 form-group">
+                        <label asp-for="FechaHoraInicio" class="control-label">Fecha/Hs Inicio</label>
+                        <input asp-for="FechaHoraInicio" onchange="calcular(2)" id="fechaInicio" name="FechaHoraInicio" class="form-control" />
+                        <span asp-validation-for="FechaHoraInicio" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 form-group">
+                        <label asp-for="FechaHoraCompletado" class="control-label">Fecha/Hs Completado</label>
+                        <input asp-for="FechaHoraCompletado" onchange="calcular(2)" id="fechaCompletado" name="FechaHoraCompletado" class="form-control" />
+                        <span asp-validation-for="FechaHoraCompletado" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12  form-group">
+                        <label asp-for="DescripcionResolucion" class="control-label">Descripción de como se resolvio</label>
+                        <textarea asp-for="DescripcionResolucion" name="DescripcionResolucion" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="DescripcionResolucion" class="text-danger"></span>
+                    </div>
+
+
+
+                </div>
+            </div>
+
+
+            <div class="jumbotron jumbotron-fluid border border-success p-1 mb-2">
+                <div class="row mx-md-1 mb-md-1">
+                    <div class="col-12 col-md-3 form-group">
+                        <label asp-for="ImporteNeto" name="importeNeto" class="control-label">Importe * Hora - <span>(Neto)</span></label>
+                        <input asp-for="ImporteNeto" onchange="calcular(3)" id="importe" name="ImporteNeto" class="form-control" />
+                        <span asp-validation-for="ImporteNeto" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12 col-md-3 form-group">
+                        <label asp-for="CantidadFacturado" class="control-label">Minutos Capacitación</label>
+                        <input asp-for="@minutos" onchange="calcular(4)" id="minutos" class="form-control" />
+                        <span asp-validation-for="CantidadFacturado" class="text-danger"></span>
+                    </div>
+                    <hr />
+                    <div class="col-12 col-md-4 form-group">
+                        <label name="TotalNeto" class="control-label font-weight-bold">$ Total Capacitación <span>(Neto)</span></label>
+                        <input onchange="calcular(5)" id="totalNeto" name="TotalNeto" class="form-control" />
+                        <span class="text-danger"></span>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+            <br />
+
+            <div class="form-group">
+                <input type="button" onclick="enviarFormulario()" value="Guardar" class="btn btn-primary" />
+            </div>
+</form>
+
+
+</div>
+
+
+@section Scripts
+{
+    <script asp-append-version="true" src="~/script/soporte/soporteEditar.js"></script>
+}

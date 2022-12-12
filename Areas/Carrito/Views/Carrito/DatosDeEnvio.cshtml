@@ -1,0 +1,302 @@
+﻿@model LibreriaBase.Areas.Usuario.ViewEnvio
+@using  LibreriaBase.Areas.Usuario
+
+
+@{
+    ViewData["Title"] = "Datos De Envio";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<LibreriaBase.Areas.Carrito.ViewSucursal> listaSucursal = (List<LibreriaBase.Areas.Carrito.ViewSucursal>)ViewBag.ListaSucursales;
+
+    String dirGmaps = "";
+
+    if (listaSucursal?.Count() > 0)
+    {
+        dirGmaps = String.Join("_", listaSucursal.Select(c => c.DireccionGoogleMaps).ToArray());
+    }
+
+
+    int rol = ViewBag.rol ?? 2;
+
+}
+
+
+@section Estilos
+{
+    <style type="text/css">
+
+        .oculto { display: none;}
+
+        .visible { display: block;}
+
+        #map { height: 400px; border: 1px solid #000; }
+
+    </style>
+}
+
+
+<div class="container">
+
+    <i class="fas fa-shipping-fast fa-2x"></i><h4 class="d-inline-block ml-2"> Datos Envio/Retiro</h4>
+    <hr />
+
+    <div class="row">
+
+        <div class="col-12">
+
+            <form id="frmEnviar" method="post" asp-action="DatosDeEnvio" asp-controller="Carrito" asp-area="Carrito">
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+                <div class="row">
+                   
+                        <div class="col-12 form-group">
+                            <label class="control-label">Modalidad</label>
+
+
+                            <select onchange="cambiaTipoEnvio()"
+                                    class="form-control"
+                                    id="cbTipoEnvio"
+                                    asp-for="IdTipoEnvio">
+                                @{
+                                    var listaTipoEnvio = (List<Generica>)ViewBag.ListaTipoEnvio;
+
+                                    foreach (var item in listaTipoEnvio)
+                                    {
+                                        <option value="@item.Id">@item.Nombre</option>
+                                    }
+                                }
+                            </select>
+
+
+                        </div>
+                </div>
+
+
+                <div>
+
+
+
+
+                    <div id="divRetiro">
+                        <div class="form-group">
+                            <label class="control-label">Sucursal </label>
+                            <br />
+
+                            <select asp-for="IdSucursal"
+                                    onchange="cambiaSucursalRetiro()"
+                                    class="form-control"
+                                    id="cbSucursalRetiro">
+                                @{
+                                    if (listaSucursal?.Count() > 0)
+                                    {
+                                        foreach (var sucursal in listaSucursal)
+                                        {
+                                            String dirCompleta = "";
+                                            if (sucursal?.View_Ciudad != null)
+                                            {
+                                                dirCompleta = sucursal.View_Ciudad.ToString();
+                                            }
+
+                                            <option data-tel="@sucursal.Telefonos"
+                                                    data-cor="@sucursal.CorreoE"
+                                                    data-dir="@dirCompleta"
+                                                    data-dirmapa="@sucursal.DireccionGoogleMaps"
+                                                    value="@sucursal.SucursalId">
+                                                @sucursal.Nombre @sucursal.Domicilio
+                                            </option>
+                                        }
+                                    }
+
+                                }
+                            </select>
+
+                        </div>
+
+                        <br />
+
+                        @{
+                            if (rol == (Int32)EnumRol.Vendedor)
+                            {
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">  <i class="far fa-save"></i> Guardar</button>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">Siguiente <i class="fas fa-angle-right"></i></button>
+                                </div>
+
+                            }
+                        }
+
+
+                        <div id="divDatosSucursal" class="ocultarDiv">
+                            <p id="pTel"></p>
+                            <p id="pCor"></p>
+                            <p id="pDir"></p>
+                        </div>
+
+                    </div>
+
+
+
+
+
+                    <div id="divEnvio" class=" oculto">
+
+                        <div class="form-group">
+                            <label class="control-label">Envio</label>
+                            <br />
+                            <select onchange="cambiaEnvio()"
+                                    id="cbEnvio"
+                                    class="form-control"
+                                    asp-for="IdEnvio">
+                                @{
+                                    foreach (DatoConfiguracion envio in ViewBag.ListaEnvio)
+                                    {
+                                        <option data-valor="@envio.Valor.MostrarEntero()"
+                                                value="@envio.Codigo">
+                                            @envio.Descripcion
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Costo</label>
+                            <input class="form-control" asp-for="Costo" type="number" id="txtCostoEnvio" readonly />
+                            <br />
+                            <span class="control-label text-danger" id="txtCostoEnvioAviso" />
+                        </div>
+
+                        <hr />
+
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+
+                                <button onclick="getLocation()"
+                                        class="btn btn-success mb-2"
+                                        type="button">
+                                    <i class="far fa-flag">
+                                    </i> Obtener mi ubicación
+                                </button>
+
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Provincia</label>
+                                    <br />
+                                    <input class="form-control" type="text" id="txtProvincia" />
+                                    <span class="control-label text-danger" id="txtProvinciaAviso" />
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Localidad</label>
+                                    <br />
+                                    <input class="form-control" type="text" id="txtLocalidad" />
+                                    <span class="control-label text-danger" id="txtLocalidadAviso" />
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Codigo Postal</label>
+                                    <br />
+                                    <input class="form-control" type="text" id="txtCodigoPostal" />
+                                    <span class="control-label text-danger" id="txtCodigoPostalAviso" />
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label">Dirección</label>
+                            <br />
+
+                            <input class="form-control" type="text" id="txtDireccion" />
+                            <span class="control-label text-danger" id="txtDireccionAviso" />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Información Adicional</label>
+                            <br />
+
+                            <input class="form-control" type="text" id="txtInfoAdicional" />
+                            <span class="control-label text-danger" id="txtInfoAdicionalAviso" />
+                        </div>
+
+
+
+                        @{
+                            if (rol == (Int32)EnumRol.Vendedor)
+                            {
+                                <div class="form-group">
+                                    <button type="submit"
+                                            class="btn btn-primary">
+                                        <i class="far fa-save"></i> Guardar
+                                    </button>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">
+                                        Siguiente <i class="fas fa-angle-right"></i>
+                                    </button>
+                                </div>
+                            }
+                        }
+
+
+                    </div>
+
+                </div>
+
+                <input type="hidden" asp-for="IdSucursal" id="txtIdSucursal" />
+                <input type="hidden" asp-for="NombreIdTipoEnvio" id="txtNombreIdTipoEnvio" />
+                <input type="hidden" asp-for="NombreIdEnvio" id="txtNombreIdEnvio" />
+                <input type="hidden" asp-for="NombreIdSucursal" id="txtNombreIdSucursal" />
+
+                <input type="hidden" asp-for="Clientes" />
+                <input type="hidden" asp-for="Celular" />
+                <input type="hidden" asp-for="CodigoPostal" />
+                <input type="hidden" asp-for="Domicilio" />
+                <input type="hidden" asp-for="UrlRetorno" />
+            </form>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+</div>
+
+
+<br />
+<br />
+
+
+@section Scripts{
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCIqii7LhF9rAB4rtgWrVWZtyngiaHHvYo&language=es"></script>
+    <script type="text/javascript" src="~/script/carrito/datosDeEnvio.js"></script>
+
+    <script type="text/javascript">
+    
+        $(document).ready(function () {
+
+            $("#txtCostoEnvioAviso").hide();
+            var direcciones = '@dirGmaps';
+            iniciarMapa(direcciones);
+            $("#cbSucursalRetiro").trigger("change");
+     
+        });
+
+    </script>
+}

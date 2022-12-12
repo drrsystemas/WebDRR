@@ -1,0 +1,347 @@
+﻿@model LibreriaBase.Areas.Soporte.SoporteViewModel_crub
+@using DRR.Core.DBEmpresaEjemplo.Models
+
+@{
+    ViewData["Title"] = "NuevoSoporteCaso";
+
+    Layout = "~/Views/Shared/_LayoutSoporte.cshtml";
+
+
+    //String urlRetorno = (String)ViewBag.UrlRetorno; -04/05/2021 aca hay que mejorar
+    String urlRetorno = Url.Action("ListarSoporte", "Soporte");
+
+    List<LibreriaBase.Areas.Soporte.TecnicoView> listaTecnicos
+= (List<LibreriaBase.Areas.Soporte.TecnicoView>)ViewBag.ListaTecnicos;
+
+    List<SoporteCasoTipo> listaTipoCaso
+       = (List<SoporteCasoTipo>)ViewBag.ListaTipoCaso;
+
+    String errorArgegar = "";
+
+    if (ViewBag.Error != null)
+    {
+        errorArgegar = ViewBag.Error;
+    }
+
+}
+
+
+@section Estilos
+{
+    <link rel="stylesheet" href="~/css/soporte.css" />
+}
+
+@*@section Atras
+    {
+        <a class="btn bd-white mr-1"
+           href="@urlRetorno">
+            <i class="fas fa-angle-left"></i> <p class="d-none d-sm-inline">Atrás</p>
+        </a>
+    }*@
+
+<partial name="_aviso" />
+<a id="urlVolver" href="@urlRetorno" hidden></a>
+
+
+@{
+
+    if (Model.TipoOperacion == (int)EnumTipoOperacion.Agregar)
+    {
+        <h4>Nuevo Caso</h4>
+        <hr />
+    }
+    else
+    {
+
+        <h4>
+            Editar Caso
+        </h4>
+       
+        <a class="btn btn-success mt-1"
+           asp-controller="Soporte"
+           asp-action="AgregarTarea"
+           asp-route-casoId="@Model.SoporteCaso.CasoId">Nueva Tarea</a>
+        <hr />
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+<p id="errorContactoCliente" class="error errorLetra">@errorArgegar</p>
+
+
+
+
+<div class="row">
+    <div class="col">
+        <form method="post" id="frmAgregarCaso"
+              enctype="multipart/form-data"
+              asp-area="Soporte"
+              asp-controller="Soporte"
+              asp-action="GuardarSoporteCaso">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger">
+            </div>
+            <input type="hidden" asp-for="TipoOperacion" value="@Model?.TipoOperacion" id="frmTipoOperacion" class="form-control" />
+
+            <input type="hidden" asp-for="Cliente.EntidadSucId" value="@Model?.Cliente?.EntidadSucId" class="form-control" />
+
+            @{
+                if (Model.TipoOperacion != (Int32)EnumTipoOperacion.Agregar)
+                {
+                    <input type="hidden" asp-for="SoporteCaso.CasoId" value="@Model?.SoporteCaso?.CasoId" class="form-control" />
+
+                }
+            }
+
+            <input type="hidden" asp-for="SoporteCaso.FechaHora" value="@Model?.SoporteCaso?.FechaHora" class="form-control" />
+            <input type="hidden" asp-for="SoporteCaso.EtapaId" value="@Model?.SoporteCaso?.EtapaId" class="form-control" />
+            <input type="hidden" asp-for="SoporteCaso.EstadoId" value="@Model?.SoporteCaso?.EstadoId" class="form-control" />
+            <input type="hidden" asp-for="SoporteCaso.Activo" value="@Model?.SoporteCaso?.Activo" class="form-control" />
+
+
+            <input type="hidden" asp-for="SoporteCaso.AlmaUserId" value="@Model.Usuario?.AlmaUserID" class="form-control" />
+
+
+            <input type="hidden" asp-for="SoporteCaso.ClienteId"
+                   value="@Model?.SoporteCaso?.ClienteId" class="form-control" />
+
+
+
+            <input type="hidden" asp-for="SoporteTarea.AlmaUserId" value="@Model?.SoporteTarea?.AlmaUserId" class="form-control" />
+            <input type="hidden" asp-for="SoporteTarea.EtapaId" value="@Model?.SoporteTarea?.EtapaId" class="form-control" />
+            <input type="hidden" asp-for="SoporteTarea.TipoOperacionId" value="@Model?.SoporteTarea?.TipoOperacionId" class="form-control" />
+
+
+
+
+
+
+
+            <div class="form-group">
+                <label class="control-label">Usuario: @Model.Usuario.Nombre</label>
+            </div>
+
+
+
+            <div class="form-group ">
+                <label class="requerido control-label">Contacto</label>
+
+                <div class="p-2 form-row colorBuscarContacto">
+                    <div class="col-6 col-md-3 col-lg-3 col-xl-3">
+                        <input type="text" id="txtCodigo_BuscarCcontacto"
+                               placeholder="Busqueda por nombre/teléfono"
+                               asp-for="IdLocateContacto.Codigo" class="form-control">
+                    </div>
+                    <div class="col-1 col-md-1 col-lg-1 col-xl-1">
+                        <button type="button" onclick="buscarContactos()"
+                                class="btn btn-success" id="btnContacto">
+                            <i class="fas fa-search fa-1x"></i>
+                        </button>
+                    </div>
+                    <div class="col-12 col-md-8 col-lg-8 col-xl-8 mt-1 mt-md-0 mt-lg-0 mt-xl-0">
+                        <label class="d-block">@Model.IdLocateContacto.Dato</label>
+                    </div>
+                </div>
+
+                <input type="hidden" asp-for="IdLocateContacto.Identificador" name="txtContactoId" id="contactoId" readonly class="form-control">
+
+
+            </div>
+
+
+            <div class="form-group  @(Model.TipoOperacion !=1?"":"ocultarDiv")">
+                <label class="control-label">Cliente</label>
+                <input readonly asp-for="SoporteCaso.Cliente.EntidadSuc.Entidad.RazonSocial" class="form-control" />
+            </div>
+
+
+
+            <div class="form-group @(Model.TipoOperacion ==1?"":"ocultarDiv")">
+                <label class="requerido control-label">Cliente</label>
+
+                <div class="p-2 form-row colorBuscarCliente">
+                    <div class="col-6 col-md-3 col-lg-3 col-xl-3">
+                        <input type="text" id="txtCodigo_BuscarCliente" placeholder="Busqueda por nombre/id/cuit/dirección" asp-for="IdLocateCliente.Codigo" class="form-control">
+                    </div>
+                    <div class="col-1 col-md-1 col-lg-1 col-xl-1">
+                        <button type="button" onclick="buscarClientes()" class="btn btn-success" id="btnCliente"><i class="fas fa-search fa-1x"></i></button>
+                    </div>
+                    <div class="col-12 col-md-8 col-lg-8 col-xl-8 mt-1 mt-md-0 mt-lg-0 mt-xl-0">
+
+                        <input type="hidden" asp-for="IdLocateCliente.Identificador" class="form-control">
+
+                        @if (Model.Cliente?.ClienteID > 0)
+                        {
+                            String saldo = Model.Cliente.SaldoCtaCte.FormatoMoneda();
+
+                            <label class="d-block">
+                                LP: [@Model.Cliente.ListaPrecID]@Model.Cliente.ListaPrecID_Nombre
+                                - <a asp-area="Usuario"
+                                     asp-action="EstadoCta"
+                                     asp-controller="Cliente"
+                                     asp-route-id="@Model.Cliente.EntidadSucId"
+                                     asp-route-rz="@Model.Cliente.RazonSocial"> Saldo:  @saldo </a>
+                                </label>
+
+
+                                <label class="d-block">@Model.IdLocateCliente.Dato</label>
+                                <label class="d-block">@Model.IdLocateCliente.DatoDos</label>
+
+                            }
+                            else
+                            {
+                                <label class="d-block">@Model.IdLocateCliente.Dato</label>
+
+                            }
+
+                    </div>
+                </div>
+
+                <input type="hidden" asp-for="IdLocateCliente.Identificador" name="txtClienteId" id="clienteId"
+                       readonly class="form-control">
+            </div>
+
+
+
+
+            <div class="form-group">
+                <label class="control-label">Tipo</label>
+                <select class="custom-select" asp-for="SoporteCaso.TipoCasoId"
+                        asp-items="@(new SelectList(listaTipoCaso,"TipoCasoId","Descripcion"))">
+                </select>
+                <span asp-validation-for="SoporteCaso.TipoCasoId" class="text-danger"></span>
+            </div>
+
+            <br />
+
+
+            <div class="jumbotron jumbotron-fluid border border-dark  p-2">
+
+                <div class="form-group">
+                    <label class="requerido control-label">Descripción</label>
+                    <textarea id="DescripcionProblema" name="DescripcionProblema"
+                              asp-for="SoporteCaso.DescripcionProblema" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="SoporteCaso.DescripcionProblema" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Fecha en la que se detecto</label>
+                    <input asp-for="SoporteCaso.FechaDeteccionCaso" class="form-control" />
+                    <span asp-validation-for="SoporteCaso.FechaDeteccionCaso" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">¿Quien lo detecto?</label>
+                    <input asp-for="SoporteCaso.QuienDetectaProblema" class="form-control" />
+                    <span asp-validation-for="SoporteCaso.QuienDetectaProblema" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Describir como se genera el problema</label>
+                    <textarea asp-for="SoporteCaso.PasosRepProblema" class="form-control" rows="2"></textarea>
+                    <span asp-validation-for="SoporteCaso.PasosRepProblema" class="text-danger"></span>
+                </div>
+
+                <br />
+                <div class="form-group @(Model.TipoOperacion ==1?"":"ocultarDiv")">
+                    <label class="control-label">Subir imagen del error</label>
+                    <input type="file" class="form-control" name="fotoProblema" />
+                    <span class="text-danger"></span>
+                </div>
+                <br />
+            </div>
+
+
+            <div class="jumbotron jumbotron-fluid border border-secondary p-2">
+
+
+                <div class="form-group">
+                    <label class="control-label">Persona a notificar resuelto el problema</label>
+                    <input asp-for="SoporteCaso.Notificar" class="form-control" />
+                    <span asp-validation-for="SoporteCaso.Notificar" class="text-danger"></span>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="control-label">Correo de la persona a notificar</label>
+                    <input id="EmailNotificacion" name="EmailNotificacion" asp-for="SoporteCaso.EmailNotificacion" class="form-control" />
+                    <span asp-validation-for="SoporteCaso.EmailNotificacion" class="text-danger"></span>
+                </div>
+
+
+
+            </div>
+
+            <hr />
+
+            <div class="form-group @(Model.TipoOperacion ==1?"":"ocultarDiv")">
+                <label class="control-label">Agendar fecha para realizar la tarea</label>
+                <input asp-for="SoporteCaso.AgendarFecha" class="form-control" />
+                <span asp-validation-for="SoporteCaso.AgendarFecha" class="text-danger"></span>
+            </div>
+
+            <div class="form-group @(Model.TipoOperacion ==1?"":"ocultarDiv")">
+                <label class="requerido control-label">RRHH</label>
+                <select class="custom-select" name="TecnicoSoporteId" asp-for="SoporteTarea.TecnicoSoporteId"
+                        asp-items="@(new SelectList(listaTecnicos,"IdTecnico","Nombre"))">
+                    <option value="0" disabled="disabled" selected="selected">Selecciona 1 rrhh</option>
+                </select>
+                <span asp-validation-for="SoporteTarea.TecnicoSoporteId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group @(Model.TipoOperacion ==1?"":"ocultarDiv")">
+                <label class="control-label">Prioridad</label>
+                @*<input type="number" asp-for="SoporteTarea.PrioridadId" placeholder="Rango 1-10" min="1" max="10" class="form-control" />
+            <span asp-validation-for="SoporteTarea.PrioridadId" class="text-danger"></span>*@
+
+                <select class="custom-select" asp-for="SoporteTarea.PrioridadId">
+                    <option value="1">Baja</option>
+                    <option value="5">Media</option>
+                    <option value="10">Alta</option>
+                </select>
+                <span asp-validation-for="SoporteTarea.PrioridadId" class="text-danger"></span>
+
+            </div>
+
+
+            <input type="hidden" id="funcionalidad" name="Enum_Funcionalidad" value="1" class="form-control" />
+
+            <br />
+            <div class="form-group">
+                <input id="btnUno" type="button" onclick="enviarFormulario(1, this)" value="Guardar" class="btn btn-primary" />
+
+                @{
+                    if (Model.TipoOperacion == (int)EnumTipoOperacion.Agregar)
+                    {
+                        <input id="btnDos" type="button" onclick="enviarFormulario(2, this)" value="Guardar - Editar" class="ml-4 btn btn-outline-primary" />
+
+                    }
+                }
+
+
+            </div>
+
+            <input type="hidden" id="modoGuardar" name="modoGuardar" class="form-control" />
+
+        </form>
+    </div>
+</div>
+<br />
+<br />
+
+
+@section Scripts {
+
+    <script asp-append-version="true" src="~/script/soporte/soporte.js"></script>
+}

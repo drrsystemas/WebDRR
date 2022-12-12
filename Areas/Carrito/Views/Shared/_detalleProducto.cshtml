@@ -1,0 +1,255 @@
+﻿@model IEnumerable<ProductoMinimo>
+
+@{
+
+    List<LibreriaBase.Areas.Usuario.DatoConfiguracion> lisaConf =
+         (List<LibreriaBase.Areas.Usuario.DatoConfiguracion>)ViewData["Conf_VP"];
+
+    Boolean verStock = false;
+    Boolean stockSemaforo = false;
+    if (lisaConf?.FirstOrDefault(c => c.Codigo == (Int32)LibreriaBase.Areas.Usuario.
+    ConfViewDatosProductos.EnumConfViewDatosProductos.VerStock)?.Valor == 1)
+    {
+        verStock = true;
+
+        var semaforo = false;
+
+        if (lisaConf?.FirstOrDefault(c => c.Codigo == (Int32)LibreriaBase.Areas.Usuario.
+    ConfViewDatosProductos.EnumConfViewDatosProductos.Semaforo_Stock)?.Valor == 1)
+        {
+            stockSemaforo = true;
+        }
+    }
+
+    int esquemaPrecios = (Int32)ViewData["EsquemaPrecios"];
+
+    String urlWp = (String)ViewData["UrlWp"];
+
+    String urlActionAjax = Url.Action("Agregar_Carrito_Json", "Carrito");
+
+    Int32? rol = (Int32?)ViewData["Rol"];
+
+}
+
+
+@{
+
+    @for (int i = 0; i < Model?.Count(); i++)
+    {
+
+
+        var item = Model.ElementAt(i);
+
+        String codigoProducto = "";
+
+        if (item.Representada == false)
+        {
+            codigoProducto = item.ProductoId.ToString();
+        }
+        else
+        {
+            if (item.ProductoId == 1378)
+            {
+                continue;
+            }
+
+
+            codigoProducto = item.CodigoProveedor;
+
+            if (String.IsNullOrEmpty(codigoProducto))
+            {
+                item.Representada = false;
+
+                codigoProducto = item.ProductoId.ToString();
+            }
+        }
+
+
+        //foreach (var item in Model)
+        //{
+        String codigo = "";
+
+        if (item.Representada == false)
+        {
+            codigo = item.ProductoId.ToString();
+        }
+        else
+        {
+            codigo = item.CodigoProveedor;
+
+            if (String.IsNullOrEmpty(codigo))
+            {
+                item.Representada = false;
+
+                codigo = item.ProductoId.ToString();
+            }
+        }
+
+        ViewData["Codigo"] = codigo;
+
+        String urlVerProducto = Url.Action("VerProducto",
+        "Producto",
+        new
+        {
+            codigo = codigo,
+            representada = item.Representada,
+            urlretorno = ViewContext.HttpContext.Request.PathAndQuery()
+        });
+        ViewData["UrlVerProducto"] = urlVerProducto;
+
+
+        String cbarras = "";
+        if (lisaConf?.FirstOrDefault(c => c.Codigo == (Int32)LibreriaBase.Areas.Usuario.
+        ConfViewDatosProductos.EnumConfViewDatosProductos.VerCodigodeBarras)?.Valor == 1)
+        {
+            if (!String.IsNullOrEmpty(item.CodigoBarras))
+            {
+                cbarras = item.CodigoBarras;
+            }
+        }
+
+
+
+
+
+
+            <div name="tarjetaProducto"
+                 class="card @( item.ProductoOfertaID > 0 ? "card_anchos_oferta" : "card_anchos" )  mb-2 mx-1 float-left"
+                 data-oferta=" @( item.ProductoOfertaID > 0 ? "1" : "0" ) "
+                 data-cb="@item.ProductoBaseId">
+
+                <div class="card-header titulo" onclick="verProducto('@urlVerProducto')" style="cursor: pointer;">
+                    @{
+                        String nombreProducto = "";
+
+
+                        if (lisaConf?.FirstOrDefault(c => c.Codigo == (Int32)LibreriaBase.Areas.Usuario.
+                         ConfViewDatosProductos.EnumConfViewDatosProductos.VerCodigo)?.Valor == 1)
+                        {
+                            nombreProducto += $"[{codigo}] ({item.RubroCodigo}) {item.NombreCompleto}";
+                        }
+                        else
+                        {
+                            //Se tiene que poner otro filtro si quiere mostrar rubro/codigo
+
+                            //nombreProducto += $"({item.RubroCodigo}) {item.NombreCompleto}";
+
+                            nombreProducto += $"{item.NombreCompleto}";
+                        }
+
+
+                        if (item.Cantidad > 1)
+                        {
+                            nombreProducto += " {x" + item.Cantidad.MostrarEntero() + "}";
+                        }
+
+                        //Se controla la cantidad de caracteres a 100
+                        if (nombreProducto.Length > 100)
+                        {
+                            nombreProducto = nombreProducto.Substring(0, 97) + " ...";
+                        }
+
+                    }
+
+
+
+                    <div class="row">
+                        @if (item.EstaCarrito == false)
+                        {
+                            <b class="text-primary" id="name_prod_@i" style="font-weight:bold;">@nombreProducto</b>
+                        }
+                        else
+                        {
+                            <b id="name_prod_@i" style="color:orangered;font-weight:bold;">@nombreProducto</b>
+                        }
+                    </div>
+                </div>
+
+
+
+                    <partial name="_detalleProducto_imagen.cshtml" model="item" view-data="ViewData" />
+
+                
+
+
+
+                @* ACA no se ve DETALLE del Producto *@
+                <div class="card-footer bg-transparent p-1">
+
+                    <div class="row m-0">
+
+                        <div class="col-8">
+
+                            <div class="d-flex align-items-baseline flex-column p-0">
+                                <partial name="_detalleProducto_esquemaPrecios.cshtml" model="item" view-data="ViewData" />
+
+
+
+                                @if (lisaConf?.FirstOrDefault(c => c.Codigo == (Int32)LibreriaBase.Areas.Usuario.
+                             ConfViewDatosProductos.EnumConfViewDatosProductos.VerCodigodeBarras)?.Valor == 1)
+                                {
+                                    <p class="m-0"><i class="fas fa-barcode"></i> @cbarras </p>
+                                }
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <div class="col-4 p-0">
+
+                            <div class="d-flex align-items-end flex-column p-0">
+                                <div class="p-0">
+
+                                    @if (rol != 10)
+                                    {
+                                        <button onclick="agregar_Carrito('@codigoProducto', '@item.IdItemCarrito', '@item.Representada'
+                                                    ,'@urlActionAjax','@i')"
+                                                id="btnAg_@i"
+                                                class="btn btn-sm btn-primary"
+                                                type="button">
+                                            <i class="fas fa-cart-plus"></i>
+                                        </button>
+                                    }
+
+
+                                </div>
+                                <p class="text-dark p-0 m-0">@item.TipoPresentacion.ToString()</p>
+
+                                @{
+                                    if (verStock == true && stockSemaforo == false)
+                                    {
+                                        <p><kbd class="fondo-naranja">Stock: @item.Stock.MostrarEntero()</kbd> </p>
+
+                                    }
+                                }
+
+                            </div>
+
+                            @if (verStock == true && stockSemaforo == true)
+                            {
+                            <partial name="_detalleProducto_semaforo.cshtml" model="item" view-data="ViewData" />
+
+
+                            }
+
+                        </div>
+                    </div>
+
+             
+
+
+
+                </div>
+
+
+            </div>
+
+        }
+
+
+
+    }

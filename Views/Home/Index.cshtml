@@ -1,0 +1,142 @@
+﻿@model EmpresaViewModel;
+
+@{
+    ViewData["Title"] = "Principal";
+    String urlIngreso = Url.Action("Ingreso", "Acceso");
+
+    Boolean logginActivo = false;
+
+    if(ViewData.ContainsKey("logginActivo"))
+    {
+        logginActivo = (Boolean)ViewData["logginActivo"];
+    }
+
+}
+
+<div class="container">
+    <div class="text-center">
+
+        @if (Model == null)
+        {
+            <h1 class="display-4">Bienvenidos</h1>
+            <br />
+            <p>
+                Para mas información <a href="https://www.drrsystemas.com" target="_blank">
+                    DRR Systemas - AlmeNET Web
+                </a>.
+            </p>
+            <br />
+            <img width="460" height="345" src="~/img/almanet_web.png" class="img-fluid">
+        }
+        else
+        {
+            if (String.IsNullOrEmpty(Model.Logo_Html))
+            {
+                <h1 class="display-4">@Model.RazonSocial</h1>
+                <br />
+                <br />
+            }
+            else
+            {
+                <img width="400" height="350" src="@Model.Logo_Html" class="img-fluid">
+                <br />
+                <br />
+            }
+                    <p class="text-center"> <i class="fab fa-cuttlefish fa-2x"></i> <strong>Cuit: </strong> @Model.Cuit</p>
+                    <p class="text-center"><i class="fas fa-map-marked-alt fa-2x"></i> <strong>Dirección: </strong> @Model.Direccion</p>
+                    <p class="text-center"><i class="fas fa-phone-alt fa-2x"></i> <strong>Teléfonos: </strong> @Model.Telefono</p>
+
+            <br />
+            <br />
+            <br />
+
+            if (Model.TipoEmpresa == (Int32)EnumTiposEmpresas.EmpresaMultisector)
+            {
+                if (Model.TipoEmpresa == (Int32)EnumTiposEmpresas.Representada)
+                {
+                    <h5>Representadas</h5>
+                    <br />
+                }
+                else
+                {
+                    //Momentaneo---
+                    if (Model.EmpresaId != 84)
+                    {
+                    <h5>Sectores</h5>
+                    <br />
+                    }
+                }
+
+    <div class="row text-center">
+
+        @{
+
+            //Momentaneo---
+            if (Model.EmpresaId != 84)
+            {
+                foreach (var item in Model?.ListadoSectores)
+                {
+                    <div class="col-sm-4 col-md-6">
+
+                        <div class="card">
+                            <a class="btn-outline-secondary"
+                               asp-controller="Home"
+                               asp-action="Representada"
+                               asp-route-sectorId="@item.SectorId"
+                               asp-route-nombre="@item.Descripcion">
+
+                                <div class="card-header">
+                                    <h4>@item.Descripcion</h4>
+                                </div>
+
+                                <div class="card-body">
+                                    <img style="width:auto;height:160px;object-fit:scale-down;display:block;margin:auto;"
+                                         class="img-fluid"
+                                         src="@item.Logo.RutaImagenJpg()">
+                                </div>
+
+                            </a>
+                        </div>
+
+                        <br />
+
+                    </div>
+                }
+            }
+
+
+
+        }
+
+    </div>
+            }
+        }
+
+    </div>
+</div>
+
+
+
+<br />
+<br />
+<br />
+
+
+
+@section Scripts
+{ 
+    <script type="text/javascript" src="~/script/home/home_Index.js"></script>
+
+    <script>
+        window.onload = function () {
+
+            @*var urlAction = '@urlIngreso';
+
+            if ('@logginActivo' === 'False')
+            {
+                recuperarDatos(urlAction);
+            }*@
+           
+        };
+    </script>
+}

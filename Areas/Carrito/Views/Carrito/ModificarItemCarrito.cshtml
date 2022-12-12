@@ -1,0 +1,244 @@
+﻿@*Modificado: 17/09/2021*@
+@model LibreriaBase.Areas.Carrito.ViewActualizarItem
+
+@{
+    ViewData["Title"] = "ModificarItemCarrito";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    //Se toma como si es o no vendedor.
+    Boolean ocultar = Model.Rol == (Int32)EnumRol.Cliente ? true : false;
+
+}
+
+
+@if (Model.IdItemCarrito > 0)
+{
+    <p class="h5">Editar - @Model.Nombre</p>
+
+}
+else
+{
+    <p class="h5">Agregar - @Model.Nombre</p>
+
+}
+
+<hr class="d-none d-sm-block" />
+<div class="row">
+
+    <div class="col-12 col-md-8 col-lg-6">
+
+        <form id="frmModificar" method="post"
+              asp-area="Carrito" asp-controller="Carrito" asp-action="ModificarItemCarrito">
+
+            <input type="hidden" asp-for="@Model.ProductoId" />
+
+
+            <input type="hidden" name="PrecioNeto" value="@Model.PrecioNeto" />
+            <input type="hidden" name="PrecioBruto" value="@Model.PrecioBruto" />
+
+
+            <input type="hidden" id="cambialaPresentacion" name="cambialaPresentacion" class="form-control" />
+            <input type="hidden" asp-for="Rol" class="form-control" />
+            @{
+                if (Model.EsGenerico == true)
+                {
+                    <div class="bg-light">
+                        <div class="form-group">
+                            <label asp-for="Nombre" class="control-label"></label>
+                            <input asp-for="Nombre" class="form-control" />
+                            <span asp-validation-for="Nombre" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="PrecioNeto" class="control-label"> </label>
+                            <input id="inputPrecioNeto" asp-for="PrecioGenerico" class="form-control" />
+                            <span asp-validation-for="PrecioGenerico" class="text-danger"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="form-row">
+
+                        <div class="form-group col-md-6">
+
+                            <label class="control-label">Cantidad</label>
+
+                            <div class="input-group ">
+                                <div class="input-group-prepend">
+                                    <button onclick="cantidadesBtn(-1)"
+                                            class="btn btn-outline-danger" type="button">
+                                        <i class="fas fa-minus fa-1x"></i>
+                                    </button>
+                                </div>
+
+                                <input id="txtCantidad" asp-for="Cantidad" name="Cantidad" class="form-control" />
+
+                                <div class="input-group-prepend">
+                                    <button onclick="cantidadesBtn(1)"
+                                            class="btn btn-outline-success" type="button">
+                                        <i class="fas fa-plus fa-1x"></i>
+                                    </button>
+                                </div>
+
+                                <span asp-validation-for="Cantidad" class="text-danger"></span>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group col-md-6">
+                            <label asp-for="Presentacion" class="control-label"></label>
+                            <select class="form-control" asp-for="Presentacion">
+
+                                <option value="Bulto">Bulto</option>
+                                <option value="Unidad">Unidad</option>
+                            </select>
+                        </div>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="form-row ">
+                        <div class="form-group @(ocultar==true ? "ocultarDiv" : "") col-6">
+                            <label class="control-label">Precio Neto </label>
+                            <label id="txtPrecioNeto" class="form-control">@Model.PrecioNeto.FormatoMoneda()</label>
+                        </div>
+
+                        <div class="form-group col-6">
+                            <label class="control-label">Precio Final </label>
+                            <label id="txtPrecioBruto" class="form-control">@Model.PrecioBruto.FormatoMoneda()</label>
+                        </div>
+                    </div>
+
+
+                    <div class="form-row ">
+
+
+
+
+
+
+                        <div class="form-group  col-6">
+                            <label class="control-label">Cantidad</label>
+
+                            <div class="input-group ">
+                                <div class="input-group-prepend">
+                                    <button onclick="cantidadesBtn(-1)"
+                                            class="btn btn-outline-danger" type="button">
+                                        <i class="fas fa-minus fa-1x"></i>
+                                    </button>
+                                </div>
+
+                                @{
+                                    if (Model.ControlStock == true)
+                                    {
+                                        <input class="form-control"
+                                               id="txtCantidad" name="Cantidad" value="@Model.Cantidad.MostrarEntero()" />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control" id="txtCantidad" name="Cantidad" value="@Model.Cantidad.MostrarEntero()" />
+                                    }
+                                }
+
+
+                                <div class="input-group-prepend">
+                                    <button onclick="cantidadesBtn(1)"
+                                            class="btn btn-outline-success" type="button">
+                                        <i class="fas fa-plus fa-1x"></i>
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        <div class="form-group @(Model.BonificacionVisible==true ? "" : "ocultarDiv") col-6">
+                            <label asp-for="Bonificacion" class="control-label"></label>
+                            <input id="txtBonificacion" asp-for="Bonificacion" class="form-control" />
+                            <span asp-validation-for="Bonificacion" class="text-danger"></span>
+                        </div>
+                    </div>
+
+
+                }
+            }
+
+            <input id="inputEsGenerico" type="hidden" asp-for="EsGenerico" class="form-control" />
+
+
+            <div class="form-group @(ocultar==true ? "ocultarDiv" : "")">
+
+                <label asp-for="Presentacion" class="control-label"></label>
+
+                <select onchange="cambiaPresentacion()" class="form-control" asp-for="Presentacion">
+                    <option value="Bulto">Bulto</option>
+                    <option value="Unidad">Unidad</option>
+                </select>
+
+            </div>
+
+
+
+
+            <div class="form-group">
+                <label asp-for="Detalle" class="control-label"></label>
+                <input asp-for="Detalle" class="form-control" />
+                <span asp-validation-for="Detalle" class="text-danger"></span>
+            </div>
+
+            <input type="hidden" asp-for="IdItemCarrito" class="form-control" />
+            <input type="hidden" asp-for="UrlRetorno" class="form-control" />
+
+        </form>
+
+
+
+        <label class="my-2 d-block text-success h5" id="lbSubtotal"></label>
+        <label class="my-2 d-block text-secondary h6" id="lbSubtotalBonificado"></label>
+        <label class="my-2 d-block text-primary" id="lbAhorro"></label>
+
+
+        <form id="frmEliminar" asp-action="EliminarItemCarrito" method="post">
+            <input type="hidden" name="productoId"
+                   value="@Model.ProductoId" />
+            <input type="hidden" name="idItemCarrito"
+                   value="@Model.IdItemCarrito" />
+            <input type="hidden" name="urlRetorno"
+                   value="@Model.UrlRetorno" />
+        </form>
+
+        <div class="mt-2">
+            <button onclick="enviarFormulario(2)" class="btn btn-danger">
+                <i class="far fa-trash-alt"></i> @(Model.IdItemCarrito==0? "Cerrar" : "Eliminar")
+            </button>
+            <button onclick="enviarFormulario(1)" class="btn btn-primary">
+                <i class="far fa-save"></i> Guardar
+            </button>
+        </div>
+
+
+        @*<label class="mt-1 d-block">Ultima actualización: @Model.FechaActualizacion?.FechaCorta()</label>*@
+    </div>
+
+
+
+</div>
+
+<br />
+<br />
+<br />
+
+
+
+@section Scripts
+{
+    <script asp-append-version="true" type="text/javascript" src="~/script/carrito/modificarItemCarrito.js"></script>
+    <script type="text/javascript">
+        _viewControlStock = '@Model.ControlStock';
+        _viewOcultar = '@ocultar';
+
+
+
+    </script>
+}

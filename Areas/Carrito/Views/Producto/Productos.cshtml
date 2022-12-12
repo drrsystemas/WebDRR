@@ -1,0 +1,808 @@
+﻿
+@model ProductoMinimoViewModel
+
+@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    if (Model?.Paginacion.Elementos > 0)
+    {
+        ViewData["Title"] = "Productos [" + Model?.Paginacion.Elementos + "]";
+    }
+    else
+    {
+        ViewData["Title"] = "Productos";
+    }
+
+
+    int itemCarrito = 0;
+    if (Model?.Filtro?.TipoEmpresa != 256)
+    {
+        itemCarrito = Model?.Filtro?.CantidadCarrito.MostrarEntero() ?? 0;
+    }
+
+    List<LibreriaBase.Areas.Usuario.DatoConfiguracion> lisaConf =
+         (List<LibreriaBase.Areas.Usuario.DatoConfiguracion>)ViewData["Conf_VP"];
+
+
+    var esquemaP = lisaConf?.FirstOrDefault(x => x.Codigo == 13);
+    Int32 esquemaPrecios = 1; //por defecto es precio final.
+
+    if (esquemaP != null)
+    {
+        esquemaPrecios = esquemaP.Valor.MostrarEntero();
+    }
+
+    //Para verlo en la vista parcial.
+    ViewData["EsquemaPrecios"] = esquemaPrecios;
+
+
+
+    var ubicacionStock = lisaConf?.FirstOrDefault(x => x.Codigo == 29);
+    Boolean ustock = false;
+    if (ubicacionStock != null)
+    {
+        ustock = ubicacionStock.Valor.MostrarEntero() == 1 ? true : false;
+    }
+
+    ViewData["UbicacionStock"] = ustock;
+
+
+    String urlWp = (String)ViewData["UrlWp"];
+
+    String urlActual = @ViewContext.HttpContext.Request.PathAndQuery();
+
+    Int32? rol = (Int32?)ViewData["Rol"];
+
+    SessionAcceso session = (SessionAcceso)ViewData["Session"];
+
+
+
+    String urlCargarImgJson = Url.Action("CargarImagenesSegundoPlano", "Producto");
+
+    //No se muestra imagen --- 27/04/202 DESACTIVO LA IMG en VENDEDOR...
+    if (Model?.Filtro?.VerTodos == true || rol == (Int32)EnumRol.Vendedor)
+    {
+        if (session?.Sistema?.EmpresaId == 84 || session?.Sistema?.EmpresaId == 136)
+        {
+            urlCargarImgJson = "";
+        }
+
+    }
+
+
+
+
+    if (!String.IsNullOrEmpty(Model?.Filtro?.NombreFamilia))
+    {
+        Model.Filtro.NombreFamilia = Model.Filtro.NombreFamilia.Replace("&nbsp;", "");
+    }
+
+
+    Boolean btnComprar = (Boolean)ViewData["BtnComprar"];
+
+
+    Boolean modoEdicionProductos = (Boolean)ViewData["ModoEdicionProducto"];
+
+
+}
+
+@section Estilos
+{
+    <link rel="stylesheet" href="~/css/producto.css" />
+
+}
+
+
+@section Menu
+{
+
+    <div class="d-flex justify-content-end bd-highlight">
+
+        @* Logo de la empresa *@
+        <div class="d-none d-sm-none d-md-block p-md-2 bd-highlight">
+            <img src="@session?.Sistema?.Logo" height="45" id="headerv4_img_logo" class="d-inline-block align-top" alt="logo">
+        </div>
+
+        <div class="p-2 w-100 align-items-end bd-highlight">
+            @{
+                LibreriaBase.Areas.Usuario.DatoConfiguracion conf_filtroPagina = session?.Configuracion?.ConfiguracionesViewDatosProductos?.
+                    FirstOrDefault(x => x.Codigo == (int)LibreriaBase.Areas.Usuario.ConfViewDatosProductos.EnumConfViewDatosProductos.Filtrar_Sobre_La_Pagina);
+
+                Boolean filtroPagina = false;
+
+                if (conf_filtroPagina?.Valor.MostrarEntero() == 1)
+                {
+                    filtroPagina = true;
+                }
+
+                if (session.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo == 1)?.Valor == 0)
+                {
+                    if (session?.Usuario?.IdAlmaWeb > 0)
+                    {
+                        @* Formulario de busqueda principal del sistema. *@
+                        <form asp-area="Carrito" asp-controller="Producto" asp-action="Productos" method="get">
+                            <div class="row ml-2">
+                                <div class="col-9 col-md-10 col-lg-11 p-0">
+
+
+                                    @{
+                                        if (rol == (int)EnumRol.Vendedor || session?.Sistema?.TipoEmpresa == (int)EnumTiposEmpresas.Representada)
+                                        {
+
+                                            <input class="form-control mr-1" id="searchTerm"
+                                                   onkeyup="@(filtroPagina == true ? "FiltrarProductoPagina()" : "")"
+                                                   asp-for="Filtro.Dato" type="text"
+                                                   placeholder="Buscar productos"
+                                                   aria-label="Search">
+                                        }
+                                        else
+                                        {
+
+                                            if (Model.Filtro.TipoVisualizacion == (Int32)FiltroProducto.EnumTipoVisualizacion.Tarjeta)
+                                            {
+                                                <input class="form-control mr-1" id="searchTerm"
+                                                       onkeyup="@(filtroPagina == true ? "FiltrarProductoPaginaTarjeta()" : "")"
+                                                       asp-for="Filtro.Dato" type="text"
+                                                       placeholder="Buscar productos"
+                                                       aria-label="Search">
+                                            }
+                                            else
+                                            {
+                                                <input class="form-control mr-1" id="searchTerm"
+                                                       onkeyup="@(filtroPagina == true ? "FiltrarProductoPagina()" : "")"
+                                                       asp-for="Filtro.Dato" type="text"
+                                                       placeholder="Buscar productos"
+                                                       aria-label="Search">
+                                            }
+                                        }
+
+
+
+                                        if (Model.Filtro.Ofertas == true)
+                                        {
+
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input id="check-oferta-activa" asp-for="Filtro.Ofertas" type="checkbox" class="form-check-input"> Ofertas
+                                                </label>
+                                            </div>
+
+                                        }
+                                        else
+                                        {
+
+                                            if (session?.Usuario?.Rol != (Int32)EnumRol.Catalogo)
+                                            {
+                                                <input type="hidden" class="form-check-input" asp-for="Filtro.Ofertas">
+                                            }
+
+                                        }
+
+
+                                        if (Model.Filtro.MarcaId > 0)
+                                        {
+                                            Model.Filtro.FiltroMarca = true;
+
+                                            <input type="hidden" class="form-check-input" asp-for="Filtro.MarcaId">
+                                            <input type="hidden" class="form-check-input" asp-for="Filtro.NombreMarca">
+
+                                            if (Model?.Filtro?.Filtro_33 == false)
+                                            {
+                                                <div class="form-check-inline">
+                                                    <label class="form-check-label">
+                                                        <input id="check-marca-activa" asp-for="Filtro.FiltroMarca" type="checkbox" class="form-check-input">@Model.Filtro.NombreMarca
+                                                    </label>
+                                                </div>
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            Model.Filtro.FiltroRubro = false;
+                                        }
+
+
+                                        if (Model.Filtro.FamiliaId > 0)
+                                        {
+                                            Model.Filtro.FiltroRubro = true;
+
+                                            <input id="input-familia-identificador"
+                                                   name="Filtro.FamiliaId"
+                                                   type="hidden"
+                                                   class="form-check-input"
+                                                   value="@Model.Filtro.FamiliaId">
+
+                                            <input type="hidden"
+                                                   class="form-check-input"
+                                                   asp-for="Filtro.NombreFamilia">
+
+                                            if (Model?.Filtro?.Filtro_33 == false)
+                                            {
+                                                <div class="form-check-inline">
+
+                                                    <label class="form-check-label">
+                                                        <input id="check-familia-activa" asp-for="Filtro.FiltroRubro" data-familia="@Model.Filtro.FamiliaId" type="checkbox" class="form-check-input">@Model.Filtro.NombreFamilia
+                                                    </label>
+
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Model.Filtro.FiltroRubro = false;
+                                        }
+                                    }
+
+
+
+
+                                </div>
+                                <div class="col-2 col-md-2 col-lg-1 pl-2">
+                                    <button type="submit" class="btn btn-primary "><i class="fas fa-search fa-1x"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-area="Carrito" asp-controller="Producto" asp-action="Productos" method="get">
+                            <div class="row ml-2">
+                                <div class="col-9 col-md-10 col-lg-11 p-0">
+
+                                    @{
+
+                                        if (session?.Usuario?.IdAlmaWeb > 0)
+                                        {
+                                            if (rol == (int)EnumRol.Vendedor || session?.Sistema?.TipoEmpresa == (int)EnumTiposEmpresas.Representada)
+                                            {
+                                                <input class="form-control mr-1" id="searchTerm"
+                                                       onkeyup="@(filtroPagina == true? "FiltrarProductoPagina()":"")"
+                                                       asp-for="Filtro.Dato" type="text"
+                                                       placeholder="Buscar productos"
+                                                       aria-label="Search">
+                                            }
+                                            else
+                                            {
+                                                if (Model.Filtro.TipoVisualizacion == (Int32)FiltroProducto.EnumTipoVisualizacion.Tarjeta)
+                                                {
+                                                    <input class="form-control mr-1" id="searchTerm"
+                                                           onkeyup="@(filtroPagina == true? "FiltrarProductoPaginaTarjeta()":"")"
+                                                           asp-for="Filtro.Dato" type="text"
+                                                           placeholder="Buscar productos"
+                                                           aria-label="Search">
+                                                }
+                                                else
+                                                {
+                                                    <input class="form-control mr-1" id="searchTerm"
+                                                           onkeyup="@(filtroPagina == true? "FiltrarProductoPagina()":"")"
+                                                           asp-for="Filtro.Dato" type="text"
+                                                           placeholder="Buscar productos"
+                                                           aria-label="Search">
+                                                }
+                                            }
+
+
+                                        }
+                                        else
+                                        {
+                                            <input class="form-control mr-1" id="searchTerm"
+                                                   onkeyup="@(filtroPagina == true? "FiltrarProductoPaginaTarjeta()":"")"
+                                                   asp-for="Filtro.Dato" type="text"
+                                                   placeholder="Buscar productos"
+                                                   aria-label="Search">
+
+                                        }
+
+
+
+
+
+
+                                        if (Model.Filtro.MarcaId > 0)
+                                        {
+                                            Model.Filtro.FiltroMarca = true;
+
+                                            <input type="hidden" class="form-check-input" asp-for="Filtro.MarcaId">
+                                            <input type="hidden" class="form-check-input" asp-for="Filtro.NombreMarca">
+
+                                            if (Model?.Filtro?.Filtro_33 == false)
+                                            {
+                                                <div class="form-check-inline">
+                                                    <label class="form-check-label">
+                                                        <input id="check-marca-activa" type="checkbox" asp-for="Filtro.FiltroMarca" class="form-check-input">@Model.Filtro.NombreMarca
+                                                    </label>
+                                                </div>
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            Model.Filtro.FiltroRubro = false;
+                                        }
+
+
+
+                                        if (Model.Filtro.FamiliaId > 0)
+                                        {
+                                            Model.Filtro.FiltroRubro = true;
+
+                                            <input id="input-familia-identificador"
+                                                   name="Filtro.FamiliaId"
+                                                   type="hidden"
+                                                   class="form-check-input"
+                                                   value="@Model.Filtro.FamiliaId">
+
+                                            <input type="hidden"
+                                                   class="form-check-input"
+                                                   asp-for="Filtro.NombreFamilia">
+
+                                            if (Model?.Filtro?.Filtro_33 == false)
+                                            {
+                                                <div class="form-check-inline">
+
+                                                    <label class="form-check-label">
+                                                        <input id="check-familia-activa"
+                                                               data-familia="@Model.Filtro.FamiliaId"
+                                                               type="checkbox" asp-for="Filtro.FiltroRubro"
+                                                               onchange="activarDesactivarFamilia(this)"
+                                                               class="form-check-input">@Model.Filtro.NombreFamilia
+                                                        </label>
+
+                                                    </div>
+                                                }
+                                            }
+
+
+                                    }
+
+
+                                    @{
+                                        if (session?.Usuario?.Rol != (Int32)EnumRol.Catalogo)
+                                        {
+                                            <input type="hidden" class="form-check-input" asp-for="Filtro.Ofertas">
+                                        }
+                                    }
+
+
+                                    @*@await Component.InvokeAsync("LibreriaBase.Areas.Carrito.Rubro", @Model.Filtro)*@
+
+                                </div>
+                                <div class="col-2 col-md-2 col-lg-1 pl-2">
+                                    <button type="submit" class="btn btn-primary "><i class="fas fa-search fa-1x"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    }
+
+                }
+                else
+                {
+                    @* Formulario de busqueda principal del sistema. *@
+                    <form asp-area="Carrito" asp-controller="Producto" asp-action="Productos" method="get">
+                        <div class="row ml-2">
+                            <div class="col-9 col-md-10 col-lg-11 p-0">
+
+                                @{
+
+                                    if (session?.Usuario?.IdAlmaWeb > 0)
+                                    {
+                                        if (rol == (int)EnumRol.Vendedor || session?.Sistema?.TipoEmpresa == (int)EnumTiposEmpresas.Representada)
+                                        {
+                                            <input class="form-control mr-1" id="searchTerm"
+                                                   onkeyup="@(filtroPagina == true? "FiltrarProductoPagina()":"")"
+                                                   asp-for="Filtro.Dato" type="text"
+                                                   placeholder="Buscar productos"
+                                                   aria-label="Search">
+                                        }
+                                        else
+                                        {
+                                            if (Model.Filtro.TipoVisualizacion == (Int32)FiltroProducto.EnumTipoVisualizacion.Tarjeta)
+                                            {
+                                                <input class="form-control mr-1" id="searchTerm"
+                                                       onkeyup="@(filtroPagina == true? "FiltrarProductoPaginaTarjeta()":"")"
+                                                       asp-for="Filtro.Dato" type="text"
+                                                       placeholder="Buscar productos"
+                                                       aria-label="Search">
+                                            }
+                                            else
+                                            {
+                                                <input class="form-control mr-1" id="searchTerm"
+                                                       onkeyup="@(filtroPagina == true? "FiltrarProductoPagina()":"")"
+                                                       asp-for="Filtro.Dato" type="text"
+                                                       placeholder="Buscar productos"
+                                                       aria-label="Search">
+                                            }
+                                        }
+
+
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control mr-1" id="searchTerm"
+                                               onkeyup="@(filtroPagina == true? "FiltrarProductoPaginaTarjeta()":"")"
+                                               asp-for="Filtro.Dato" type="text"
+                                               placeholder="Buscar productos"
+                                               aria-label="Search">
+
+                                    }
+
+
+
+
+
+
+                                    if (Model.Filtro.MarcaId > 0)
+                                    {
+                                        Model.Filtro.FiltroMarca = true;
+
+                                        <input type="hidden" class="form-check-input" asp-for="Filtro.MarcaId">
+                                        <input type="hidden" class="form-check-input" asp-for="Filtro.NombreMarca">
+
+                                        if (Model?.Filtro?.Filtro_33 == false)
+                                        {
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input id="check-marca-activa" type="checkbox" asp-for="Filtro.FiltroMarca" class="form-check-input">@Model.Filtro.NombreMarca
+                                                </label>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Model.Filtro.FiltroRubro = false;
+                                    }
+
+
+
+                                    if (Model.Filtro.FamiliaId > 0)
+                                    {
+                                        Model.Filtro.FiltroRubro = true;
+
+                                        <input id="input-familia-identificador"
+                                               name="Filtro.FamiliaId"
+                                               type="hidden"
+                                               class="form-check-input"
+                                               value="@Model.Filtro.FamiliaId">
+
+                                        <input type="hidden"
+                                               class="form-check-input"
+                                               asp-for="Filtro.NombreFamilia">
+
+                                        if (Model?.Filtro?.Filtro_33 == false)
+                                        {
+                                            <div class="form-check-inline">
+
+                                                <label class="form-check-label">
+                                                    <input id="check-familia-activa"
+                                                           data-familia="@Model.Filtro.FamiliaId"
+                                                           type="checkbox" asp-for="Filtro.FiltroRubro"
+                                                           onchange="activarDesactivarFamilia(this)"
+                                                           class="form-check-input">@Model.Filtro.NombreFamilia
+                                                    </label>
+
+                                                </div>
+                                            }
+
+                                        }
+
+
+                                }
+
+
+                                @{
+                                    if (session?.Usuario?.Rol != (Int32)EnumRol.Catalogo)
+                                    {
+                                        <input type="hidden" class="form-check-input" asp-for="Filtro.Ofertas">
+                                    }
+                                }
+
+
+
+                                @*@await Component.InvokeAsync("LibreriaBase.Areas.Carrito.Rubro", @Model.Filtro)*@
+
+                            </div>
+                            <div class="col-2 col-md-2 col-lg-1 pl-2">
+                                <button type="submit" class="btn btn-primary "><i class="fas fa-search fa-1x"></i></button>
+                            </div>
+                        </div>
+                    </form>
+
+                }
+
+            }
+
+
+
+        </div>
+
+        <div class="p-2 bd-highlight">
+            @await Component.InvokeAsync("FiltroProducto", Model.Filtro)
+        </div>
+
+    </div>
+
+}
+
+
+<partial name="_aviso" />
+
+
+@{
+    if (Model?.Filtro?.Filtro_33 == false)
+    {
+        String leyenda = Model?.Filtro?.NombreMarca;
+
+        if (!String.IsNullOrEmpty(Model?.Filtro?.NombreFamilia))
+        {
+            if (!String.IsNullOrEmpty(leyenda))
+            {
+                leyenda += "/" + Model.Filtro.NombreFamilia;
+            }
+            else
+            {
+                leyenda = Model.Filtro.NombreFamilia;
+            }
+        }
+
+        if (!String.IsNullOrEmpty(leyenda))
+        {
+            if (Model.Filtro.Ofertas == false)
+            {
+                <h4 class="text-center text-white rounded colorNarajna">@leyenda - Resultados: @Model?.Paginacion.Elementos</h4>
+            }
+            else
+            {
+                <h4 class="text-center text-white rounded colorOferta">Ofertas - @leyenda - Resultados: @Model?.Paginacion.Elementos</h4>
+
+            }
+        }
+        else
+        {
+            if (!String.IsNullOrEmpty(Model?.Filtro?.Dato))
+            {
+                if (@Model?.Paginacion?.Elementos > 0)
+                {
+                    if (Model.Filtro.Ofertas == false)
+                    {
+                        <h6 class="text-center rounded colorDato"><span class="font-weight-bold"> Resultados:</span> @Model?.Paginacion.Elementos</h6>
+                    }
+                    else
+                    {
+                        <h6 class="text-center rounded colorDato">Ofertas - Resultados: @Model?.Paginacion.Elementos</h6>
+
+                    }
+                }
+
+
+            }
+        }
+    }
+
+
+
+}
+
+
+@{
+
+    if (rol == (int)EnumRol.Vendedor)
+    {
+        ViewCliente vCliente = (ViewCliente)ViewData["viewCliente"];
+        if (vCliente != null)
+        {
+            <partial name="_datosEsquemaPrecio_Cliente" for="@vCliente" />
+        }
+    }
+
+    int? totalElementos = Model?.Lista?.Count();
+
+    if (totalElementos != null && totalElementos > 0)
+    {
+
+        <div class="clearfix">
+
+            @if (Model.Filtro.TipoVisualizacion == (Int32)FiltroProducto.EnumTipoVisualizacion.Tarjeta)
+            {
+                <partial name="_detalleProducto" for="Lista" view-data="ViewData" />
+            }
+            else
+            {
+                <partial name="_tablaProductos" for="Lista" view-data="ViewData" />
+            }
+
+        </div>
+
+
+
+
+        <br />
+        if (Model?.Filtro?.VerTodos == false)
+        {
+            <div page-model="@Model.Paginacion"
+                 page-action="Productos"
+                 page-classes-enabled="true"
+                 page-url-FamiliaId="@Model.Filtro.FamiliaId"
+                 page-url-NombreFamilia="@Model.Filtro.NombreFamilia"
+                 page-url-FiltroRubro="@Model.Filtro.FiltroRubro"
+                 page-url-MarcaId="@Model.Filtro.MarcaId"
+                 page-url-NombreMarca="@Model.Filtro.NombreMarca"
+                 page-url-FiltroMarca="@Model.Filtro.FiltroMarca"
+                 page-url-Dato="@Model.Filtro.Dato"
+                 page-url-Ofertas="@Model.Filtro.Ofertas"
+                 page-url-Filtro_33="@Model.Filtro.Filtro_33"
+                 page-url-ClasificacionId="@Model.Filtro.ClasificacionId"
+                 page-class="btn"
+                 page-class-normal="btn-light"
+                 page-class-selected="btn-primary"
+                 class="btn-group">
+            </div>
+        }
+
+
+    }
+
+}
+
+
+
+<div id="mostrarmodal" class="modal fade bd-example-modal-sm" tabindex="-1"
+     role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <h5 class="modal-title text-center">El producto se agrego con exito al carrito</h5>
+
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <img class="img-fluid p-5" src="~/img/carrito/carritoLleno.png" />
+
+
+                @*<p>
+                        Continuar: para seguir comprando.
+                    </p>
+                    <p>
+                        Ver Carrito: ves el detalle de la compra.
+                    </p>
+                    <p>
+                        Comprar: finalizar la compra.
+                    </p>*@
+                <div class="row">
+                    <div class="col">
+                        <button type="button" class="btn btn-secondary btn-block btn-sm" data-dismiss="modal">Seguir Comprando</button>
+
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col">
+                        <a class="btn btn-primary btn-block btn-sm" asp-area="Carrito"
+                           asp-controller="Carrito"
+                           asp-action="Index"
+                           asp-route-urlRetorno="@ViewContext.HttpContext.Request.PathAndQuery()">Ver Carrito</a>
+                    </div>
+
+                </div>
+
+                @{
+
+
+                    if (btnComprar == true)
+                    {
+                        if (rol != 4)
+                        {
+
+
+
+                            <div class="row mt-2">
+                                <div class="col">
+                                    <a class="btn btn-success btn-block btn-sm" asp-area="Carrito"
+                                       asp-controller="Carrito"
+                                       asp-action="DatosDeEnvio"
+                                       asp-route-urlRetorno="@ViewContext.HttpContext.Request.PathAndQuery()">Finalizar Compra</a>
+                                </div>
+
+                            </div>
+                        }
+                    }
+                }
+
+            </div>
+
+            <br />
+
+            @*<div class="modal-footer">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Continuar</button>
+                        </div>
+                        <div class="col-sm-6">
+                            <a class="btn btn-primary btn-sm" asp-area="Carrito"
+                               asp-controller="Carrito"
+                               asp-action="Index"
+                               asp-route-urlRetorno="@ViewContext.HttpContext.Request.PathAndQuery()">Ver Carrito</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <a class="btn btn-success btn-block btn-sm" asp-area="Carrito"
+                           asp-controller="Carrito"
+                           asp-action="DatosDeEnvio"
+                           asp-route-urlRetorno="@ViewContext.HttpContext.Request.PathAndQuery()">Comprar</a>
+                    </div>
+
+
+
+                </div>*@
+
+        </div>
+    </div>
+</div>
+
+
+
+@{
+    if (rol != (int)EnumRol.Vendedor)
+    {
+        <div class="btn-whatsapp d-none d-inline ">
+            <a id="linkwp" href="@ViewBag.url" target="_blank" title="Contactar">
+                <img src="~/img/btn_whatsapp.png" style="width: 40px; height: 40px;" alt="">
+            </a>
+        </div>
+    }
+}
+
+
+<a href="#" class="scroll-top" title="Ir arriba">
+    <i class="fa fa-angle-up"></i>
+</a>
+
+
+<br />
+<span id="datosEnlace"></span>
+<br />
+<br />
+
+
+<div id="frmBusqueda" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Buscador</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" placeholder="Ingrese el nombre o el código del producto " class="form-control" id="txtBusquedaFrmModal" aria-describedby="basic-addon3">
+            </div>
+            <div class="modal-footer">
+                <a id="btnModal" class="btn btn-primary">Iniciar busqueda</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<input name="inpTipoVista" hidden id="inpTipoVista" value="@Model?.Filtro?.TipoVisualizacion" />
+
+
+
+@section Scripts
+{
+
+
+    <script asp-append-version="true" type="text/javascript" src="~/script/producto/producto.js"></script>
+
+    <script src="~/lib/sorttable/sorttable.js"></script>
+
+
+    <script>
+        urlCargarImgJson = '@urlCargarImgJson';
+    </script>
+}

@@ -1,0 +1,150 @@
+﻿
+@model int;
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    if (Model == 1)
+    {
+        ViewData["Title"] = "Buscar Guía";
+    }
+    else
+    {
+        ViewData["Title"] = "Ver Guía";
+    }
+
+}
+
+<br />
+<div class="jumbotron">
+
+    <h1 class="display-4"> @ViewData["Title"] </h1>
+
+
+    <br />
+
+    <div class="row">
+
+        <div class="col-md-8">
+
+            @{
+                if (Model == 1)
+                {
+                    <form method="get" action="~/Logistica/DatosGuia">
+                        <div class="form-group">
+                            <label for="lbNumeroGuia">N° de Guía</label>
+                            <input type="number" class="form-control" name="numero" id="numero" placeholder="Ingrese el n° de guía" autofocus>
+                            <small id="numeroHelp" class="form-text text-muted">Ingrese el número de guía para poder ver todo el detalle</small>
+                        </div>
+
+                        <p class="text-danger">@ViewBag.ErrorMessage</p>
+                        <button type="submit" class="btn btn-primary">Consultar</button>
+                    </form>
+                }
+                else
+                {
+                    <form id="frmConsultar" name="frmConsultar" method="get" action="~/Logistica/Guia">
+                        <div class="form-group">
+                            <label for="lbNumeroGuia">Consultar Guía</label>
+                            <input type="text" maxlength="11" onkeypress="return validarCaracteres(event)" class="form-control" name="guia" id="guia" placeholder="Ingrese el código de la guía" autofocus>
+                        </div>
+
+                        <p class="text-danger">@ViewBag.ErrorMessage</p>
+                        <button type="submit" class="btn btn-primary">Consultar</button>
+                    </form>
+                }
+
+            }
+
+        </div>
+
+        <div class="col-md-4">
+
+            @if (Model == 1)
+            {
+                <img height="150" width="150" src="~/img/seguimiento.png" class="img-fluid">
+            }
+            else
+            {
+                <img src="~/img/logistica/rutaMisionera.png" class="img-fluid">
+            }
+
+            <br />
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        $(document).ready(Separadores);
+
+        function Separadores()
+        {
+            var flag = true;
+
+            $(document).on('keyup', '[id=guia]', function (e) {
+
+                tecla = (document.all) ? e.keyCode : e.which;
+
+                if ($(this).val().length == 2 && flag)
+                {
+                        
+
+                    //Tecla de retroceso para borrar, siempre la permite
+                    if (tecla != 8) {
+                                           $(this).val($(this).val() + "-");
+                    flag = true;
+                    }
+
+
+                }
+                else if ($(this).val().length == 8 && flag)
+                {
+                    $(this).val($(this).val() + "-");
+                    flag = false;
+                }
+                else
+                {
+                    if ($(this).val().length < 8)
+                    {
+                        flag = true;
+                    }
+                    else if ($(this).val().length == 11) //tiraria la busqueda de forma automatica
+                    {
+                        if (tecla != 8) //Siempre que no sea un borrar
+                        {
+                            document.forms["frmConsultar"].submit();
+                        }
+                    }
+                }
+            });
+        }
+
+
+        function validarCaracteres(e) {
+
+            tecla = (document.all) ? e.keyCode : e.which;
+
+            //Tecla de retroceso para borrar, siempre la permite
+            if (tecla == 8) {
+                return true;
+            }
+
+            // Patron de entrada, en este caso solo acepta numeros y letras
+            patron = /[0-9|-]/;
+            tecla_final = String.fromCharCode(tecla);
+            return patron.test(tecla_final);
+        }
+
+
+
+    </script>
+}
+
+<br />
+<br />

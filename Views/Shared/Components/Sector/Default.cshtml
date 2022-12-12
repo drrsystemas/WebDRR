@@ -1,0 +1,69 @@
+﻿@model ViewModelSeleccionarSector
+
+@{ 
+
+}
+
+<div class="modal fade" data-backdrop="static" data-keyboard="false"  id="ventana-formulario-sectores" tabindex="-1"
+     role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+
+            <form method="post" action="@Model.UrlAction">
+
+                <div class="modal-header">
+                    <h4 class="modal-title" id="vConfirmacionTitulo">Sucursal - @Model.EmpresaNombre</h4>
+                    <button type="button" onclick="cerrarSeleccionarSucursal('@Model.UrlCancelar')" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="container">
+
+                        @{
+                            <select asp-for="SectorSeleccionada.IdSector" class="custom-select">
+
+                                <option value="" hidden disabled selected>Seleccione 1 sector</option>
+
+                                @{
+                                    for (int i = 0; i < Model.ListaSectores.Count(); i++)
+                                    {
+                                        var sucural = Model.ListaSectores[i];
+
+                                        <option value="@sucural.SectorId"> @sucural.Descripcion</option>
+
+                                    }
+                                }
+
+                            </select>
+                            <span asp-validation-for="SectorSeleccionada.IdSector" class="text-danger"></span>
+                        }
+
+
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="submit" class="btn btn-primary">
+                        Aceptar
+                    </button>
+
+                    <button type="button" class="btn btn-secondary" onclick="cerrarSeleccionarSucursal('@Model.UrlCancelar')"
+                            data-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                </div>
+
+
+            </form>
+
+        </div>
+    </div>
+</div>

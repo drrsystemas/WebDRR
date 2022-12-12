@@ -1,0 +1,49 @@
+﻿@model PedidoView
+
+@{
+
+}
+
+<table id="tablaProductos" class="table table-striped">
+
+    <thead>
+        <tr>
+            @{
+
+                <th class="d-none d-sm-table-cell"> Producto</th>
+
+                <th class="d-none d-sm-table-cell mx-auto"> Cant. </th>
+
+                <th class="d-none d-sm-table-cell"> Subtotal </th>
+
+            }
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in Model?.Items)
+        {
+            <tr>
+                @{
+
+                    <td class="d-none d-sm-table-cell">
+                        <p>@item.Producto</p>
+                    </td>
+
+                    <td class="d-none d-sm-table-cell mx-auto">
+                        <p>@item.Cantidad.MostrarEntero()</p>
+                    </td>
+
+                    <td class="d-none d-sm-table-cell">
+                        <p class="txtSinSaltos">
+                            @item.Total
+                        </p>
+                    </td>
+
+                }
+            </tr>
+        }
+
+    </tbody>
+</table>

@@ -1,0 +1,75 @@
+﻿@model SeleccionarEmpresaViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Empresas</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+
+    <div class=" container">
+
+        <div class="text-center">
+            <br />
+            <br />
+            <img src="~/img/almanet_web.png" class="img-fluid" width="400" height="200">
+            <br />
+            <br />
+            <h3 class="text-secondary text-center">Seleccione la Empresa</h3>
+        </div>
+
+
+        <br />
+        <br />
+        <div class="row">
+
+            @{
+                foreach (var item in Model?.ListaEmpresas)
+                {
+                    <div class="col-sm-4">
+
+                        <div class="card">
+                            <a class="btn-outline-secondary" asp-controller="Home" asp-action="Index" asp-route-idEmpresa="@item.IdEmpresa">
+
+                                <div class="card-header">
+                                    <h4 class="text-center">@item.Nombre_Empresa</h4>
+                                </div>
+                            </a>
+                        </div>
+                        <br />
+                        <br />
+                    </div>
+                }
+
+            }
+
+        </div>
+
+    </div>
+
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script type="text/javascript">
+        (function () {
+            if (window.localStorage)
+                console.log("Almacenamiento local admitido")
+            else
+                console.log("Almacenamiento local no admitido")
+        })();
+
+    </script>
+</body>
+</html>

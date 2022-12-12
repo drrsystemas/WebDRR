@@ -1,0 +1,81 @@
+﻿@model List<ViewClasificacionSeleccion>
+
+@{
+
+}
+
+
+
+<div class="modal fade" data-backdrop="static" data-keyboard="false" id="ventana-formulario-clasificaciones" tabindex="-1"
+     role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+
+            <form method="post" action="">
+
+                <div class="modal-header">
+                    <h4 class="modal-title" id="vConfirmacionTitulo">Clasificaciones</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="container">
+                        @{
+                            <div class="input-group">
+                                <div class="input-group-prepend mr-2 mt-2 ml-1">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                </div>
+                                <input class="form-control text-sm-left" autofocus type="text" id="txtFiltroClasificacion" onkeyup="FiltrarClasificaciones_lista()" placeholder="Buscar Clasificación">
+                            </div>
+                            <br />
+
+                            <ul class="list-group" id="listaTablaClasificacion">
+                                @{
+                                    if (Model != null && Model?.Count() > 0)
+                                    {
+                                        foreach (LibreriaBase.Areas.Carrito.ViewClasificacionSeleccion clasificacion in Model)
+                                        {
+                                            <li class="list-group-item">
+
+                                                <span class="badge badge-success badge-pill">@clasificacion.ClasificacionID</span>
+                                                @clasificacion.Descripcion
+                                                @{
+                                                    if (clasificacion.Seleccionada == true)
+                                                    {
+                                                        <button onclick="agregarQuitarClasificacion(3,'@clasificacion.ClasificacionID')" class="btn btn-sm btn-danger float-right">Quitar</button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button onclick="agregarQuitarClasificacion(1,'@clasificacion.ClasificacionID')" class="btn btn-sm btn-success float-right">Agregar</button>
+                                                    }
+                                                }
+
+                                            </li>
+                                        }
+                                    }
+                                }
+                            </ul>
+                        }
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            onclick="cerrarFrmClasificaciones()"
+                            class="btn btn-secondary"
+                            data-dismiss="modal"
+                            aria-label="Close">
+                        Cerrar
+                    </button>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

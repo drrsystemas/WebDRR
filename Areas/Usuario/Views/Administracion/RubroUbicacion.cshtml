@@ -1,0 +1,57 @@
+﻿@model IEnumerable<LibreriaBase.Areas.Usuario.DatoConfiguracion>
+
+@{
+    ViewData["Title"] = "RubroUbicacion";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Rubro Ubicacion</h3>
+
+<p class="mb-1">
+    <a class="btn btn-primary" 
+       asp-area="Usuario" 
+       asp-controller="Administracion" 
+       asp-action="Abm_RubroUbicacion"
+       asp-route-tipoOperacion="1">Agregar</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            @* Codigo seria el ProductoFamiliaID *@
+            <th>
+               Código
+            </th>
+            @* El nombre del Rubro *@
+            <th>
+               Nombre
+            </th>
+            @* Lista de valores ID/Nombre -- Deposito *@
+            <th>
+                Ubicacion/es
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Codigo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descripcion)
+            </td>
+            <td>
+
+                @Html.ActionLink("Editar", "Abm_RubroUbicacion", new { tipoOperacion=1}) |
+                @Html.ActionLink("Detalle", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Eliminar", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

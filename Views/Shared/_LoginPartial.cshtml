@@ -1,0 +1,248 @@
+﻿@using Microsoft.AspNetCore.Http
+@model SessionAcceso
+
+
+@if (Model != null && Model.Usuario?.Nombre != null)
+{
+
+    @if (Model.Sistema?.EmpresaId == 29)
+    {
+
+        <li class="navbar-nav float-right">
+
+            <form id="logoutForm"
+                  class="form-inline"
+                  asp-area="Acceso"
+                  asp-controller="Acceso"
+                  asp-action="Cerrar">
+
+                <button id="logout" type="submit"
+                        class="nav-link btn btn-link">
+                    <i class="fas fa-user-alt-slash"> </i> Salir
+                </button>
+
+            </form>
+
+        </li>
+
+
+        <li class="navbar-nav float-right">
+
+            <button id="logout" type="submit"
+                    class="nav-link btn btn-link">
+                <i class="far fa-user"></i> @Model.Usuario?.Nombre
+            </button>
+
+        </li>
+
+
+
+    }
+    else
+    {
+        <li class="navbar-nav dropdown dropleft">
+
+            <a class="nav-link text-dark dropdown-toggle" data-toggle="dropdown">
+                <i class="fa fa-user fa-2x"></i>
+
+                @{
+                    String nombreUsuario = Model.Usuario?.Nombre;
+
+                    if(Model.Usuario?.Rol == (int)EnumRol.Vendedor)
+                    {
+                        nombreUsuario= "[" + Model.Usuario?.Cliente_Vendedor_Id.ToString() +"] " + nombreUsuario;
+                    }
+                    else if (Model.Usuario?.Rol == (int)EnumRol.ClienteFidelizado)
+                    {
+                        nombreUsuario = "[" + Model.Usuario?.EntidadSucId.ToString() + "] " + nombreUsuario;
+                    }
+
+                   <b class="caret d-none d-md-inline"> @nombreUsuario</b>
+
+                }
+            </a>
+
+
+            <ul class="dropdown-menu">
+
+                @{
+                    if (Model.Usuario.Rol == (Int32)EnumRol.Vendedor)
+                    {
+                        @*<li class="dropdown-item">
+
+                                <button id="panaleControl"
+                                        type="button" onclick="callSector()"
+                                        class="nav-link btn btn-link">
+                                                    <i class="fas fa-vector-square"></i><b class="caret"> Sector</b>
+                                </button>
+
+                        </li>*@
+
+
+                        <li class="dropdown-item">
+
+                            <form id="panelForm"
+                                  class="form-inline text-left"
+                                  asp-area="Usuario"
+                                  asp-controller="Panel"
+                                  asp-action="Ingresar">
+                                <button id="panaleControl"
+                                        type="submit"
+                                        class="nav-link btn btn-link">
+                                    <i class="fa fa-clipboard-list"></i><b class="caret"> Panel Ctrol.</b>
+                                </button>
+                            </form>
+
+                        </li>
+
+
+                        if (@Model.Sistema.TipoEmpresa != 256)
+                        {
+                            <li class="dropdown-item">
+                                <form class="form-inline text-left" method="get"
+                                      asp-area="Usuario"
+                                      asp-controller="Panel"
+                                      asp-action="EditarDatos">
+
+                                    <button id="misDatos"
+                                            type="submit"
+                                            class="nav-link btn btn-link">
+                                        <i class="fas fa-user-edit"></i> <b class="caret"> Mis Datos</b>
+                                    </button>
+                                </form>
+                            </li>
+                        }
+
+                        <li class="dropdown-divider"></li>
+
+                    }
+
+                }
+
+
+
+
+
+
+                <li class="dropdown-item">
+                    <form id="logoutForm"
+                          class="form-inline"
+                          asp-area="Acceso"
+                          asp-controller="Acceso"
+                          asp-action="Cerrar">
+                        <button id="logout" type="submit"
+                                class="nav-link btn btn-link">
+                            <i class="fas fa-user-alt-slash  icono-salir"></i><b class="caret iconoscolorletra"> Salir</b>
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </li>
+    }
+
+}
+else
+{
+<li class="navbar-nav float-right">
+    @if (Model?.Sistema?.EmpresaId == 29)
+    {
+        <a class="nav-link text-dark"
+           asp-area="Acceso"
+           asp-controller="Codigo"
+           asp-action="Acceso">
+            <i class="fas fa-door-open fa-2x"></i>
+
+            <b class="pl-1 d-none d-sm-inline ">Ingresar</b>
+        </a>
+    }
+    else
+    {
+
+
+        var modoCarritoW = Model?.Configuracion?.ConfiguracionesPago.
+        FirstOrDefault(c => c.Codigo == (int)LibreriaBase.Areas.Usuario.
+        ConfPortal.EnumConfPortal.ModoCarritoWhatsApp);
+
+
+        if (modoCarritoW == null)
+        {
+            if (Model?.Usuario?.Rol != (int)EnumRol.Root)
+            {
+                <a class="nav-link text-dark"
+                   asp-area="Acceso"
+                   asp-controller="Acceso"
+                   asp-action="Index">
+                    <i class="fas fa-door-open fa-2x icono-entrar"></i>
+
+                    <b class="pl-1 d-none d-sm-inline  iconoscolorletra">Ingresar</b>
+                </a>
+            }
+            else
+            {
+                <a class="nav-link text-dark"
+                   asp-area="Acceso"
+                   asp-controller="Acceso"
+                   asp-action="Cerrar">
+                    <i class="fas fa-door-open fa-2x icono-entrar"></i>
+
+                    <b class="pl-1 d-none d-sm-inline  iconoscolorletra">Salir</b>
+                </a>
+            }
+
+
+            if (Model?.Configuracion?.ConfiguracionesPortal?.
+            FirstOrDefault(c => c.Codigo == (int)LibreriaBase.Areas.Usuario.ConfPortal.EnumConfPortal.Ver_Icono_Registrarme)?.Valor.MostrarEntero() == 1)
+            {
+                <a class="nav-link text-dark"
+                   asp-area="Acceso"
+                   asp-controller="Acceso"
+                   asp-action="NuevaCuenta">
+                    <i class="far fa-grin-wink fa-2x"></i>
+
+                    <b class="pl-1 d-none d-sm-inline ">Crear Cuenta</b>
+                </a>
+            }
+        }
+        else if (modoCarritoW?.Valor.Activo_Inactivo() == "Inactivo")
+        {
+
+            if (Model?.Usuario?.Rol != (int)EnumRol.Root)
+            {
+                <a class="nav-link text-dark"
+                   asp-area="Acceso"
+                   asp-controller="Acceso"
+                   asp-action="Index">
+                    <i class="fas fa-door-open fa-2x icono-entrar"></i>
+
+                    <b class="pl-1 d-none d-sm-inline  iconoscolorletra">Ingresar</b>
+                </a>
+            }
+            else
+            {
+                <a class="nav-link text-dark"
+                   asp-area="Acceso"
+                   asp-controller="Acceso"
+                   asp-action="Cerrar">
+                    <i class="fas fa-door-open fa-2x icono-entrar"></i>
+
+                    <b class="pl-1 d-none d-sm-inline  iconoscolorletra">Salir</b>
+                </a>
+            }
+
+
+            if (Model?.Configuracion?.ConfiguracionesPortal?.
+            FirstOrDefault(c => c.Codigo == (int)LibreriaBase.Areas.Usuario.ConfPortal.EnumConfPortal.Ver_Icono_Registrarme)?.Valor.MostrarEntero() == 1)
+            {
+                <a class="nav-link text-dark"
+                   asp-area="Acceso"
+                   asp-controller="Acceso"
+                   asp-action="NuevaCuenta">
+                    <i class="far fa-grin-wink fa-2x"></i>
+
+                    <b class="pl-1 d-none d-sm-inline ">Crear Cuenta</b>
+                </a>
+            }
+        }
+    }
+</li>
+}

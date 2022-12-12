@@ -1,0 +1,55 @@
+﻿@model IEnumerable<LibreriaBase.Areas.Usuario.DatoConfiguracion>
+
+@{
+    ViewData["Title"] = "OpcionesUsuario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4>Opciones Usuario</h4>
+<hr/>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Tipo
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Codigo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descripcion)
+            </th>
+            <th>
+             Estado
+            </th>
+            <th>
+               Valor
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Codigo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descripcion)
+            </td>
+            <td>
+                @(item.Valor.Activo_Inactivo())
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Extra)
+            </td>
+            <td>
+                @Html.ActionLink("Editar", "EditarOpcionesUsuario", item) 
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

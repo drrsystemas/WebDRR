@@ -1,0 +1,89 @@
+﻿@model DatosEmpresa
+
+@{
+    string titulo = "";
+    byte tipoOperacion = (byte)ViewData["TipoOperacion"];
+
+    if (tipoOperacion == 1)
+    {
+        titulo = "Agregar Empresa";
+    }
+    else if (tipoOperacion == 2)
+    {
+        titulo = "Editar Empresa";
+    }
+
+
+    ViewData["Title"] = titulo;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+    var listaTipoEmpresas =  (List<Generica>)ViewData["ListaTiposEmpresas"];
+
+
+}
+
+
+
+<h4>@titulo</h4>
+
+
+<hr />
+
+
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="post" asp-controller="Administracion" asp-action="CrubEmpresa">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="IdEmpresa"   class="control-label"></label>
+                
+                <input asp-for="IdEmpresa"  name="IdEmpresa"
+                       id="txtIdEmpresa" 
+                       data-tipoOp="@tipoOperacion" 
+                       class="form-control"  />
+
+                <span asp-validation-for="IdEmpresa" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Nombre de la Base de Datos</label>
+                <input asp-for="Nombre_BaseDatos" class="form-control" />
+                <span asp-validation-for="Nombre_BaseDatos" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label  class="control-label">Nombre de la Empresa</label>
+                <input asp-for="Nombre_Empresa" class="form-control" />
+                <span asp-validation-for="Nombre_Empresa" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Activa" /> <spam>Activa</spam>
+                </label>
+            </div>
+            <div class="form-group">
+                <label  class="control-label">Tipo</label>
+                @*<input asp-for="TipoEmpresa" class="form-control" />
+            <span asp-validation-for="TipoEmpresa" class="text-danger"></span>*@
+
+                <select class="form-control"  asp-for="TipoEmpresa" asp-items="@(new SelectList(listaTipoEmpresas,"Id","Nombre"))">
+                    <option value="">Seleccione 1 opción</option>
+                </select>
+
+            </div>
+
+            <input type="hidden" name="tipoOperacion" asp-for="@tipoOperacion"   />
+
+            <div class="form-group">
+                <input type="submit" value="Guardar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts 
+{
+    <script type="text/javascript" src="~/script/administracion/crubEmpresa.js"></script>
+}

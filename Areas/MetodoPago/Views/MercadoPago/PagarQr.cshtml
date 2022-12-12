@@ -1,0 +1,50 @@
+﻿
+@model LibreriaBase.Api.MercadoPago.PuntoVenta.Result
+
+@{
+    ViewData["Title"] = "Pagar QR";
+}
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm">
+                <h3>Para operar con Qr, mediante su celular scanee nuestro código e ingrese el importe y detalle.</h3>
+
+                <br />
+
+                <img height="200" src="@Model.qr.image" />
+
+                <br />
+                <br />
+            </div>
+            <div class="col-sm">
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+
+                <p>Si ya realizo el pago con el codigo de operación que le dio mercado pago, verifique su pago.</p>
+
+                <form method="get" asp-area="MetodoPago" asp-action="InformacionPago" asp-controller="MercadoPago">
+                    <div class="form-group">
+                        <label for="codigoPago">Codigo Operación</label>
+                        <input type="number" class="form-control" name="codigoPago" id="codigoPago" autofocus>
+                    </div>
+                    <p class="text-danger">@ViewBag.ErrorMessage</p>
+                    <br />
+                    <button type="submit" class="btn btn-primary">Consultar</button>
+                </form>
+            </div>
+
+        </div>
+
+
+
+
+
+    </div>
+<br />
+<br />
+<br />

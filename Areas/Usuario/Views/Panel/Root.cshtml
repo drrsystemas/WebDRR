@@ -1,0 +1,159 @@
+﻿
+@{
+    DatosUsuario datos = (DatosUsuario)ViewData["Datos"];
+
+    ViewData["Title"] = "Conf.";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+
+
+@section Estilos
+{
+
+    <style>
+
+        .altoTarjeta {
+            min-height: 250px;
+        }
+
+        .margenArriba {
+            margin-top: 10px;
+        }
+
+        /*        @@media screen and (max-width:480px) {
+            .margenArriba {
+                margin-top: 10px;
+            }
+        }*/
+    </style>
+}
+
+
+<h4 class="mt-1">Configuraciones del Sistema</h4>
+<hr />
+
+    <div class="row">
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+            <div class="card text-center altoTarjeta">
+
+
+                    <div class="card-body">
+                        <h4 class="card-title">Opciones Pago y Envío</h4>
+                        <p class="card-text">
+                            Se establecen las formas de pago y las modalidades de envío.
+                        </p>
+
+                    </div>
+
+
+                    <div class="card-footer">
+                        <a class="btn btn-primary"
+                           asp-area="Usuario"
+                           asp-controller="Administracion"
+                           asp-action="Validacion" asp-route-pantalla="1"><i class="fas fa-cash-register fa-2x"></i></a>
+                    </div>
+
+                   
+            </div>
+        </div>
+
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+            <div class="card text-center altoTarjeta">
+                <div class="card-body">
+                    <h4 class="card-title">Conf. Portal</h4>
+                    <p class="card-text">
+                        Asignación de permisos dentro de la página. Por ejemplo,
+                        los usuarios pueden visualizar los productos o necesitan iniciar sesión.
+                    </p>
+
+                    @* Aca va despues un if para si es o no representada. *@
+
+                  
+                </div>
+
+                <div class="card-footer">
+                    <a class="btn btn-primary"
+                       asp-area="Usuario"
+                       asp-controller="Administracion"
+                       asp-action="NivelPermisos"><i class="fas fa-user-secret fa-2x"></i></a>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+            <div class="card text-center altoTarjeta">
+                <div class="card-body">
+                    <h4 class="card-title">Conf. Producto</h4>
+                    <p class="card-text">
+                        Se configuran las opciones para la visualizacion de los productos.
+                    </p>
+
+                    @* Aca va despues un if para si es o no representada. *@
+
+                    
+                </div>
+
+                <div class="card-footer">
+                    <a class="btn btn-primary"
+                       asp-area="Usuario"
+                       asp-controller="Administracion"
+                       asp-action="ConfigurarViewDatosProductos"><i class="fas fa-list-ul fa-2x"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+            <div class="card text-center altoTarjeta">
+                <div class="card-body">
+                    <h4 class="card-title">Usuario Web</h4>
+                    <p class="card-text">Pantalla para administrar los Usuarios de la Web y los Vendedores </p>
+                   
+                </div>
+
+                <div class="card-footer">
+                    <a class="btn btn-primary"
+                       asp-area="Usuario"
+                       asp-controller="UsuarioWeb"
+                       asp-action="UsuariosWeb"><i class="fas fa-users-cog fa-2x"></i></a>
+                </div>
+            </div>
+        </div>
+
+
+
+        @if (datos.IdEmpresa == 2)//DRR Systemas
+        {
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 margenArriba">
+                <div class="card text-center altoTarjeta">
+                    <div class="card-body">
+                        <h4 class="card-title">Conf. Empresas</h4>
+                        <p class="card-text">
+                            Abm de las empresas que se visualizan desde Empresas.
+                        </p>
+
+                       
+                    </div>
+
+                    <div class="card-footer">
+                        <a class="btn btn-primary"
+                           asp-area="Usuario"
+                           asp-controller="Administracion"
+                           asp-action="ConfigurarEmpresas"><i class="fas fa-chess-king fa-2x"></i></a>
+                    </div>
+                </div>
+            </div>
+
+        }
+
+
+
+    </div>
+
+
+<br />
+<br />

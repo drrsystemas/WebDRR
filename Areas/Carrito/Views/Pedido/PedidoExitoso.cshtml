@@ -1,0 +1,222 @@
+﻿@*
+    Modificado: 16/09/2021
+*@
+
+@model CarritoIndexViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    SessionAcceso session = Context.Session.GetJson<SessionAcceso>("SessionAcceso");
+
+    if (session.Usuario.Rol == 4)
+    {
+        ViewData["Title"] = "Pedido -" + Model.Carrito.PedidoId;
+    }
+    else
+    {
+        ViewData["Title"] = "Compra -" + Model.Carrito.PedidoId;
+    }
+
+    String sector = "[" + session?.Sistema?.SectorId + "] " + session?.Sistema?.NombreRepresentada;
+    String cliente = "";
+
+
+    if (session?.Sistema?.TipoEmpresa == (int)EnumTiposEmpresas.Representada)
+    {
+        if (session.Usuario.Rol == (int)EnumRol.Vendedor)
+        {
+            cliente = "[" + Model.Carrito.Cliente?.NroClienteAsignado + "] " + Model.Carrito.Cliente?.RazonSocial;
+        }
+        else
+        {
+            cliente = session?.Usuario?.Nombre;
+        }
+    }
+    else
+    {
+        if (Model.Carrito.Cliente != null)
+        {
+            cliente = "[" + Model.Carrito.Cliente.ClienteID + "] " + Model.Carrito.Cliente.RazonSocial;
+        }
+        else
+        {
+            cliente = session.Usuario.Nombre;
+        }
+    }
+
+}
+
+
+@section Estilos
+{
+    <link rel="stylesheet" href="~/css/carrito.css" />
+}
+
+
+
+<div class="container-sm">
+    @{
+        if (session.Usuario.Rol == (int)EnumRol.Vendedor)
+        {
+            <div>
+                <h4 class="text-dark">El pedido se registro con exito</h4>
+                <br />
+                <h5>Código de pedido: @Model.Carrito.PedidoId</h5>
+            </div>
+
+            <div class="form-group">
+                <label>Empresa: </label>
+                <p>@session.Sistema.Nombre - (@session.Sistema.NombreRepresentada)</p>
+            </div>
+
+            <div class="form-group">
+                <label>Cliente: </label>
+                @{
+                    if (@Model.Carrito.Cliente != null)
+                    {
+                        <p>@cliente</p>
+                    }
+                    else
+                    {
+                        <p>No se selecciono ningun cliente.</p>
+                    }
+                }
+            </div>
+
+            <div class="form-group">
+                <label>Vendedor: </label>
+                <p>@session.Usuario.Nombre</p>
+            </div>
+
+            <br />
+
+            <div class="form-group">
+
+                @{
+                    var formatoPedido = session?.Configuracion?.ConfiguracionesPortal?.FirstOrDefault(c => c.Codigo == (int)LibreriaBase.Areas.Usuario.ConfPortal.EnumConfPortal.Forma_GrabanPedidos);
+
+                    if (formatoPedido?.Valor == 0)
+                    {
+                        <a class="btn btn-success" target="_blank"
+                           asp-area="Carrito"
+                           asp-controller="Pedido"
+                           asp-action="GenerarPdf"
+                           asp-route-sector="@sector"
+                           asp-route-cliente="@cliente"
+                           asp-route-codigo="@Model.Carrito.PedidoId.ToString().Encriptar()">Imprimir</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-success"
+                           asp-area="Carrito"
+                           asp-controller="Pedido"
+                           asp-action="ListarPedidos">Ver Pedidos</a>
+                    }
+                }
+
+
+                <a class="btn  btn-primary"
+                   asp-controller="Home"
+                   asp-action="Principal">Inicio</a>
+
+            </div>
+        }
+        else
+        {
+            if (Model.Carrito.EstadoId != 20)
+            {
+                <h4 class="text-dark text-sm-center">La compra se registro con exito</h4>
+
+                <div class="row">
+
+                    <div class="col-6 col-md-3">
+                        <img class="img-fluid" src="~/img/carrito/compraFinalizada.png" />
+                    </div>
+
+                    <div class="col-12 col-md-7">
+                        <h5 class="mt-4">Muchas Gracias @cliente</h5>
+                        <h5>Código de compra es @Model.Carrito.PedidoId</h5>
+                        @if (Model?.Carrito?.Pago != null)
+                        {
+                            <h5>Pago - @(Model.Carrito.Pago?.NombreIdPago +" "+Model.Carrito.Pago?.DatosPago)</h5>
+                        }
+
+                        @if (!String.IsNullOrEmpty(Model.Carrito.Envio?.NombreIdEnvio))
+                        {
+                            <h5>Envio - @Model.Carrito.Envio.NombreIdEnvio</h5>
+                        }
+                    </div>
+
+                </div>
+
+                <br />
+
+                <h5 class="text-primary">Detalle de Compra</h5>
+
+                <partial name="_detalleCompraFinalizada" model="Model" />
+
+                <div class="form-group mt-1">
+                    <a class="btn btn-success" target="_blank"
+                       asp-area="Carrito"
+                       asp-controller="Pedido"
+                       asp-action="GenerarPdf"
+                       asp-route-codigo="@Model.Carrito.PedidoId.ToString().Encriptar()">Imprimir</a>
+
+
+                    <a class="btn  btn-primary"
+                       asp-area="Carrito"
+                       asp-controller="Producto"
+                       asp-action="Productos">Productos</a>
+                </div>
+            }
+            else
+            {
+<h4 class="text-dark text-sm-center">Pedido parcial</h4>
+
+                <h6 class="text-primary text-sm-center">Estos pedidos son parciales, lo que permite que se sigan agregando productos al mismo sin que este sea reprocesado, para finalizar el mismo en cualquier momento puede recuperar el pedido y realizar la compra.</h6>
+                <div class="row mt-2">
+
+                    <div class="col-6 col-md-3">
+                        <i class="fas fa-coins fa-4x"></i>
+                    </div>
+
+                    <div class="col-12 col-md-7">
+                        <h5>Código de su pedido es: @Model.Carrito.PedidoId</h5>
+                    </div>
+
+                </div>
+
+                <br />
+
+                <h5 class="text-primary">Detalle del Pedido Parcial</h5>
+
+                <partial name="_detalleCompraFinalizada" model="Model" />
+
+                <div class="form-group mt-1">
+
+                    <a class="btn  btn-primary"
+                       asp-controller="Home"
+                       asp-action="Principal">Principal</a>
+                </div>
+            }
+
+        }
+    }
+
+
+
+
+    <br />
+    <br />
+
+
+</div>
+
+
+
+@section Scripts{
+
+
+
+}

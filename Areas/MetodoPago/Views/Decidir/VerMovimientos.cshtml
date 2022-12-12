@@ -1,0 +1,101 @@
+﻿@model IEnumerable<LibreriaCoreDRR.Decidir.Payment>
+
+@{
+    ViewData["Title"] = "VerMovimientos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4>Ver Movimientos</h4>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.site_transaction_id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.payment_method_id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.card_brand)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.currency)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.bin)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.installments)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.payment_type)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.card_data)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ticket)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.site_transaction_id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.payment_method_id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.card_brand)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.amount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.currency)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.bin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.installments)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.payment_type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.card_data)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ticket)
+            </td>
+
+        </tr>
+}
+    </tbody>
+</table>

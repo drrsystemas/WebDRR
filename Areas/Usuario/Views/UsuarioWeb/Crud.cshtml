@@ -1,0 +1,438 @@
+﻿@model DRR.Core.DBAlmaNET.Models.UsuarioWeb
+
+@{
+    ViewData["Title"] = "Editar";
+
+    Byte rol = 0;
+
+
+    if (ViewData.ContainsKey("Rol"))
+    {
+        rol = Convert.ToByte(ViewData["Rol"]);
+
+        if (rol == 3)
+        {
+            Layout = "~/Views/Shared/_LayoutRoot.cshtml";
+        }
+        else
+        {
+            Layout = "~/Views/Shared/_Layout.cshtml";
+        }
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+
+    String nombre = "";
+    Boolean bloquearFormulario = false;
+
+    int tipoOperacion = (int)ViewData["TipoOperacion"];
+    Boolean representada = (Boolean)ViewData["Representada"];
+
+
+
+    UsuarioWeb_Configuracion configuracion = Model?.Configuracion.GetObjectOfXml<UsuarioWeb_Configuracion>();
+    if (configuracion == null)
+    {
+        configuracion = new UsuarioWeb_Configuracion();
+        configuracion.FechaRegistro = DateTime.Now;
+    }
+
+    String urlBuscar = Url.Action("Buscar", "UsuarioWeb");
+    String urlDni = Url.Action("BuscarDni", "UsuarioWeb");
+
+
+    if (tipoOperacion == (Int32)EnumTipoOperacion.Agregar)
+    {
+        nombre = "Agregar";
+    }
+    else if (tipoOperacion == (Int32)EnumTipoOperacion.Modificar)
+    {
+        nombre = "Modificar";
+
+        Model.Contrasena = Model.Contrasena.DesEncriptar();
+
+
+    }
+    else if (tipoOperacion == (Int32)EnumTipoOperacion.Detalle)
+    {
+        nombre = "Detalle";
+        bloquearFormulario = true;
+    }
+
+}
+
+@section Estilos
+{
+    <style type="text/css">
+        .error {
+            color: red;
+        }
+
+        .preloader {
+            width: 70px;
+            height: 70px;
+            border: 10px solid #eee;
+            border-top: 10px solid #666;
+            border-radius: 50%;
+            animation-name: girar;
+            animation-duration: 2s;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+        }
+
+        @@keyframes girar {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+}
+
+
+
+
+<h4>@nombre - Usuario Web</h4>
+<hr />
+
+@{
+    if (!String.IsNullOrEmpty(Model.P_Error))
+    {
+        <h5 id="msjError" class="error">@Model.P_Error</h5>
+    }
+}
+
+
+
+<div class="row mx-2">
+    <div class="col-12">
+        <form id="frmCrubUsuarioWeb" asp-area="Usuario" asp-controller="UsuarioWeb" asp-action="Edit" method="post">
+
+
+            @* Campos ocultos - Para usarlos para enviar los datos simplemente. *@
+            <input hidden name="tipoOperacion" value="@tipoOperacion" class="form-control" />
+            <input hidden name="idClienteVendedor" id="idClienteVendedor" class="form-control" />
+            <input type="hidden" id="txtentidadSucId" name="txtEntidadSucId" class="form-control" />
+
+
+
+            <div hidden class="form-group">
+                <label asp-for="EmpresaId" class="control-label"></label>
+                <input asp-for="EmpresaId" class="form-control" />
+                <span asp-validation-for="EmpresaId" class="text-danger"></span>
+            </div>
+
+            <div hidden class="form-group">
+                <label asp-for="Idrealcionado" class="control-label"></label>
+                <input asp-for="Idrealcionado" class="form-control" />
+                <span asp-validation-for="Idrealcionado" class="text-danger"></span>
+            </div>
+
+            <div hidden class="form-group">
+                <label asp-for="CodigoAcceso" class="control-label"></label>
+                <input asp-for="CodigoAcceso" class="form-control" />
+                <span asp-validation-for="CodigoAcceso" class="text-danger"></span>
+            </div>
+
+            <div hidden class="form-group">
+                <label asp-for="TipoAccesoId" class="control-label"></label>
+                <input asp-for="TipoAccesoId" class="form-control" />
+                <span asp-validation-for="TipoAccesoId" class="text-danger"></span>
+            </div>
+
+            <div hidden class="form-group">
+                <label asp-for="TipoNroIdentificacion" class="control-label"></label>
+                <input asp-for="TipoNroIdentificacion" class="form-control" />
+                <span asp-validation-for="TipoNroIdentificacion" class="text-danger"></span>
+            </div>
+
+            <div hidden class="form-group">
+                <label asp-for="SectorId" class="control-label"></label>
+                <input asp-for="SectorId" class="form-control" />
+                <span asp-validation-for="SectorId" class="text-danger"></span>
+            </div>
+
+            <div hidden class="form-group">
+                <label asp-for="Configuracion" class="control-label"></label>
+                <input asp-for="Configuracion" class="form-control" />
+                <span asp-validation-for="Configuracion" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group @(tipoOperacion!=1?" ":"ocultarDiv")">
+                            <label asp-for="WebUserId" class="control-label"></label>
+                            <input readonly name="webUserId" asp-for="WebUserId" class="form-control" />
+                            <span asp-validation-for="WebUserId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+
+                        @if (tipoOperacion == (Int32)EnumTipoOperacion.Modificar && Model.AlmaUserId.IsNullOrValue(0))
+                        {
+                            <div class="form-group @(tipoOperacion!=1?" ":"ocultarDiv")">
+                                <label asp-for="AlmaUserId" class="control-label"></label>
+                                <input asp-for="AlmaUserId" class="form-control" />
+                                <span asp-validation-for="AlmaUserId" class="text-danger"></span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group @(tipoOperacion!=1?" ":"ocultarDiv")">
+                                <label asp-for="AlmaUserId" class="control-label"></label>
+                                <input readonly asp-for="AlmaUserId" class="form-control" />
+                                <span asp-validation-for="AlmaUserId" class="text-danger"></span>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+
+
+
+                <div class="form-group">
+                    <label class="control-label">Rol</label>
+
+                    <select class="custom-select" onchange="getComboRoles(this)" id="tipoUsuario" asp-for="@configuracion.TipoUsuario">
+
+                        @{
+                            if (tipoOperacion == (int)EnumTipoOperacion.Agregar)
+                            {
+                                <option value="" disabled selected>Seleccione el Rol</option>
+                            }
+
+                            if (representada == false)
+                            {
+                                <option value="2">Cliente</option>
+                                <option value="4">Vendedor</option>
+                                <option value="8">Cliente Fidelizado</option>
+                                @*<option value="128">Administrador</option>*@
+                            }
+                            else
+                            {
+                                <option value="4">Vendedor</option>
+                                <option value="8">Cliente Fidelizado</option>
+                            }
+                        }
+
+                    </select>
+
+                    <span asp-validation-for="@configuracion.TipoUsuario" class="text-danger"></span>
+                </div>
+
+                <hr />
+
+                <div id="div-seleccionar-usurio" class="form-group @(tipoOperacion == (int)EnumTipoOperacion.Agregar ? "ocultarDiv" : "")">
+
+                    <label class="control-label d-block">Usuario</label>
+
+                    <input type="text" readonly id="entidadSucId" name="entidadSucId" class="form-control d-inline w-50" />
+
+                    <a class="mb-1 btn btn-warning" onclick="seleccionarEntidadSuc()"><i class="far fa-id-badge"></i> Seleccionar</a>
+
+                </div>
+
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+            <div class="jumbotron jumbotron-fluid border border-danger p-2">
+                <div class="form-group">
+                    <label class="control-label">Correo Electrónico</label>
+                    <input asp-for="Email" id="email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                @*<div class="form-group @(tipoOperacion==1?" ":"ocultarDiv")">*@
+            <div class="form-group">
+                @*<label class="control-label">Clave Sistema</label>
+
+        <div class="input-group ">
+            <input id="id_password" type="password" asp-for="Contrasena" placeholder="La clave la genera el operador - ¡¡NO ES LA DEL CORREO DEL USUARIO!!" id="pass" class="form-control" />
+            <div class="input-group-append">
+                <i class="far fa-eye ml-3 mt-2" id="togglePassword" style="cursor: pointer;"></i>
+            </div>
+            <span asp-validation-for="Contrasena" class="text-danger"></span>
+        </div>*@
+
+                <div class="form-group">
+                    <label class="control-label">Contraseña</label>
+                    <input name="Contrasena" id="pass" value="@Model.Contrasena"  class="form-control" />
+                    <span asp-validation-for="Contrasena" class="text-danger"></span>
+                </div>
+
+
+            </div>
+            </div>
+
+
+            <hr />
+
+
+            <div id="datos-rol-cliente">
+                <div class="form-group @(representada==true?"ocultarDiv":" ")">
+                    <label class="control-label d-block">N° Documento *</label>
+                    <input type="number" asp-for="NroIdentificacion" id="numeroDni" class="form-control d-inline w-50" />
+                    <a class="btn  mb-1  btn-outline-success" onclick="verificarClientePorDni('@urlDni')"><i class="fas fa-certificate"></i> Verificar</a>
+
+                    <div id="giro" class=""></div>
+                    <span asp-validation-for="NroIdentificacion" class="text-danger"></span>
+                </div>
+
+
+                <div class="jumbotron jumbotron-fluid border border-success p-2 @(representada==true?"ocultarDiv":" ")">
+
+                    <div class="form-group">
+                        <label class="control-label">Apellido y Nombre</label>
+                        <input id="txtAyN" asp-for="@configuracion.ApellidoyNombre" class="form-control" />
+                        <span asp-validation-for="@configuracion.ApellidoyNombre" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Teléfono</label>
+                        <input id="txtTel" asp-for="@configuracion.Celular" class="form-control" />
+                        <span asp-validation-for="@configuracion.Celular" class="text-danger"></span>
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label class="control-label">Código Postal</label>
+                        <input id="txtCodP" asp-for="@configuracion.CodigoPostal" class="form-control" />
+                        <span asp-validation-for="@configuracion.CodigoPostal" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Localidad</label>
+                        <input id="txtLoc" asp-for="@configuracion.Localidad" class="form-control" />
+                        <span asp-validation-for="@configuracion.Localidad" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Dirección</label>
+                        <input id="txtDir" asp-for="@configuracion.Direccion" class="form-control" />
+                        <span asp-validation-for="@configuracion.Direccion" class="text-danger"></span>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="control-label">Fecha Nacimiento</label>
+                        <input type="date" id="txtFN" asp-for="@configuracion.FechaNacimiento" class="form-control" />
+                        <span asp-validation-for="@configuracion.FechaNacimiento" class="text-danger"></span>
+                    </div>
+
+
+                    @*<div class="form-group">
+                    <label class="control-label">Visualiza todos los Clientes</label>
+                    <input type="date" id="txtFN" asp-for="@configuracion.FechaNacimiento" class="form-control" />
+                    <span asp-validation-for="@configuracion.FechaNacimiento" class="text-danger"></span>
+                </div>*@
+
+
+                </div>
+            </div>
+
+
+
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="@configuracion.VendedorVisualizaTodosLosCliente" />
+                    Ver todos los clientes
+                </label>
+            </div>
+
+
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Inhabilitado" />
+                    @Html.DisplayNameFor(model => model.Inhabilitado)
+                </label>
+            </div>
+
+            <div class="form-group @(tipoOperacion!=1?"ocultarDiv":" ")">
+                <label class="control-label">Fecha Registro</label>
+                <input type="date" asp-for="@configuracion.FechaRegistro" class="form-control" />
+                <span asp-validation-for="@configuracion.FechaRegistro" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input onclick="enviarFromularioCrub()" type="button" value="Guardar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<br />
+<br />
+<br />
+
+
+
+<div class="modal" data-backdrop="static" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 id="tituloModal" class="modal-title">Seleccionar</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div id="divBuscar">
+                    <form id="frmbusquedaAjax">
+
+                        <div class="form-row">
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control "
+                                       data-urlaction="@urlBuscar"
+                                       id="inputDatoBusqueda" placeholder="Ingrese el nombre - Cuit - Dni">
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="button" onclick="buscarDatos()" class="btn btn-primary mb-2">Buscar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="divDatos">
+
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script src="~/script/usuarioWeb/usuarioWeb.js" type="text/javascript"></script>
+    <script src="~/script/usuarioWeb/crud.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        tipo = '@tipoOperacion';
+
+    </script>
+
+}

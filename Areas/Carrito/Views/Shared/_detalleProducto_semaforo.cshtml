@@ -1,0 +1,174 @@
+﻿@model ProductoMinimo
+@{
+
+    List<LibreriaBase.Areas.Usuario.DatoConfiguracion> lisaConf =
+        (List<LibreriaBase.Areas.Usuario.DatoConfiguracion>)ViewData["Conf_VP"];
+
+    String urlWp = (String)ViewData["UrlWp"];
+    String codigo = (String)ViewData["Codigo"];
+}
+
+
+
+<div class="row p-0">
+    <div class="col-12 m-0">
+        @{
+            var semaforo = lisaConf?.FirstOrDefault(c => c.Codigo == 9);
+
+            if (!String.IsNullOrEmpty(semaforo.Extra))
+            {
+
+                String[] data = semaforo.Extra.Split('|');
+
+                Int32 valorR = Convert.ToInt32(data[0]);
+                Int32 valorV = Convert.ToInt32(data[1]);
+
+                if (Model.Stock.MostrarEntero() > valorV)
+                {
+
+                    if (!String.IsNullOrEmpty(semaforo?.ExtraDos))
+                    {
+                        String[] leyendas = semaforo.ExtraDos.Split('|');
+
+                        if (leyendas.Count() >= 3)
+                        {
+                            String lda = leyendas[2];
+
+                            if (!String.IsNullOrEmpty(lda.Trim()))
+                            {
+                                <a class="bg-success cursorAyuda"
+                                   onclick="enlaceWpProducto(@codigo, '@Model.Nombre', '@urlWp')">
+                                    <p class="text-center bg-success text-white rounded">@lda </p>
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="bg-success cursorAyuda"
+                                   onclick="enlaceWpProducto(@codigo,'@Model.Nombre','@urlWp')">
+                                    <p class="bg-success text-success rounded">.</p>
+                                </a>
+                            }
+                        }
+                        else
+                        {
+                            <a class="bg-success cursorAyuda"
+                               onclick="enlaceWpProducto(@codigo,'@Model.Nombre','@urlWp')">
+                                <p class="bg-success text-success rounded">.</p>
+                            </a>
+                        }
+
+                    }
+                    else
+                    {
+                        <a class="bg-success cursorAyuda"
+                           onclick="enlaceWpProducto(@codigo,'@Model.Nombre','@urlWp')">
+                            <p class="bg-success text-success rounded">.</p>
+                        </a>
+                    }
+
+
+                }
+                else if (Model.Stock.MostrarEntero() > valorR)
+                {
+                    if (!String.IsNullOrEmpty(semaforo?.ExtraDos))
+                    {
+                        String[] leyendas = semaforo.ExtraDos.Split('|');
+
+                        if (leyendas.Count() >= 2)
+                        {
+                            String lda = leyendas[1];
+
+                            if (!String.IsNullOrEmpty(lda.Trim()))
+                            {
+                                <a class="bg-warning cursorAyuda"
+                                   onclick="enlaceWpProducto(@codigo,'@Model.Nombre','@urlWp')">
+                                    <p class="text-center bg-warning text-white rounded">@lda</p>
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="bg-warning cursorAyuda"
+                                   onclick="enlaceWpProducto(@codigo,'@Model.Nombre','@urlWp')">
+                                    <p class="bg-warning text-warning rounded">.</p>
+                                </a>
+                            }
+
+                        }
+                        else
+                        {
+                            <a class="bg-warning cursorAyuda"
+                               onclick="enlaceWpProducto(@codigo,'@Model.Nombre','@urlWp')">
+                                <p class="bg-warning text-warning rounded">.</p>
+                            </a>
+
+                        }
+
+                    }
+                    else
+                    {
+
+
+                        <a class="bg-warning cursorAyuda"
+                           onclick="enlaceWpProducto(@codigo,'@Model.Nombre','@urlWp')">
+                            <p class="bg-warning text-warning rounded">.</p>
+                        </a>
+                    }
+
+                    //Amarillo
+                }
+                else
+                {
+
+                    //Rojo
+                    if (!String.IsNullOrEmpty(semaforo?.ExtraDos))
+                    {
+                        String[] leyendas = semaforo.ExtraDos.Split('|');
+
+                        if (leyendas.Count() >= 1)
+                        {
+                            String lda = leyendas[0];
+
+                            if (!String.IsNullOrEmpty(lda.Trim()))
+                            {
+                                <a class="bg-danger cursorAyuda"
+                                   onclick="enlaceWpProducto(@codigo,'@Model.Nombre','@urlWp')">
+                                    <p class="text-center bg-danger text-white  rounded">@lda</p>
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="bg-danger cursorAyuda"
+                                   onclick="enlaceWpProducto(@codigo,'@Model.Nombre','@urlWp')">
+                                    <p class="text-center bg-danger text-danger rounded">.</p>
+                                </a>
+                            }
+
+                        }
+                        else
+                        {
+                            <a class="bg-danger cursorAyuda"
+                               onclick="enlaceWpProducto(@codigo,'@Model.Nombre','@urlWp')">
+                                <p class="text-center bg-danger text-danger rounded">.</p>
+                            </a>
+                        }
+
+                    }
+                    else
+                    {
+                        <a class="bg-danger cursorAyuda"
+                           onclick="enlaceWpProducto(@codigo,'@Model.Nombre','@urlWp')">
+                            <p class="text-center bg-danger text-danger rounded">.</p>
+                        </a>
+                    }
+                }
+
+            }
+            else
+            {
+                <p><kbd class="fondo-naranja">Stock: @Model.Stock.MostrarEntero()</kbd> </p>
+            }
+
+        }
+
+    </div>
+</div>

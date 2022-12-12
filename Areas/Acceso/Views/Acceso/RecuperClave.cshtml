@@ -1,0 +1,39 @@
+﻿@model LibreriaBase.Clases.DatosUsuario
+
+@{
+    ViewData["Title"] = "RecuperClave";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container p-4">
+    <div class="row">
+        <div class="col-md-4 mx-auto">
+            <div class="card text-center">
+                <div class="card-header">
+                    <h3>Recuperar Clave</h3>
+                </div>
+                <br />
+                <div class="card-body">
+                    <form method="post" asp-area="Acceso" asp-controller="Acceso" asp-action="RecuperClave">
+                        <div class="form-group">
+                            <input asp-for="@Model.Correo" placeholder="Correo Electronico" class="form-control" />
+                            <span asp-validation-for="@Model.Correo" class="text-danger"></span>
+                        </div>
+
+                        <br />
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary btn-block">Recuperar</button>
+                        </div>
+                        <p class="text-danger">@ViewBag.ErrorMessage</p>
+                        <br />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+<br />
+<br />
+

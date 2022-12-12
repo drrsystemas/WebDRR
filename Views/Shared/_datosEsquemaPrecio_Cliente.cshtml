@@ -1,0 +1,63 @@
+﻿@model ViewCliente
+
+@{
+    String codigo = "";
+    String razonSocial = "";
+
+    if (Model.EsRepresentada == true)
+    {
+        codigo = Model.NroClienteAsignado?.ToString();
+
+        razonSocial = Model.RazonSocial;
+
+        if (Model?.TipoBonificProducto > 0)
+        {
+            razonSocial += " {TB " + Model.TipoBonificProducto + "}";
+        }
+    }
+    else
+    {
+        codigo = Model.ClienteID.ToString();
+        razonSocial = Model.RazonSocial;
+    }
+
+    String cliente = $"[{codigo}] {razonSocial}";
+
+    //String cliente = "[" + Model.NroClienteAsignado + "] " + Model.RazonSocial;
+    String listaPrecios = "[" + Model.ListaPrecID + "] " + Model.ListaPrecID_Nombre;
+    String esquema = "";
+    String tbonf = "";
+
+    if(!Model.TipoBonificProducto.IsNullOrValue(0))
+    {
+        tbonf= "[ Tipo Bonf.: " + Model.TipoBonificProducto + "]";
+    }
+
+    String descuento = "";
+
+    if (!Model.DescuentoUno.IsNullOrValue(0))
+    {
+        descuento = "[Desc. 1: %" + Model.DescuentoUno.MostrarEntero() + "]";
+    }
+
+    esquema = descuento + "  " + tbonf;
+
+    string categoriaIm = Model.CategoriaImpuestoID_Nombre;
+    string nroIdentificacion = Model.NroIdentificacion.ToString();
+    String datosImp = $"{nroIdentificacion} - {categoriaIm}";
+}
+
+<div class="d-flex flex-sm-row bd-highlight">
+    <div class="bd-highlight"><i class="far fa-user-circle"></i></div>
+    <div class="pl-1  bd-highlight"><p><small>@cliente</small></p></div>
+    <div class="pl-1 bd-highlight"><p><small>@listaPrecios</small></p></div>
+    <div class="pl-1 bd-highlight"><p><small>@esquema</small></p></div>
+
+    <div class="pl-1 bd-highlight"><p><small>@datosImp</small></p></div>
+
+    <div class="pl-1 bd-highlight"><p><small><a asp-area="Usuario"
+   asp-action="EstadoCta"
+   asp-controller="Cliente"
+   asp-route-id="@Model.EntidadSucId"
+   asp-route-rz="@Model.RazonSocial"> Saldo:  @Html.DisplayFor(c => Model.SaldoCtaCte) </a></small></p></div>
+</div>

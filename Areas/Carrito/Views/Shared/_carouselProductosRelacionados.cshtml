@@ -1,0 +1,67 @@
+﻿@*
+    //16/10/2021
+    Muestra el detalle de los productos relacionados.
+*@
+
+@model IEnumerable<ProductoMinimo>
+
+@{
+    if (Model?.Count() > 0)
+    {
+        <h5 class="my-2 font-weight-bolder">Productos Relacionados</h5>
+
+        <div class="owl-carousel owl-theme">
+            @{
+                foreach (var item in Model)
+                {
+                    String codigoProducto = "";
+
+                    if (item.Representada == false)
+                    {
+                        codigoProducto = item.ProductoId.ToString();
+                    }
+                    else
+                    {
+                        if (item.ProductoId == 1378) // Que es esto mamadera
+                        {
+                            continue;
+                        }
+
+
+                        codigoProducto = item.CodigoProveedor;
+
+                        if (String.IsNullOrEmpty(codigoProducto))
+                        {
+                            item.Representada = false;
+
+                            codigoProducto = item.ProductoId.ToString();
+                        }
+                    }
+
+                    String urlVerProducto = Url.Action("VerProducto",
+                        "Producto",
+                        new { codigo = codigoProducto, representada = item.Representada, urlretorno = ViewContext.HttpContext.Request.PathAndQuery() });
+
+
+
+
+                    <div class="item">
+                        <h6 class="text-secondary text-center">
+                                        <a href="@urlVerProducto">@item.NombreCompleto</a></h6>
+                        <img class="imagen-producto-relacionado img-fluid" src="@item.Imagen.RutaImagenJpg()" />
+                    </div>
+                }
+            }
+
+
+        </div>
+
+
+    }
+
+}
+
+
+
+
+

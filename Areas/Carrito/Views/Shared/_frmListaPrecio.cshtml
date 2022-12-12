@@ -1,0 +1,68 @@
+﻿
+@model List<ViewListaPrecio>
+
+@{
+    String urlAction = Url.Action("SeleccionarListaPrecio", "Producto");
+}
+
+<div class="modal fade" 
+     id="id-venta-lista-precio" 
+     tabindex="-1"
+     role="dialog" 
+     aria-labelledby="exampleModalLabel" 
+     aria-hidden="true">
+   
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title" id="id-titulo">Lista de Precios</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="container">
+                    <form class="form-horizontal" method="post">
+                        <fieldset>
+
+                
+                        <select name="cb-lista-precio" class="form-control">
+
+                            <option value="0">Seleccione 1 Lista de Precio </option>
+
+                            @{
+                                for (int i = 0; i < Model.Count(); i++)
+                                {
+                                    var lp = Model[i];
+
+                                    <option value="@lp.ListaPrecId"> @lp.Descripcion</option>
+
+                                }
+                            }
+
+                        </select>
+                            
+
+                        </fieldset>
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <a id="id-venta-lista-precio-btn-aceptar" onclick="frmGuardarListaPrecio('@urlAction')" class="btn btn-success">Aceptar</a>
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

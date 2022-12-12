@@ -1,0 +1,20 @@
+﻿@{
+    String urlRetorno = (String)ViewData["UrlRetorno"];
+}
+
+<div class="col-12 col-sm-6 pl-0 pb-1">
+    <form class="form-inline"
+          asp-area="Carrito"
+          asp-controller="Carrito"
+          asp-action="AgregarItemCarrito_Codigo"
+          method="post">
+
+        <input autofocus placeholder="Cantidad*Codigo - Codigo - Nombre" class="form-control w-75" name="Codigo" type="search" aria-label="Search">
+
+        <input type="hidden" name="UrlRetorno" value="@urlRetorno">
+        <input type="hidden" name="BusquedaCliente" value="true">
+
+        <button type="submit" class="btn btn-primary ml-2"> <i class="fas fa-plus-circle"> </i> </button>
+
+    </form>
+</div>

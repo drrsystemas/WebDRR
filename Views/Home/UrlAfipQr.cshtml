@@ -1,0 +1,41 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DRR Systemas - AFIP Datos QR</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+
+    <div class=" container">
+
+        <form class="mt-5" asp-controller="Home" asp-action="VerDatosFacturaQR" method="post" >
+            <div class="form-group">
+                <label for="urlAfip">Url AFIP - Generada al leer QR</label>
+                <input type="url" name="urlAfip" class="form-control" id="urlAfip" aria-describedby="urlAfipAyuda" placeholder="ingrese o pege la url">
+                <small id="urlAfipAyuda" class="form-text text-muted">Necesita ingresar la url.</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Aceptar</button>
+        </form>
+
+    </div>
+
+
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script type="text/javascript">
+
+    </script>
+</body>
+</html>

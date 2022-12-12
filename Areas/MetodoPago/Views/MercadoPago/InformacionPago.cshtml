@@ -1,0 +1,21 @@
+﻿@model LibreriaBase.Api.MercadoPago.Pago.Payment
+@{
+    ViewData["Title"] = "InformacionPago";
+}
+
+<div class="container">
+    <h3>Informacion del Pago</h3>
+    <br />
+    <p>Referencia: @Model.external_reference</p>
+    <p>Cliente: @Model.payer.first_name @Model.payer.last_name</p>
+    <p>Estado: @Model.status</p>
+    <p>Pago: $ @Model.transaction_amount</p>
+
+</div>
+
+<br />
+<br />
+<br />
+
+
+

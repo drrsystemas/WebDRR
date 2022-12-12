@@ -1,0 +1,71 @@
+﻿@model LibreriaBase.Areas.Usuario.DatoConfiguracion
+
+@{
+    ViewData["Title"] = "Flete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<LibreriaBase.Areas.Carrito.Clases.ProductoMinimo> lista =
+        (List<LibreriaBase.Areas.Carrito.Clases.ProductoMinimo>)ViewData["servicios"];
+}
+
+<h3>Flete</h3>
+
+@*<partial name="_btnSuperiorAtras"
+         model='new DireccionView { Area = "Usuario",
+    Controlador = "Administracion",
+    Action = "ConfigurarEnvios" }' />*@
+
+
+@{
+    if (Model != null && Model.Valor > 0)
+    {
+        <p>Actualmente el seleccionado es: @Model.Descripcion</p>
+    }
+    else
+    {
+        <p>Seleccione de la lista el flete:</p>
+        <p>
+            Recuerde que el producto tiene que estar como sevicio y
+            en la opcion es venta departamento tiene que estar marcada
+        </p>
+
+    }
+}
+<br />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Descripcion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Valor)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in lista)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NombreCompleto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductoId)
+                </td>
+                <td>
+                    <form method="post" asp-action="Flete" asp-controller="Administracion" asp-area="Usuario">
+                        <input type="hidden" name="idFlete" value="@item.ProductoId" />
+                        <input type="hidden" name="nombre" value="@item.NombreCompleto" />
+
+                        <button class="btn btn-link" type="submit">Seleccionar</button>
+                    </form>
+
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

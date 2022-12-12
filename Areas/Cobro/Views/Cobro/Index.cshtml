@@ -1,0 +1,360 @@
+﻿@model ListadoCobrosViewModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+    string urlCobros = Url.Action("Agregar", "Cobro");
+
+
+    SessionAcceso session = SessionAcceso.RecuperarSession(Context);
+    Carrito carrito = SessionCarrito.RecuperarSession(Context);
+
+
+    Boolean _esRepresentada = (Boolean)ViewData["Representada"];
+
+
+    String filtro = Model.Filtro.ToJson();
+}
+
+@section Estilos
+{
+
+
+}
+
+
+
+
+@section Menu
+{
+    <div class="d-flex  bd-highlight">
+
+        @* Btn de Los filtros para ver o esconder... *@
+        <button class="btn btn-sm btn-light ml-md-3 my-md-2" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <i class="fas fa-bars fa-2x"></i>
+        </button>
+
+        <h3 class="float-left flex-grow-1 ml-2 mt-2">Listado de Cobranzas</h3>
+
+        <div class="p-2 bd-highlight">
+
+
+
+            <!-- Default dropleft button -->
+            <div class="btn-group dropleft">
+                <button type="button" class="btn  btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bars fa-1x"></i>
+                </button>
+                <div class="dropdown-menu">
+
+                    <a onclick="viewFrmAsignarNumeroReparto()" class="dropdown-item cursor-pointer my-2"><i class="fas fa-pen-alt"></i> Asignar N° Reparto</a>
+
+
+                    <a class="dropdown-item  cursor-pointer my-2"
+                       asp-action="ListarClientes" asp-controller="Cliente" asp-area="Usuario"><i class="far fa-hand-pointer"></i> Seleccionar Cliente</a>
+
+                    <a asp-area="Cobro"
+                       asp-controller="Cobro"
+                       asp-action="Agregar" asp-route-esquema="1" class="dropdown-item cursor-pointer my-2"><i class="fas fa-plus"></i> Agregar Cobro</a>
+
+
+                    <div class="dropdown-divider"></div>
+                    <a asp-area="Cobro" target="_blank"
+                       asp-controller="Cobro"
+                       asp-action="GenerarLiquidacion" asp-route-filtro="@filtro" class="dropdown-item cursor-pointer my-2"><i class="far fa-file-alt"></i> Rte Liquidación</a>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+
+
+    @* Div que se muestra o esconde --- Filtros *@
+    <div class="collapse" id="collapseExample">
+        <div>
+            <div>
+                @* Aca Formulario *@
+                <form class="mx-3" method="post" asp-action="Index" asp-controller="Cobro">
+
+                    <div class="row px-2 mb-2">
+                        <div class="col-sm-4">
+                            <div class="form-group pmd-textfield pmd-textfield-floating-label">
+                                <label class="control-label">Desde: </label>
+                                <input asp-for="Filtro.FechaDesde" type="date" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group pmd-textfield pmd-textfield-floating-label">
+                                <label class="control-label">Hasta: </label>
+                                <input asp-for="Filtro.FechaHasta" type="date" class="form-control">
+                            </div>
+                        </div>
+
+
+                        <div class="col-sm-3">
+                            <div class="form-check">
+
+                                <input type="checkbox" asp-for="Filtro.Todos" class="form-check-input">
+                                <label class="form-check-label  font-weight-bold">Todos</label>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    @*<input type="hidden" value="@jsonF" name="json" />*@
+                    <input type="hidden" value="3" name="operacion" />
+
+
+                    <div class="d-flex justify-content-end align-items-center">
+                        <button class="btn btn-success mb-1" type="submit"><i class="fas fa-filter"></i> Filtrar</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+<partial name="_aviso" />
+
+@if (session?.Usuario?.Rol == (int)EnumRol.Vendedor)
+{
+    ViewCliente vCliente = carrito?.Cliente;
+    if (vCliente != null)
+    {
+        <partial name="_datosEsquemaPrecio_Cliente" for="@vCliente" />
+    }
+}
+
+<span class="mt-1 d-sm-block d-md-none"></span>
+
+
+@if (Model?.Lista?.Count() > 0)
+{
+    <table class="table table-sm table-light table-striped">
+        <thead>
+            <tr>
+                <th class="d-none d-md-table-cell">
+                    Id
+                </th>
+                <th class="d-none d-md-table-cell">
+                    Cobro
+                </th>
+                <th class="d-none d-md-table-cell">
+                    Fecha
+                </th>
+                <th class="d-none d-md-table-cell">
+                    Total
+                </th>
+                <th class="d-none d-md-table-cell">
+                    Cliente
+                </th>
+                @{
+                    if (_esRepresentada == true)
+                    {
+                        <th class="d-none d-md-table-cell">
+                            Sector
+
+                        </th>
+                    }
+                }
+                <th class="d-none d-md-table-cell">
+                    Obs
+                </th>
+                <th class="d-none d-md-table-cell">
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+
+                foreach (var item in Model.Lista)
+                {
+                    Boolean reprocesado = false;
+                    if (item.FechaHoraReproceso != null)
+                    {
+                        reprocesado = true;
+                    }
+
+
+                    String cobroWebId = reprocesado == true ? "(R) " + item.CobroWebId : item.CobroWebId.ToString();
+                    String cliente = @item?.Cliente?.EntidadSuc?.Entidad?.RazonSocial;
+
+                    <tr>
+
+                        @* Se ve en celular unicamente. *@
+                        <td class="p-1 d-sm-block d-md-none">
+
+                            <div class="d-flex flex-column bd-highlight mb-1">
+                                <div class="p-0 bd-highlight">
+                                    <p class="d-inline-block">@cobroWebId </p>
+                                    @if (item.CobroId != null)
+                                    {
+                                        <p class="d-inline-block">Cobro: @item.CobroId</p>
+                                    }
+
+                                    <p class="d-inline-block">
+                                        @cliente
+
+                                    </p>
+
+
+                                </div>
+                                <div class="p-0 bd-highlight">
+                                    <p class="d-block">
+                                        <strong class="font-weight-bold">Fecha: </strong> @item.FechaComprobante.FechaCorta()
+
+                                        <strong class="ml-1 font-weight-bold">Total: </strong> @item.TotalCobro.FormatoMoneda(true)
+                                    </p>
+
+
+                                    <p class="d-inline-block">
+                                        @item.Observacion
+
+                                    </p>
+
+
+
+                                </div>
+
+                                <div class="p-0 bd-highlight">
+                                    @if (reprocesado == false)
+                                    {
+                                        <a class="btn btn-sm btn-primary"
+                                           asp-area="Cobro"
+                                           asp-controller="Cobro"
+                                           asp-action="Editar" asp-route-cobroWebId="@item.CobroWebId">Editar</a>
+
+                                        <a class="btn btn-sm btn-danger"
+                                           asp-area="Cobro"
+                                           asp-controller="Cobro"
+                                           asp-action="Eliminar" asp-route-cobroWebId="@item.CobroWebId">Eliminar</a>
+                                    }
+
+
+                                    <a class="btn btn-sm btn-secondary" target="_blank"
+                                       asp-area="Cobro"
+                                       asp-controller="Cobro"
+                                       asp-action="GenerarPdf" asp-route-cobroId="@item.CobroWebId">Rte</a>
+
+
+                                </div>
+
+                            </div>
+
+
+                        </td>
+
+
+                        <td class="d-none d-md-table-cell">
+                            @cobroWebId
+                        </td>
+                        <td class="d-none d-md-table-cell">
+                            @item.CobroId
+                        </td>
+                        <td class="d-none d-md-table-cell">
+                            @item.FechaComprobante.FechaCorta()
+                        </td>
+                        <td class="d-none d-md-table-cell">
+                            @item.TotalCobro.FormatoMoneda()
+                        </td>
+
+                        <td class="d-none d-md-table-cell">
+                            @item?.Cliente?.EntidadSuc?.Entidad?.RazonSocial
+                        </td>
+
+                        @if (_esRepresentada == true)
+                        {
+                            <td class="d-none d-md-table-cell">
+                                @item?.Sector?.Descripcion
+
+                            </td>
+                        }
+
+                        <td class="d-none d-md-table-cell">
+                            @item.Observacion
+                        </td>
+                        <td class="d-none d-md-table-cell">
+                            @if (reprocesado == false)
+                            {
+                                <a class="btn btn-sm btn-primary"
+                                   asp-area="Cobro"
+                                   asp-controller="Cobro"
+                                   asp-action="Editar" asp-route-cobroWebId="@item.CobroWebId">Editar</a>
+                            }
+
+
+                            <a class="btn btn-sm btn-secondary" target="_blank"
+                               asp-area="Cobro"
+                               asp-controller="Cobro"
+                               asp-action="GenerarPdf" asp-route-cobroId="@item.CobroWebId">Rte</a>
+                        </td>
+                    </tr>
+
+
+
+                }
+
+
+            }
+
+
+
+        </tbody>
+    </table>
+}
+else
+{
+    <h5 class="text-danger">No hay ningun cobro</h5>
+}
+
+
+
+
+
+
+<br />
+<br />
+<br />
+
+
+<div id="frm-asignar">
+
+</div>
+
+
+<div class="modal" id="frm-cobros" data-backdrop="static" tabindex="-1" role="dialog" style="max-height:500px;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 id="tituloModal" class="modal-title">Agregar Cobro</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <button onclick="agregarCobros('@urlCobros', '1')" type="button" class="mt-2 btn btn-primary btn-block">Por Seleccion de Comprobantes</button>
+                <button onclick="agregarCobros('@urlCobros',2)" type="button" class="mt-2 btn btn-secondary btn-block">Ingresando un Importe</button>
+                <button type="button" class="mt-2 btn btn-danger btn-block" data-dismiss="modal">Cerrar</button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts{
+    <script type="text/javascript" src="~/script/cobro/cobro.js"></script>
+
+}

@@ -1,0 +1,45 @@
+﻿@model IEnumerable<LibreriaBase.Areas.Usuario.DatoConfiguracion>
+
+@{
+    ViewData["Title"] = "ConfigurarMetodosPago";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+    <h4 class="mb-md-2">Metodos de Pago</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    Nombre
+                </th>
+                <th>
+                    Estado
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Descripcion)
+                    </td>
+                    <td>
+                        @item.Valor.Activo_Inactivo()
+                    </td>
+                    <td>
+                        @Html.ActionLink("Modificar", "ModificarPago", new { codigoEnvio = item.Codigo })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <br />
+    <br />
+
+
+

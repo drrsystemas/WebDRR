@@ -1,0 +1,61 @@
+﻿@model ProductoMinimo
+
+@{
+
+    int esquemaPrecios = (Int32)ViewData["EsquemaPrecios"];
+
+    Int32? rol = (Int32?)ViewData["Rol"];
+
+    if (esquemaPrecios == 3)
+    {
+        if (((bool)ViewData["EsconderPrecio"]) == false)
+        {
+
+            if (Model.ProductoOfertaID > 0 && Model.TipoOferta == 5 && Model.CantidadMinimaOferta.IsNullOrValue(0)==true)
+            {
+                <p class="small d-inline-block"><strike>Neto: @Model.PrecioNetoSinDescuento.FormatoMoneda()</strike></p>
+            }
+
+            <p class="small d-inline-block m-0">Neto: @Model.PrecioNeto.FormatoMoneda()</p>
+            <p class="small d-inline-block m-0">Final: @Model.PrecioBruto.FormatoMoneda()</p>
+        }
+
+        if (rol > 3 && rol != 10)
+        {
+            <p class="d-inline-block m-0"><strong>Sugerido: @Model.PrecioSugerido.FormatoMoneda()</strong></p>
+        }
+
+
+
+
+    }
+    else if (esquemaPrecios == 2)
+    {
+        if (((bool)ViewData["EsconderPrecio"]) == false)
+        {
+
+            if (Model.ProductoOfertaID > 0 && Model.TipoOferta == 5 && Model.CantidadMinimaOferta.IsNullOrValue(0) == true)
+            {
+                        <p class="small d-inline-block"><strike>Neto: @Model.PrecioNetoSinDescuento.FormatoMoneda()</strike></p>
+            }
+
+                    <p class="small d-inline-block m-0">Neto: @Model.PrecioNeto.FormatoMoneda()</p>
+                    <p class="small d-inline-block m-0">Final: @Model.PrecioBruto.FormatoMoneda()</p>
+        }
+
+    }
+    else
+    {
+                if (((bool)ViewData["EsconderPrecio"]) == false)
+                {
+                    if (Model.ProductoOfertaID > 0 && Model.TipoOferta == 5 && Model.CantidadMinimaOferta.IsNullOrValue(0) == true)
+                    {
+                        <h6><strike>@Model.PrecioBrutoSinDescuento.FormatoMoneda()</strike></h6>
+                    }
+
+                    <h4>@Model.PrecioBruto.FormatoMoneda()</h4>
+                }
+    }
+
+}
+
